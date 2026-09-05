@@ -1,0 +1,12 @@
+sympy__sympy-15017
+sphinx-doc__sphinx-7757
+django__django-13449
+pytest-dev__pytest-5787
+pydata__xarray-6938
+django__django-16938
+pydata__xarray-6992
+pylint-dev__pylint-4551
+sphinx-doc__sphinx-8551
+matplotlib__matplotlib-25775
+pylint-dev__pylint-8898
+scikit-learn__scikit-learn-25102
