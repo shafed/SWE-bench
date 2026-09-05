@@ -1,0 +1,13 @@
+position	instance_id	order
+1	django__django-13449	multi-first
+2	pydata__xarray-6992	multi-first
+3	pylint-dev__pylint-8898	multi-first
+4	pylint-dev__pylint-4551	single-first
+5	scikit-learn__scikit-learn-25102	single-first
+6	sympy__sympy-15017	multi-first
+7	pytest-dev__pytest-5787	single-first
+8	django__django-16938	multi-first
+9	sphinx-doc__sphinx-8551	single-first
+10	sphinx-doc__sphinx-7757	multi-first
+11	pydata__xarray-6938	single-first
+12	matplotlib__matplotlib-25775	single-first

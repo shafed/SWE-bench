@@ -1,0 +1,7 @@
+You are solving a SWE-bench software engineering task in the current repository.
+
+Implement the minimal correct fix for the issue below.
+Inspect the repository and run relevant tests as needed.
+Do not use external web resources.
+
+Issue:
