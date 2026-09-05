@@ -1,0 +1,10 @@
+# script_sha256 = 24f195ef51764906ef6d6900e0807e24cd89f21ed6b1a3851eba45093f482b7e
+# dataset = SWE-bench/SWE-bench_Verified
+# total dataset rows = 500
+# eligible rows = 499
+# dropped without production .py = 0
+# raw difficulty counts = {'15 min - 1 hour': 260, '1-4 hours': 42, '<15 min fix': 194, '>4 hours': 3}
+# sizes split=primary: L/lo=409, L/hi=20, M/lo=16, M/hi=10, D/lo=29, D/hi=15
+# sizes split=fallback: L/lo=188, L/hi=241, M/lo=2, M/hi=24, D/lo=4, D/hi=40
+# ladder step = step1
+# active split = primary

@@ -1,0 +1,509 @@
+{
+  "dataset": "SWE-bench/SWE-bench_Verified",
+  "script_sha256": "24f195ef51764906ef6d6900e0807e24cd89f21ed6b1a3851eba45093f482b7e",
+  "active_split": "primary",
+  "ladder_step": "step1",
+  "seed": 118,
+  "config": {
+    "exclude_instances": [
+      "sympy__sympy-20590"
+    ],
+    "exclude_repos": [],
+    "per_cell": 2,
+    "reserve_per_cell": 2,
+    "max_per_repo": 2
+  },
+  "records": [
+    {
+      "instance_id": "sympy__sympy-15017",
+      "repo": "sympy/sympy",
+      "difficulty": "<15 min fix",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 1,
+      "patch_lines": 4,
+      "problem_len": 1010,
+      "prod_files": [
+        "sympy/tensor/array/dense_ndim_array.py"
+      ],
+      "dirs": [
+        "sympy/tensor/array"
+      ],
+      "cell": "L/lo",
+      "role": "main"
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-7757",
+      "repo": "sphinx-doc/sphinx",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 1,
+      "patch_lines": 27,
+      "problem_len": 652,
+      "prod_files": [
+        "sphinx/util/inspect.py"
+      ],
+      "dirs": [
+        "sphinx/util"
+      ],
+      "cell": "L/lo",
+      "role": "main"
+    },
+    {
+      "instance_id": "django__django-13417",
+      "repo": "django/django",
+      "difficulty": "<15 min fix",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 1,
+      "patch_lines": 9,
+      "problem_len": 940,
+      "prod_files": [
+        "django/db/models/query.py"
+      ],
+      "dirs": [
+        "django/db/models"
+      ],
+      "cell": "L/lo",
+      "role": "reserve1"
+    },
+    {
+      "instance_id": "django__django-15467",
+      "repo": "django/django",
+      "difficulty": "<15 min fix",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 1,
+      "patch_lines": 6,
+      "problem_len": 727,
+      "prod_files": [
+        "django/contrib/admin/options.py"
+      ],
+      "dirs": [
+        "django/contrib/admin"
+      ],
+      "cell": "L/lo",
+      "role": "reserve2"
+    },
+    {
+      "instance_id": "django__django-13449",
+      "repo": "django/django",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 2,
+      "patch_lines": 14,
+      "problem_len": 6278,
+      "prod_files": [
+        "django/db/models/expressions.py"
+      ],
+      "dirs": [
+        "django/db/models"
+      ],
+      "cell": "L/hi",
+      "role": "main"
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5787",
+      "repo": "pytest-dev/pytest",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 4,
+      "patch_lines": 234,
+      "problem_len": 3907,
+      "prod_files": [
+        "src/_pytest/reports.py"
+      ],
+      "dirs": [
+        "src/_pytest"
+      ],
+      "cell": "L/hi",
+      "role": "main"
+    },
+    {
+      "instance_id": "django__django-15957",
+      "repo": "django/django",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 4,
+      "patch_lines": 35,
+      "problem_len": 854,
+      "prod_files": [
+        "django/db/models/fields/related_descriptors.py"
+      ],
+      "dirs": [
+        "django/db/models/fields"
+      ],
+      "cell": "L/hi",
+      "role": "reserve1"
+    },
+    {
+      "instance_id": "astropy__astropy-13579",
+      "repo": "astropy/astropy",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 1,
+      "n_dirs": 1,
+      "n_hunks": 2,
+      "patch_lines": 6,
+      "problem_len": 4822,
+      "prod_files": [
+        "astropy/wcs/wcsapi/wrappers/sliced_wcs.py"
+      ],
+      "dirs": [
+        "astropy/wcs/wcsapi/wrappers"
+      ],
+      "cell": "L/hi",
+      "role": "reserve2"
+    },
+    {
+      "instance_id": "pydata__xarray-6938",
+      "repo": "pydata/xarray",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 6,
+      "patch_lines": 28,
+      "problem_len": 2978,
+      "prod_files": [
+        "xarray/core/dataset.py",
+        "xarray/core/variable.py"
+      ],
+      "dirs": [
+        "xarray/core"
+      ],
+      "cell": "M/lo",
+      "role": "main"
+    },
+    {
+      "instance_id": "django__django-16938",
+      "repo": "django/django",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 2,
+      "patch_lines": 12,
+      "problem_len": 4015,
+      "prod_files": [
+        "django/core/serializers/python.py",
+        "django/core/serializers/xml_serializer.py"
+      ],
+      "dirs": [
+        "django/core/serializers"
+      ],
+      "cell": "M/lo",
+      "role": "main"
+    },
+    {
+      "instance_id": "astropy__astropy-8707",
+      "repo": "astropy/astropy",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 6,
+      "patch_lines": 79,
+      "problem_len": 840,
+      "prod_files": [
+        "astropy/io/fits/card.py",
+        "astropy/io/fits/header.py"
+      ],
+      "dirs": [
+        "astropy/io/fits"
+      ],
+      "cell": "M/lo",
+      "role": "reserve1"
+    },
+    {
+      "instance_id": "sympy__sympy-22080",
+      "repo": "sympy/sympy",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 3,
+      "patch_lines": 16,
+      "problem_len": 645,
+      "prod_files": [
+        "sympy/printing/codeprinter.py",
+        "sympy/printing/precedence.py"
+      ],
+      "dirs": [
+        "sympy/printing"
+      ],
+      "cell": "M/lo",
+      "role": "reserve2"
+    },
+    {
+      "instance_id": "pydata__xarray-6992",
+      "repo": "pydata/xarray",
+      "difficulty": ">4 hours",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 8,
+      "patch_lines": 127,
+      "problem_len": 1562,
+      "prod_files": [
+        "xarray/core/dataset.py",
+        "xarray/core/indexes.py"
+      ],
+      "dirs": [
+        "xarray/core"
+      ],
+      "cell": "M/hi",
+      "role": "main"
+    },
+    {
+      "instance_id": "pylint-dev__pylint-4551",
+      "repo": "pylint-dev/pylint",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 4,
+      "n_dirs": 1,
+      "n_hunks": 7,
+      "patch_lines": 134,
+      "problem_len": 777,
+      "prod_files": [
+        "pylint/pyreverse/diagrams.py",
+        "pylint/pyreverse/inspector.py",
+        "pylint/pyreverse/utils.py",
+        "pylint/pyreverse/writer.py"
+      ],
+      "dirs": [
+        "pylint/pyreverse"
+      ],
+      "cell": "M/hi",
+      "role": "main"
+    },
+    {
+      "instance_id": "django__django-16631",
+      "repo": "django/django",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 3,
+      "patch_lines": 37,
+      "problem_len": 824,
+      "prod_files": [
+        "django/contrib/auth/__init__.py",
+        "django/contrib/auth/base_user.py"
+      ],
+      "dirs": [
+        "django/contrib/auth"
+      ],
+      "cell": "M/hi",
+      "role": "reserve1"
+    },
+    {
+      "instance_id": "django__django-14631",
+      "repo": "django/django",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 2,
+      "n_dirs": 1,
+      "n_hunks": 7,
+      "patch_lines": 69,
+      "problem_len": 1399,
+      "prod_files": [
+        "django/forms/boundfield.py",
+        "django/forms/forms.py"
+      ],
+      "dirs": [
+        "django/forms"
+      ],
+      "cell": "M/hi",
+      "role": "reserve2"
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8551",
+      "repo": "sphinx-doc/sphinx",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 2,
+      "n_dirs": 2,
+      "n_hunks": 2,
+      "patch_lines": 7,
+      "problem_len": 1874,
+      "prod_files": [
+        "sphinx/domains/python.py",
+        "sphinx/util/docfields.py"
+      ],
+      "dirs": [
+        "sphinx/domains",
+        "sphinx/util"
+      ],
+      "cell": "D/lo",
+      "role": "main"
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25775",
+      "repo": "matplotlib/matplotlib",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 3,
+      "n_dirs": 2,
+      "n_hunks": 12,
+      "patch_lines": 45,
+      "problem_len": 718,
+      "prod_files": [
+        "lib/matplotlib/backends/backend_agg.py",
+        "lib/matplotlib/backends/backend_cairo.py",
+        "lib/matplotlib/text.py"
+      ],
+      "dirs": [
+        "lib/matplotlib",
+        "lib/matplotlib/backends"
+      ],
+      "cell": "D/lo",
+      "role": "main"
+    },
+    {
+      "instance_id": "django__django-13121",
+      "repo": "django/django",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 4,
+      "n_dirs": 4,
+      "n_hunks": 9,
+      "patch_lines": 78,
+      "problem_len": 1189,
+      "prod_files": [
+        "django/db/backends/base/operations.py",
+        "django/db/backends/mysql/operations.py",
+        "django/db/backends/sqlite3/operations.py",
+        "django/db/models/expressions.py"
+      ],
+      "dirs": [
+        "django/db/backends/base",
+        "django/db/backends/mysql",
+        "django/db/backends/sqlite3",
+        "django/db/models"
+      ],
+      "cell": "D/lo",
+      "role": "reserve1"
+    },
+    {
+      "instance_id": "sympy__sympy-13091",
+      "repo": "sympy/sympy",
+      "difficulty": "15 min - 1 hour",
+      "n_prod_files": 21,
+      "n_dirs": 9,
+      "n_hunks": 45,
+      "patch_lines": 154,
+      "problem_len": 1823,
+      "prod_files": [
+        "sympy/core/basic.py",
+        "sympy/core/exprtools.py",
+        "sympy/core/numbers.py",
+        "sympy/geometry/entity.py",
+        "sympy/physics/optics/medium.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/physics/vector/frame.py",
+        "sympy/physics/vector/vector.py",
+        "sympy/polys/agca/modules.py",
+        "sympy/polys/domains/domain.py",
+        "sympy/polys/domains/expressiondomain.py",
+        "sympy/polys/domains/pythonrational.py",
+        "sympy/polys/domains/quotientring.py",
+        "sympy/polys/fields.py",
+        "sympy/polys/monomials.py",
+        "sympy/polys/polyclasses.py",
+        "sympy/polys/polytools.py",
+        "sympy/polys/rings.py",
+        "sympy/polys/rootoftools.py",
+        "sympy/tensor/array/ndim_array.py",
+        "sympy/utilities/enumerative.py"
+      ],
+      "dirs": [
+        "sympy/core",
+        "sympy/geometry",
+        "sympy/physics/optics",
+        "sympy/physics/vector",
+        "sympy/polys",
+        "sympy/polys/agca",
+        "sympy/polys/domains",
+        "sympy/tensor/array",
+        "sympy/utilities"
+      ],
+      "cell": "D/lo",
+      "role": "reserve2"
+    },
+    {
+      "instance_id": "pylint-dev__pylint-8898",
+      "repo": "pylint-dev/pylint",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 3,
+      "n_dirs": 2,
+      "n_hunks": 5,
+      "patch_lines": 38,
+      "problem_len": 3455,
+      "prod_files": [
+        "pylint/config/argument.py",
+        "pylint/utils/__init__.py",
+        "pylint/utils/utils.py"
+      ],
+      "dirs": [
+        "pylint/config",
+        "pylint/utils"
+      ],
+      "cell": "D/hi",
+      "role": "main"
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-25102",
+      "repo": "scikit-learn/scikit-learn",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 2,
+      "n_dirs": 2,
+      "n_hunks": 7,
+      "patch_lines": 33,
+      "problem_len": 2534,
+      "prod_files": [
+        "sklearn/base.py",
+        "sklearn/feature_selection/_base.py"
+      ],
+      "dirs": [
+        "sklearn",
+        "sklearn/feature_selection"
+      ],
+      "cell": "D/hi",
+      "role": "main"
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-7590",
+      "repo": "sphinx-doc/sphinx",
+      "difficulty": ">4 hours",
+      "n_prod_files": 3,
+      "n_dirs": 2,
+      "n_hunks": 14,
+      "patch_lines": 113,
+      "problem_len": 600,
+      "prod_files": [
+        "sphinx/domains/c.py",
+        "sphinx/domains/cpp.py",
+        "sphinx/util/cfamily.py"
+      ],
+      "dirs": [
+        "sphinx/domains",
+        "sphinx/util"
+      ],
+      "cell": "D/hi",
+      "role": "reserve1"
+    },
+    {
+      "instance_id": "django__django-16560",
+      "repo": "django/django",
+      "difficulty": "1-4 hours",
+      "n_prod_files": 2,
+      "n_dirs": 2,
+      "n_hunks": 18,
+      "patch_lines": 89,
+      "problem_len": 840,
+      "prod_files": [
+        "django/contrib/postgres/constraints.py",
+        "django/db/models/constraints.py"
+      ],
+      "dirs": [
+        "django/contrib/postgres",
+        "django/db/models"
+      ],
+      "cell": "D/hi",
+      "role": "reserve2"
+    }
+  ]
+}

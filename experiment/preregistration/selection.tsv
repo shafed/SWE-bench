@@ -1,0 +1,39 @@
+# script_sha256 = 24f195ef51764906ef6d6900e0807e24cd89f21ed6b1a3851eba45093f482b7e
+# dataset = SWE-bench/SWE-bench_Verified
+# total dataset rows = 500
+# eligible rows = 499
+# dropped without production .py = 0
+# raw difficulty counts = {'15 min - 1 hour': 260, '1-4 hours': 42, '<15 min fix': 194, '>4 hours': 3}
+# sizes split=primary: L/lo=409, L/hi=20, M/lo=16, M/hi=10, D/lo=29, D/hi=15
+# sizes split=fallback: L/lo=188, L/hi=241, M/lo=2, M/hi=24, D/lo=4, D/hi=40
+# ladder step = step1
+# active split = primary
+# selected seed = 118
+
+instance_id	repo	difficulty	n_prod_files	n_dirs	n_hunks	patch_lines	cell	role
+sympy__sympy-15017	sympy/sympy	<15 min fix	1	1	1	4	L/lo	main
+sphinx-doc__sphinx-7757	sphinx-doc/sphinx	15 min - 1 hour	1	1	1	27	L/lo	main
+django__django-13417	django/django	<15 min fix	1	1	1	9	L/lo	reserve1
+django__django-15467	django/django	<15 min fix	1	1	1	6	L/lo	reserve2
+django__django-13449	django/django	1-4 hours	1	1	2	14	L/hi	main
+pytest-dev__pytest-5787	pytest-dev/pytest	1-4 hours	1	1	4	234	L/hi	main
+django__django-15957	django/django	1-4 hours	1	1	4	35	L/hi	reserve1
+astropy__astropy-13579	astropy/astropy	1-4 hours	1	1	2	6	L/hi	reserve2
+pydata__xarray-6938	pydata/xarray	15 min - 1 hour	2	1	6	28	M/lo	main
+django__django-16938	django/django	15 min - 1 hour	2	1	2	12	M/lo	main
+astropy__astropy-8707	astropy/astropy	15 min - 1 hour	2	1	6	79	M/lo	reserve1
+sympy__sympy-22080	sympy/sympy	15 min - 1 hour	2	1	3	16	M/lo	reserve2
+pydata__xarray-6992	pydata/xarray	>4 hours	2	1	8	127	M/hi	main
+pylint-dev__pylint-4551	pylint-dev/pylint	1-4 hours	4	1	7	134	M/hi	main
+django__django-16631	django/django	1-4 hours	2	1	3	37	M/hi	reserve1
+django__django-14631	django/django	1-4 hours	2	1	7	69	M/hi	reserve2
+sphinx-doc__sphinx-8551	sphinx-doc/sphinx	15 min - 1 hour	2	2	2	7	D/lo	main
+matplotlib__matplotlib-25775	matplotlib/matplotlib	15 min - 1 hour	3	2	12	45	D/lo	main
+django__django-13121	django/django	15 min - 1 hour	4	4	9	78	D/lo	reserve1
+sympy__sympy-13091	sympy/sympy	15 min - 1 hour	21	9	45	154	D/lo	reserve2
+pylint-dev__pylint-8898	pylint-dev/pylint	1-4 hours	3	2	5	38	D/hi	main
+scikit-learn__scikit-learn-25102	scikit-learn/scikit-learn	1-4 hours	2	2	7	33	D/hi	main
+sphinx-doc__sphinx-7590	sphinx-doc/sphinx	>4 hours	3	2	14	113	D/hi	reserve1
+django__django-16560	django/django	1-4 hours	2	2	18	89	D/hi	reserve2
+
+# wrote experiment/preregistration/selection.json
