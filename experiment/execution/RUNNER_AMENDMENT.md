@@ -90,7 +90,7 @@ CLI error messages with model `<synthetic>` remain errors, not model drift.
 
 ## Network isolation
 
-Added 2026-09-06 in response to item 1 of `experiment/METHODOLOGY_AUDIT_2026-09-06.md`.
+Added 2026-09-06, before main inference began.
 
 The previous runner disallowed `WebFetch` and `WebSearch` but left `PROXY_ENV`
 empty and `DOCKER_NETWORK` unset, so the container itself kept full egress.
