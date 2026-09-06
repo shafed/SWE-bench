@@ -222,6 +222,61 @@ configuration, closing the third finding of the Zhang audit. It is a
 description of the runner, not a second source of truth: where the two
 disagree, the runner is what ran.
 
+## Authentication reachability and failed inference
+
+Added 2026-09-06, before main inference began. Fourth freeze. Both items were
+found by the first validation run of the third freeze and are recorded here
+with the observation that produced them.
+
+### The allow-list was missing the OAuth refresh host
+
+The discovery run that produced the allow-list carried a fresh access token, so
+the CLI never refreshed it, `platform.claude.com` never appeared in the log, and
+`api.anthropic.com` was credited with the refresh role on assumption. The first
+validation run started two hours after the token expired. The proxy refused
+`platform.claude.com` six times between 14:55:21 and 14:55:26, interleaved with
+two 401 `authentication_failed` retries, and the run ended in 5 seconds with
+"OAuth access token has expired". `platform.claude.com` is now allow-listed;
+`network/DISCOVERY.md` carries the evidence. It is Anthropic's own auth host and
+serves no repository or package index, so the contamination claim is unchanged.
+An access token lives roughly six hours, so over a 24-run series a refresh is a
+certainty, not a contingency.
+
+### An unauthenticated run must not look like a defeated agent
+
+That same run exited 0 with `protocol_status: pass`, a 0-byte patch, no tool
+calls and no model usage — indistinguishable, downstream, from an agent that
+tried and failed. In a main series one expired token would have turned every
+subsequent instance into a silent unresolved outcome.
+
+`inference_failure()` now identifies runs that never reached the model:
+`models_seen` empty (the CLI's `<synthetic>` error messages are not counted as
+an LLM answer) together with `terminal_reason: api_error`, or with retried
+provider errors on an error result. Such a run exits 20, which the
+preregistration already classifies as infrastructure eligible for paired
+substitution ("provider/network outage prevents inference from taking place"),
+and `run_series.py` stops the series on it. `metrics.json` gains
+`result_terminal_reason`, `result_text`, `api_retry_statuses` and
+`inference_failure`.
+
+An agent that answers and solves nothing is untouched by this: it produced
+model messages, so it stays an experimental outcome.
+
+### The proxy freshness check could not fail
+
+Adding the host to `allowlist.txt` was not enough: the next run was refused
+again, by a proxy container started at 11:00 UTC with the older file. The
+staleness check read `/etc/squid/squid.conf` and `/etc/squid/allowlist.txt` back
+out of the container and compared them to the files on disk — but both are
+bind-mounted read-only from exactly those paths, so the comparison was between a
+file and itself and could never report a difference. squid parses its ACLs once,
+at startup, so what matters is which files existed when the process started.
+
+The proxy is now stamped at creation with a label carrying the sha256 of both
+config files, and freshness compares that label to the current digest. A changed
+allow-list therefore forces the container to be recreated. `metadata.json`
+records the digest under `network_isolation.proxy_config_digest`.
+
 ## Verification and freeze
 
 Repository gate: `.venv/bin/pytest --exitfirst --cov`.
@@ -235,11 +290,12 @@ The network-isolation amendment is a second freeze, made before main inference
 began. `nir-runner-frozen` was left where it is, so that the state the audit
 examined stays identifiable; that runner and amendment are tagged
 `nir-runner-frozen-2`. The snapshot-completeness fix and the series driver are
-a third freeze, `nir-runner-frozen-3`, also made before main inference. The
+a third freeze, `nir-runner-frozen-3`, and the authentication-reachability fix
+is a fourth, `nir-runner-frozen-4`; both were also made before main inference. The
 frozen failure-analysis protocol is tagged `nir-failure-analysis-frozen`. From
 here the same rule applies to all of them: do not move them once main inference
 begins. The main series must be produced by the runner whose digest matches
-`runner.sha256` at `nir-runner-frozen-3`; the driver checks this itself.
+`runner.sha256` at `nir-runner-frozen-4`; the driver checks this itself.
 
 Runs made before the isolation amendment are not part of the main series and
 must not be merged into it. Any main-series run must carry

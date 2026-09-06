@@ -81,6 +81,7 @@ ALLOW_RUNTIME_INSTALL = True
 NETWORK_DIR = Path(__file__).resolve().parent / "network"
 PROXY_IMAGE = "ubuntu/squid:latest"
 PROXY_CONTAINER = "nir-proxy"
+PROXY_LABEL = "nir.proxy.config"  # records which config squid actually parsed
 INTERNAL_NETWORK = "nir-internal"  # no gateway: task containers live here
 EGRESS_NETWORK = "nir-egress"  # proxy's second interface, has a route out
 
@@ -254,6 +255,14 @@ def ensure_network(name: str, internal: bool) -> None:
         )
 
 
+def proxy_config_digest(squid_conf: Path, allowlist: Path) -> str:
+    """Identity of the configuration squid parsed when it started."""
+    digest = hashlib.sha256()
+    for path in (squid_conf, allowlist):
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
 def ensure_egress_proxy(config_name: str) -> dict:
     """Start, or verify, the allow-list proxy and the isolated network.
 
@@ -261,23 +270,30 @@ def ensure_egress_proxy(config_name: str) -> dict:
     internal, or a proxy still serving a superseded allow-list, raises rather
     than degrades. The failure being prevented is a run that silently had full
     egress and could have read the upstream fix.
+
+    Freshness is decided by a label stamped at creation, not by reading the
+    files back out of the container. Both files are bind-mounted read-only, so
+    `docker exec cat` returns the current contents whatever squid is enforcing;
+    that check could never fail. squid parses its ACLs once at startup, so the
+    only honest question is which files existed when this process started. That
+    mattered in practice: adding `platform.claude.com` to the allow-list on
+    2026-09-06 left a proxy running that still refused it, and the run failed to
+    authenticate against a configuration that looked correct on disk.
     """
     squid_conf = NETWORK_DIR / config_name
     allowlist = NETWORK_DIR / "allowlist.txt"
-    wanted = {
-        "/etc/squid/squid.conf": squid_conf.read_text().strip(),
-        "/etc/squid/allowlist.txt": allowlist.read_text().strip(),
-    }
+    digest = proxy_config_digest(squid_conf, allowlist)
 
     ensure_network(INTERNAL_NETWORK, internal=True)
     ensure_network(EGRESS_NETWORK, internal=False)
 
     running = docker_out(["inspect", "-f", "{{.State.Running}}", PROXY_CONTAINER])
     if running == "true":
-        stale = any(
-            docker_out(["exec", PROXY_CONTAINER, "cat", path]) != body
-            for path, body in wanted.items()
+        started_with = docker_out(
+            ["inspect", "-f", f"{{{{index .Config.Labels \"{PROXY_LABEL}\"}}}}",
+             PROXY_CONTAINER]
         )
+        stale = started_with != digest
     else:
         stale = True
 
@@ -292,6 +308,7 @@ def ensure_egress_proxy(config_name: str) -> dict:
             [
                 "docker", "run", "-d",
                 "--name", PROXY_CONTAINER,
+                "--label", f"{PROXY_LABEL}={digest}",
                 "--network", INTERNAL_NETWORK,
                 "-v", f"{squid_conf}:/etc/squid/squid.conf:ro",
                 "-v", f"{allowlist}:/etc/squid/allowlist.txt:ro",
@@ -317,6 +334,7 @@ def ensure_egress_proxy(config_name: str) -> dict:
         "proxy_image_id": docker_out(["inspect", "-f", "{{.Image}}", PROXY_CONTAINER]),
         "internal_network": INTERNAL_NETWORK,
         "squid_config": config_name,
+        "proxy_config_digest": digest,
         "squid_config_sha256": sha256_file(squid_conf),
         "allowlist_sha256": sha256_file(allowlist),
         "allowlist": [
@@ -400,6 +418,7 @@ def read_trace(path: Path) -> dict:
         "result_events": 0,
         "events_after_result": 0,
         "usage_events_after_result": 0,
+        "api_retry_statuses": collections.Counter(),
     }
     if not path.exists():
         return out
@@ -417,6 +436,11 @@ def read_trace(path: Path) -> dict:
         if not isinstance(obj, dict):
             out["parse_errors"] += 1
             continue
+
+        if obj.get("type") == "system" and obj.get("subtype") == "api_retry":
+            # Provider-side refusals the CLI retried through, e.g. 401 after an
+            # expired OAuth token. Evidence for the infrastructure check below.
+            out["api_retry_statuses"][str(obj.get("error_status"))] += 1
 
         if obj.get("type") == "result":
             out["result"] = obj
@@ -526,6 +550,32 @@ def token_accounting(trace: dict, *, timed_out: bool = False) -> dict:
         status="complete" if complete else "partial_snapshot",
     )
     return accounting
+
+
+def inference_failure(trace: dict, models_seen: dict) -> str | None:
+    """
+    Did the run fail before the model ever answered?
+
+    A run whose provider calls all failed produces exactly what a defeated agent
+    produces: no patch, no tool calls, exit 0. Scored as an experimental
+    outcome it becomes a silent unresolved instance, and one expired token
+    partway through a series would do that to every instance after it. The
+    preregistration already calls this case infrastructure ("provider/network
+    outage prevents inference from taking place"), so it must leave the runner
+    as exit 20 and be substituted in pairs, not analysed.
+
+    `models_seen` excludes the CLI's `<synthetic>` error messages, so an empty
+    map means no LLM message was ever produced.
+    """
+    result = trace["result"] or {}
+    if models_seen:
+        return None
+    if result.get("terminal_reason") == "api_error":
+        return "api_error"
+    if trace["api_retry_statuses"] and result.get("is_error"):
+        statuses = ",".join(sorted(trace["api_retry_statuses"]))
+        return f"api_retry_{statuses}"
+    return None
 
 
 def delegation_status(condition: str, trace: dict) -> str:
@@ -1040,6 +1090,10 @@ def main() -> int:
     if models_seen and not model_ok:
         protocol_status += "|violation_model_mismatch"
 
+    no_inference = inference_failure(tr, models_seen)
+    if no_inference:
+        protocol_status += f"|infrastructure_no_inference_{no_inference}"
+
     metrics = {
         "instance_id": iid,
         "condition": condition,
@@ -1054,6 +1108,10 @@ def main() -> int:
         "result_event_present": result is not None,
         "result_is_error": result.get("is_error") if result else None,
         "result_subtype": result.get("subtype") if result else None,
+        "result_terminal_reason": result.get("terminal_reason") if result else None,
+        "result_text": result.get("result") if result else None,
+        "api_retry_statuses": dict(tr["api_retry_statuses"]),
+        "inference_failure": no_inference,
         "num_turns": result.get("num_turns") if result else None,
         "total_cost_usd_reported": result.get("total_cost_usd") if result else None,
         "usage_reported": result.get("usage") if result else None,
@@ -1095,6 +1153,11 @@ def main() -> int:
     print(json.dumps(metrics, indent=2, ensure_ascii=False))
 
     if credential_sync_failed:
+        return 20
+    if no_inference:
+        print(f"INFRASTRUCTURE FAILURE: no model response ({no_inference}); "
+              f"{result.get('result') if result else 'no result event'}",
+              file=sys.stderr)
         return 20
     if models_seen and not model_ok:
         print(f"CONFIG VIOLATION: unexpected models {models_seen}", file=sys.stderr)

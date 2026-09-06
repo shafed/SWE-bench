@@ -215,14 +215,15 @@ def test_controller_preserves_new_files_and_commits(
             internal = cmd[-1] == runner.INTERNAL_NETWORK
             return SimpleNamespace(returncode=0, stdout=f"{str(internal).lower()}\n")
         if cmd[:2] == ["docker", "inspect"]:
-            running = "{{.State.Running}}" in cmd
-            return SimpleNamespace(
-                returncode=0, stdout="true\n" if running else "sha256:proxy\n")
-        if cmd[:3] == ["docker", "exec", runner.PROXY_CONTAINER]:
-            name = Path(cmd[-1]).name
-            source = "squid.conf" if name == "squid.conf" else "allowlist.txt"
-            return SimpleNamespace(
-                returncode=0, stdout=(runner.NETWORK_DIR / source).read_text())
+            if "{{.State.Running}}" in cmd:
+                return SimpleNamespace(returncode=0, stdout="true\n")
+            if any("Config.Labels" in part for part in cmd):
+                # The label squid was actually started with matches the files.
+                digest = runner.proxy_config_digest(
+                    runner.NETWORK_DIR / "squid.conf",
+                    runner.NETWORK_DIR / "allowlist.txt")
+                return SimpleNamespace(returncode=0, stdout=f"{digest}\n")
+            return SimpleNamespace(returncode=0, stdout="sha256:proxy\n")
         if cmd[:2] == ["docker", "run"]:
             mount = next(x for x in cmd if x.endswith(":/home/nonroot/.claude-swebench"))
             copied_profile.append(Path(mount.split(":", 1)[0]))
@@ -344,3 +345,96 @@ def test_controller_preserves_new_files_and_commits(
     if timed_out:
         assert any(cmd[:2] == ["docker", "kill"] for cmd in commands)
         assert any(cmd[:2] == ["docker", "start"] for cmd in commands)
+
+
+def auth_failure_events():
+    # Observed in runner-frozen3-validation-20260906 SINGLE: the profile's OAuth
+    # access token had expired and every provider call returned 401.
+    return [
+        {"type": "system", "subtype": "init", "tools": ["Bash"]},
+        {"type": "system", "subtype": "api_retry", "attempt": 1,
+         "error_status": 401, "error": "authentication_failed"},
+        {"type": "system", "subtype": "api_retry", "attempt": 2,
+         "error_status": 401, "error": "authentication_failed"},
+        {"type": "assistant", "message": {"model": "<synthetic>", "content": []}},
+        {"type": "result", "is_error": True, "subtype": "success",
+         "terminal_reason": "api_error", "modelUsage": {},
+         "result": "Failed to authenticate. API Error: 401 OAuth access token "
+                   "has expired. Re-authenticate to continue."},
+    ]
+
+
+def test_failed_authentication_is_infrastructure_not_an_empty_solution(runner, tmp_path):
+    path = tmp_path / "trace.jsonl"
+    path.write_text("\n".join(map(json.dumps, auth_failure_events())))
+    trace = runner.read_trace(path)
+    # <synthetic> is not an LLM answer, so no model was ever reached.
+    assert dict(trace["models"]) == {}
+    assert trace["api_retry_statuses"] == {"401": 2}
+    assert runner.inference_failure(trace, dict(trace["models"])) == "api_error"
+
+
+def test_real_run_is_not_flagged_as_missing_inference(runner, usage_trace):
+    trace = runner.read_trace(usage_trace)
+    assert runner.inference_failure(trace, dict(trace["models"])) is None
+
+
+def test_agent_that_answers_but_solves_nothing_stays_an_outcome(runner, tmp_path):
+    path = tmp_path / "trace.jsonl"
+    path.write_text("\n".join(map(json.dumps, [
+        {"type": "assistant", "message": {"model": "claude-sonnet-5", "content": []}},
+        {"type": "result", "is_error": False, "subtype": "success",
+         "terminal_reason": "stop", "modelUsage": {}},
+    ])))
+    trace = runner.read_trace(path)
+    assert runner.inference_failure(trace, dict(trace["models"])) is None
+
+
+@pytest.fixture
+def proxy_calls(runner, monkeypatch, tmp_path):
+    """Record docker commands while faking a running proxy container."""
+    squid = tmp_path / "squid.conf"
+    squid.write_text("http_port 3128\n")
+    allowlist = tmp_path / "allowlist.txt"
+    allowlist.write_text(".anthropic.com\n")
+    monkeypatch.setattr(runner, "NETWORK_DIR", tmp_path)
+    monkeypatch.setattr(runner, "ensure_network", lambda *a, **k: None)
+    calls = []
+
+    state = {"label": runner.proxy_config_digest(squid, allowlist)}
+
+    def fake_docker_out(args, check=False):
+        if args[:2] == ["inspect", "-f"] and "State.Running" in args[2]:
+            return "true"
+        if args[:2] == ["inspect", "-f"] and "Config.Labels" in args[2]:
+            return state["label"]
+        if args[0] == "logs":
+            return "listening port: 3128"
+        return "sha256:image"
+
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        return SimpleNamespace(returncode=0, stdout="")
+
+    monkeypatch.setattr(runner, "docker_out", fake_docker_out)
+    monkeypatch.setattr(runner, "run", fake_run)
+    return SimpleNamespace(runner=runner, calls=calls, state=state,
+                           squid=squid, allowlist=allowlist)
+
+
+def test_running_proxy_with_the_same_config_is_left_alone(proxy_calls):
+    proxy_calls.runner.ensure_egress_proxy("squid.conf")
+    assert not any(cmd[:3] == ["docker", "rm", "-f"] for cmd in proxy_calls.calls)
+
+
+def test_changed_allowlist_recreates_the_proxy(proxy_calls):
+    # The files are bind-mounted read-only, so reading them back out of the
+    # container can never show a difference: squid parses ACLs once, at start.
+    proxy_calls.allowlist.write_text(".anthropic.com\nplatform.claude.com\n")
+    proxy_calls.runner.ensure_egress_proxy("squid.conf")
+    assert any(cmd[:3] == ["docker", "rm", "-f"] for cmd in proxy_calls.calls)
+    started = next(c for c in proxy_calls.calls if c[:2] == ["docker", "run"])
+    label = started[started.index("--label") + 1]
+    expected = proxy_calls.runner.proxy_config_digest(
+        proxy_calls.squid, proxy_calls.allowlist)
+    assert label == f"nir.proxy.config={expected}"

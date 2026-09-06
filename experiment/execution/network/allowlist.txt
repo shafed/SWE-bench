@@ -3,8 +3,18 @@
 #
 # Derived from an observed discovery run, not from assumption: see DISCOVERY.md.
 #
-# .anthropic.com   inference and OAuth token refresh (api.anthropic.com)
-# .claude.ai       CLI install script and binary (claude.ai, downloads.claude.ai)
+# .anthropic.com      inference (api.anthropic.com)
+# .claude.ai          CLI install script and binary (claude.ai, downloads.claude.ai)
+# platform.claude.com OAuth token refresh. Added 2026-09-06 on observed
+#                     evidence, not assumption: the discovery run happened to
+#                     carry a fresh access token, so no refresh was attempted
+#                     and the host never appeared. When the token had expired,
+#                     the proxy logged repeated TCP_DENIED/403 for
+#                     platform.claude.com at 14:55:21-26 interleaved with 401
+#                     `authentication_failed` retries against api.anthropic.com,
+#                     and the run ended "OAuth access token has expired".
+#                     Anthropic's own auth host; it serves no repository and no
+#                     package index, so the contamination guarantee is unchanged.
 #
 # Deliberately absent, and observed to be contacted when nothing blocks them:
 #   github.com, raw.githubusercontent.com  - host the repository under test and
@@ -15,3 +25,4 @@
 
 .anthropic.com
 .claude.ai
+platform.claude.com
