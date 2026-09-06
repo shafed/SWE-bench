@@ -277,6 +277,33 @@ config files, and freshness compares that label to the current digest. A changed
 allow-list therefore forces the container to be recreated. `metadata.json`
 records the digest under `network_isolation.proxy_config_digest`.
 
+### Validation of the fourth freeze
+
+`runs/runner-frozen4-validation-b`, dev instance `sympy__sympy-20590`, both
+conditions, enforced isolation, with the expired token that produced the
+failure being refreshed live through the proxy.
+
+| | SINGLE | MULTI |
+| --- | --- | --- |
+| protocol_status | pass | pass |
+| patch bytes | 647 | 647 |
+| wall seconds | 73.5 | 77.9 |
+| token accounting | complete | complete |
+| total tokens | 210 699 | 470 868 |
+| model messages | 10 | 22 |
+| tool calls | 9 | 20 |
+| subagents spawned/completed | — | 1 / 1 |
+| official evaluator | resolved | resolved |
+
+`credential_refresh_status: updated` — the refreshed token was written back to
+the source profile, so the container did reach `platform.claude.com`. Probes
+recorded GitHub, raw.githubusercontent and PyPI unreachable and
+`api.anthropic.com` reachable in both runs. Both snapshots came out `complete`,
+which is what the third freeze was for. The full chain patch -> predictions ->
+official evaluator -> report -> paired summary was exercised end to end
+(`frozen4-val-single`, `frozen4-val-multi`), so the analysis path is validated,
+not just the runner.
+
 ## Verification and freeze
 
 Repository gate: `.venv/bin/pytest --exitfirst --cov`.
