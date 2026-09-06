@@ -70,3 +70,13 @@ This item is recommended rather than blocking by itself.
 ## Status
 
 Do not start the main series until items 1 and 2 are resolved and frozen. Item 3 must be reflected consistently in the written methodology. Item 4 is recommended for reproducibility and reporting quality.
+
+## Resolution (2026-09-06)
+
+**Item 1 — resolved.** Task containers run on the gateway-less Docker network `nir-internal`; the only route out is a squid allow-list proxy. The allow-list was derived from an observed run rather than assumed, and each run now carries its own probe evidence, with a reachable blocked host ending the run as a configuration violation. Design, allow-list rationale and both dev-instance validation runs are recorded in `execution/RUNNER_AMENDMENT.md` (section "Network isolation") and `execution/network/DISCOVERY.md`.
+
+The audit's concern is confirmed rather than merely reasoned about: under the previous configuration the discovery run's proxy log shows a 3.3 MB fetch from github.com during the run. It was the CLI refreshing its plugin marketplace, not an agent retrieving the fix, but the egress capability was real.
+
+**Item 2 — resolved.** `preregistration/FAILURE_ANALYSIS_PROTOCOL.md` freezes the categories, an ordered decision rule that makes them mutually exclusive, the evidence and citation requirement, the pre-specified control sample, and the freeze rule. It also resolves an asymmetry not addressed above: categories 1–3 are written in orchestrator/subagent terms and so describe MULTI only. The protocol defines the corresponding SINGLE coding explicitly, and requires per-condition reporting rather than a single pooled "delegation error" count.
+
+**Items 3 and 4 — open.** Neither blocks the main series on its own.
