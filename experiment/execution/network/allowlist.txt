@@ -1,0 +1,17 @@
+# Destinations the task container may reach. squid dstdomain syntax: a leading
+# dot matches the domain and its subdomains. Everything absent is refused.
+#
+# Derived from an observed discovery run, not from assumption: see DISCOVERY.md.
+#
+# .anthropic.com   inference and OAuth token refresh (api.anthropic.com)
+# .claude.ai       CLI install script and binary (claude.ai, downloads.claude.ai)
+#
+# Deliberately absent, and observed to be contacted when nothing blocks them:
+#   github.com, raw.githubusercontent.com  - host the repository under test and
+#                                            its upstream fix
+#   pypi.org, files.pythonhosted.org       - package index
+#   http-intake.logs.us5.datadoghq.com     - CLI telemetry; not required for
+#                                            inference, so not granted
+
+.anthropic.com
+.claude.ai

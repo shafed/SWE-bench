@@ -184,3 +184,13 @@ todo_later.txt
 !/experiment/execution/runner.py
 !/experiment/execution/RUNNER_AMENDMENT.md
 !/experiment/execution/runner.sha256
+# runner.py will not start without these; they are part of the controller.
+!/experiment/execution/network/
+/experiment/execution/network/*
+!/experiment/execution/network/squid.conf
+!/experiment/execution/network/squid-discovery.conf
+!/experiment/execution/network/allowlist.txt
+!/experiment/execution/network/DISCOVERY.md
+!/experiment/preregistration/
+/experiment/preregistration/*
+!/experiment/preregistration/FAILURE_ANALYSIS_PROTOCOL.md
