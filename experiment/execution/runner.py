@@ -73,14 +73,34 @@ KILL_GRACE = 30
 # dependency and the version-drift surface from the measured run.
 ALLOW_RUNTIME_INSTALL = True
 
-# Egress allow-list proxy. Leave empty only if you accept that the agent can
-# reach PyPI/GitHub from Bash and may retrieve the upstream fix.
+# Egress control. The task container sits on an --internal Docker network and
+# therefore has no route off the host at all; the only way out is the squid
+# allow-list proxy, which refuses every destination outside allowlist.txt. This
+# is what stops Bash from reaching GitHub/PyPI and retrieving the upstream fix.
+# Disabling the Claude Code web tools alone does not achieve that.
+NETWORK_DIR = Path(__file__).resolve().parent / "network"
+PROXY_IMAGE = "ubuntu/squid:latest"
+PROXY_CONTAINER = "nir-proxy"
+INTERNAL_NETWORK = "nir-internal"  # no gateway: task containers live here
+EGRESS_NETWORK = "nir-egress"  # proxy's second interface, has a route out
+
 PROXY_ENV: dict[str, str] = {
-    # "HTTPS_PROXY": "http://nir-proxy:3128",
-    # "HTTP_PROXY": "http://nir-proxy:3128",
-    # "NO_PROXY": "localhost,127.0.0.1",
+    "HTTPS_PROXY": f"http://{PROXY_CONTAINER}:3128",
+    "HTTP_PROXY": f"http://{PROXY_CONTAINER}:3128",
+    "NO_PROXY": "localhost,127.0.0.1",
 }
-DOCKER_NETWORK: str | None = None  # e.g. "nir-net" when the proxy is in use
+DOCKER_NETWORK: str | None = INTERNAL_NETWORK
+
+# Probed inside the task container before inference. A reachable blocked host
+# is a configuration violation, not a warning: it means the run could have seen
+# the upstream fix. An unreachable allowed host fails the run early instead of
+# letting it burn the wall-clock budget on an unauthenticated CLI.
+BLOCKED_PROBE_URLS = (
+    "https://github.com",
+    "https://raw.githubusercontent.com",
+    "https://pypi.org",
+)
+ALLOWED_PROBE_URL = "https://api.anthropic.com"
 
 # Flags the command is built from. Verified against `claude --help` at runtime so
 # that a renamed or removed flag fails loudly instead of silently no-op'ing.
@@ -208,6 +228,129 @@ def dexec(container, script, *, user=None, env=None, **kw):
     return run(
         docker_exec(container, user=user, env=env) + ["bash", "-lc", script], **kw
     )
+
+
+def docker_out(args, *, check=False) -> str:
+    return run(
+        ["docker", *args],
+        check=check,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    ).stdout.strip()
+
+
+def ensure_network(name: str, internal: bool) -> None:
+    existing = docker_out(["network", "inspect", "-f", "{{.Internal}}", name])
+    if not existing:
+        run(
+            ["docker", "network", "create"] + (["--internal"] if internal else []) + [name],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+        existing = docker_out(["network", "inspect", "-f", "{{.Internal}}", name])
+    if (existing == "true") != internal:
+        raise RuntimeError(
+            f"docker network {name} has Internal={existing}, expected {internal}"
+        )
+
+
+def ensure_egress_proxy(config_name: str) -> dict:
+    """Start, or verify, the allow-list proxy and the isolated network.
+
+    Idempotent, and deliberately unforgiving: a network that is not actually
+    internal, or a proxy still serving a superseded allow-list, raises rather
+    than degrades. The failure being prevented is a run that silently had full
+    egress and could have read the upstream fix.
+    """
+    squid_conf = NETWORK_DIR / config_name
+    allowlist = NETWORK_DIR / "allowlist.txt"
+    wanted = {
+        "/etc/squid/squid.conf": squid_conf.read_text().strip(),
+        "/etc/squid/allowlist.txt": allowlist.read_text().strip(),
+    }
+
+    ensure_network(INTERNAL_NETWORK, internal=True)
+    ensure_network(EGRESS_NETWORK, internal=False)
+
+    running = docker_out(["inspect", "-f", "{{.State.Running}}", PROXY_CONTAINER])
+    if running == "true":
+        stale = any(
+            docker_out(["exec", PROXY_CONTAINER, "cat", path]) != body
+            for path, body in wanted.items()
+        )
+    else:
+        stale = True
+
+    if stale:
+        run(
+            ["docker", "rm", "-f", PROXY_CONTAINER],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        run(
+            [
+                "docker", "run", "-d",
+                "--name", PROXY_CONTAINER,
+                "--network", INTERNAL_NETWORK,
+                "-v", f"{squid_conf}:/etc/squid/squid.conf:ro",
+                "-v", f"{allowlist}:/etc/squid/allowlist.txt:ro",
+                PROXY_IMAGE,
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+            timeout=DOCKER_SETUP_TIMEOUT,
+        )
+        run(
+            ["docker", "network", "connect", EGRESS_NETWORK, PROXY_CONTAINER],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+        deadline = time.monotonic() + 60
+        while "listening port: 3128" not in docker_out(["logs", PROXY_CONTAINER]):
+            if time.monotonic() > deadline:
+                raise RuntimeError("egress proxy did not start listening on 3128")
+            time.sleep(2)
+
+    return {
+        "proxy_container": PROXY_CONTAINER,
+        "proxy_image_id": docker_out(["inspect", "-f", "{{.Image}}", PROXY_CONTAINER]),
+        "internal_network": INTERNAL_NETWORK,
+        "squid_config": config_name,
+        "squid_config_sha256": sha256_file(squid_conf),
+        "allowlist_sha256": sha256_file(allowlist),
+        "allowlist": [
+            line.strip()
+            for line in allowlist.read_text().splitlines()
+            if line.strip() and not line.startswith("#")
+        ],
+    }
+
+
+def probe_egress(container: str, log) -> dict:
+    """Evidence, per run, that the container could not reach the fix.
+
+    curl exits non-zero when squid refuses the CONNECT tunnel, so the exit code
+    is the observation; the allowed URL confirms the proxy path itself works.
+    """
+    results = {}
+    for url in (*BLOCKED_PROBE_URLS, ALLOWED_PROBE_URL):
+        probe = dexec(
+            container,
+            f"curl -sS -o /dev/null -w '%{{http_code}}' --max-time 25 {shlex.quote(url)}",
+            user="nonroot",
+            env={"HOME": "/home/nonroot", **PROXY_ENV},
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=log,
+            timeout=DOCKER_SETUP_TIMEOUT,
+        )
+        results[url] = {
+            "exit_code": probe.returncode,
+            "http_code": probe.stdout.strip(),
+            "reachable": probe.returncode == 0,
+        }
+    return results
 
 
 def task_image(instance_id: str) -> str:
@@ -453,6 +596,14 @@ def main() -> int:
     p.add_argument("--label", default="dev")
     p.add_argument("--position", type=int)
     p.add_argument("--timeout-seconds", type=int, default=DEFAULT_TIMEOUT)
+    p.add_argument(
+        "--network-discovery",
+        action="store_true",
+        help="VALIDATION ONLY: run behind the open, logging proxy configuration "
+        "to observe which hosts the CLI contacts. Reachable blocked hosts are "
+        "then recorded instead of failing the run, so such a run is not a "
+        "measured run and is marked as unenforced in metadata.json.",
+    )
     args = p.parse_args()
 
     iid = args.instance
@@ -532,6 +683,13 @@ def main() -> int:
 
     with open(out / "setup.log", "w") as setup_log:
         try:
+            egress_config = (
+                "squid-discovery.conf" if args.network_discovery else "squid.conf"
+            )
+            metadata["network_isolation"] = ensure_egress_proxy(egress_config)
+            metadata["network_isolation"]["enforced"] = not args.network_discovery
+            write_json(out / "metadata.json", metadata)
+
             profile_lock = lock_profile(CLAUDE_PROFILE)
             credential_source = CLAUDE_PROFILE / ".credentials.json"
             if credential_source.exists():
@@ -578,6 +736,27 @@ def main() -> int:
             container_created = True
 
             basic_env = {"HOME": "/home/nonroot", **PROXY_ENV}
+
+            probes = probe_egress(container, setup_log)
+            metadata["network_isolation"]["probes"] = probes
+            (out / "network-probe.txt").write_text(
+                "\n".join(
+                    f"{url}\texit={r['exit_code']}\thttp={r['http_code'] or '-'}\t"
+                    f"reachable={r['reachable']}"
+                    for url, r in probes.items()
+                )
+                + "\n"
+            )
+            leaked = [u for u in BLOCKED_PROBE_URLS if probes[u]["reachable"]]
+            if leaked and not args.network_discovery:
+                config_violation = f"egress not isolated; reachable: {leaked}"
+                raise RuntimeError(config_violation)
+            if not probes[ALLOWED_PROBE_URL]["reachable"]:
+                config_violation = (
+                    f"allow-listed host unreachable: {ALLOWED_PROBE_URL}; "
+                    "inference would run unauthenticated"
+                )
+                raise RuntimeError(config_violation)
 
             # Git considers /testbed owned by a different uid.
             dexec(

@@ -88,6 +88,65 @@ temporary profile outside the artifact tree for manual recovery. It does not
 retry or select a reserve automatically. Credentials are never committed.
 CLI error messages with model `<synthetic>` remain errors, not model drift.
 
+## Network isolation
+
+Added 2026-09-06 in response to item 1 of `experiment/METHODOLOGY_AUDIT_2026-09-06.md`.
+
+The previous runner disallowed `WebFetch` and `WebSearch` but left `PROXY_ENV`
+empty and `DOCKER_NETWORK` unset, so the container itself kept full egress.
+Removing the CLI's web tools is not the same as blocking the container's
+network: Bash could still reach GitHub and PyPI.
+
+Task containers now run on `nir-internal`, created with `--internal` and
+therefore without a gateway. The only route out is the squid container
+`nir-proxy`, attached to both `nir-internal` and `nir-egress`, which refuses
+every destination outside `network/allowlist.txt`. The allow-list is
+`.anthropic.com` (inference, OAuth refresh) and `.claude.ai` (CLI install
+script and binary). It was read off an observed run rather than assumed;
+`network/DISCOVERY.md` records the method and the full contacted host set.
+GitHub, PyPI and the CLI's Datadog telemetry endpoint are excluded.
+
+Isolation is evidenced per run, not per configuration. Before inference the
+controller probes github.com, raw.githubusercontent.com, pypi.org and
+api.anthropic.com from inside the task container, and writes the outcome to
+`network-probe.txt` and `metadata.json.network_isolation`. A reachable blocked
+host ends the run as a configuration violation (exit 50); an unreachable
+api.anthropic.com ends it too, rather than spending the wall-clock budget on an
+unauthenticated CLI. The controller also refuses to run if `nir-internal` is
+not actually internal, or if the live proxy serves a configuration other than
+the one on disk.
+
+Validation on the excluded dev instance `sympy__sympy-20590`:
+
+- `network-discovery-20260906`, SINGLE, open logging proxy (`--network-discovery`,
+  recorded as `enforced: false`, not a measured run). Contacted
+  api.anthropic.com, claude.ai, downloads.claude.ai,
+  http-intake.logs.us5.datadoghq.com and github.com. `protocol_status: pass`.
+- `network-isolation-validation-20260906`, MULTI, strict allow-list. Probes
+  recorded github.com, raw.githubusercontent.com and pypi.org as unreachable
+  (curl exit 56 against squid's 403) and api.anthropic.com as reachable. The
+  proxy log shows 18 tunnels to api.anthropic.com, and denials for GitHub, PyPI
+  and telemetry. `protocol_status: pass`, `subagent_stats.completed: 1`,
+  `models_seen: {claude-sonnet-5: 52}`, patch collected.
+
+The MULTI run establishes that subagent inference also works through the proxy,
+and that neither the blocked telemetry endpoint nor the blocked GitHub request
+affects the run.
+
+That GitHub request is worth naming, since it is the observation behind the
+audit item. Under the open configuration the CLI fetched 3.3 MB from
+github.com _after_ inference had started: the copied profile registers the
+plugin marketplace `anthropics/claude-plugins-official`, which the CLI
+refreshes at startup. No plugin is enabled in that profile and no agent Bash
+call touched GitHub, so nothing in the measured behaviour changed — but the
+container demonstrably had working GitHub egress, which is exactly what the
+audit said could not be ruled out.
+
+Residual limitation: `.anthropic.com` and `.claude.ai` remain reachable,
+because the agent cannot run without its provider. Neither hosts the repository
+under test or its upstream fix. The claim is "no access to the fix", not "no
+network".
+
 ## Verification and freeze
 
 Repository gate: `.venv/bin/pytest --exitfirst --cov`.

@@ -151,12 +151,13 @@ def test_invalid_refresh_is_not_saved(runner, tmp_path):
 
 
 @pytest.mark.parametrize("condition", ["single", "multi"])
-@pytest.mark.parametrize("outcome", ["success", "timeout", "auth_error"])
+@pytest.mark.parametrize("outcome", ["success", "timeout", "auth_error", "egress_leak"])
 def test_controller_preserves_new_files_and_commits(
     runner, tmp_path, monkeypatch, condition, outcome
 ):
     timed_out = outcome == "timeout"
     auth_error = outcome == "auth_error"
+    egress_leak = outcome == "egress_leak"
     repo = tmp_path / "testbed"
     repo.mkdir()
     real_run = subprocess.run
@@ -192,6 +193,19 @@ def test_controller_preserves_new_files_and_commits(
             return SimpleNamespace(returncode=0, stdout="controller-head\n")
         if cmd[:3] == ["docker", "image", "inspect"]:
             return SimpleNamespace(returncode=0, stdout="sha256:dev|[]\n")
+        # Egress proxy already up and serving the on-disk configuration.
+        if cmd[:3] == ["docker", "network", "inspect"]:
+            internal = cmd[-1] == runner.INTERNAL_NETWORK
+            return SimpleNamespace(returncode=0, stdout=f"{str(internal).lower()}\n")
+        if cmd[:2] == ["docker", "inspect"]:
+            running = "{{.State.Running}}" in cmd
+            return SimpleNamespace(
+                returncode=0, stdout="true\n" if running else "sha256:proxy\n")
+        if cmd[:3] == ["docker", "exec", runner.PROXY_CONTAINER]:
+            name = Path(cmd[-1]).name
+            source = "squid.conf" if name == "squid.conf" else "allowlist.txt"
+            return SimpleNamespace(
+                returncode=0, stdout=(runner.NETWORK_DIR / source).read_text())
         if cmd[:2] == ["docker", "run"]:
             mount = next(x for x in cmd if x.endswith(":/home/nonroot/.claude-swebench"))
             copied_profile.append(Path(mount.split(":", 1)[0]))
@@ -199,6 +213,12 @@ def test_controller_preserves_new_files_and_commits(
         return SimpleNamespace(returncode=0, stdout="")
 
     def fake_dexec(container, script, *, user=None, env=None, **kwargs):
+        if script.startswith("curl "):
+            assert env["HTTPS_PROXY"] == runner.PROXY_ENV["HTTPS_PROXY"]
+            blocked = any(url in script for url in runner.BLOCKED_PROBE_URLS)
+            reachable = egress_leak if blocked else True
+            return SimpleNamespace(
+                returncode=0 if reachable else 35, stdout="200" if reachable else "000")
         if "claude --version" in script:
             return SimpleNamespace(returncode=0, stdout="2.1.261 (Claude Code)\n")
         if "claude --help" in script:
@@ -257,9 +277,23 @@ def test_controller_preserves_new_files_and_commits(
     process_api.run = fake_run
     monkeypatch.setattr(runner, "subprocess", process_api)
 
-    assert runner.main() == (30 if auth_error else 0)
+    assert runner.main() == (50 if egress_leak else 30 if auth_error else 0)
     out = tmp_path / "runs/dev/dev-instance" / condition
     metadata = json.loads((out / "metadata.json").read_text())
+
+    # The task container is reachable only through the allow-list proxy, and a
+    # blocked host that answers stops the run before inference.
+    docker_run = next(c for c in commands if c[:2] == ["docker", "run"])
+    assert docker_run[docker_run.index("--network") + 1] == runner.INTERNAL_NETWORK
+    assert metadata["network_isolation"]["enforced"] is True
+    probes = metadata["network_isolation"]["probes"]
+    assert [u for u in runner.BLOCKED_PROBE_URLS if probes[u]["reachable"]] == (
+        list(runner.BLOCKED_PROBE_URLS) if egress_leak else [])
+    if egress_leak:
+        assert "egress not isolated" in metadata["controller_exception"]
+        assert not (out / "trace.jsonl").exists()
+        return
+
     metrics = json.loads((out / "metrics.json").read_text())
     assert metadata["max_turns"] is None
     assert metadata["effort_requested"] == "high"
