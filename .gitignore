@@ -182,7 +182,10 @@ todo_later.txt
 !/experiment/execution/
 /experiment/execution/*
 !/experiment/execution/runner.py
+!/experiment/execution/run_series.py
+!/experiment/execution/analyze_runs.py
 !/experiment/execution/RUNNER_AMENDMENT.md
+!/experiment/execution/HARNESS_CARD.md
 !/experiment/execution/runner.sha256
 # runner.py will not start without these; they are part of the controller.
 !/experiment/execution/network/
