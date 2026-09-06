@@ -155,3 +155,15 @@ The runner digest is stored in `runner.sha256`; verify from the repository root
 with `sha256sum -c experiment/execution/runner.sha256`. The immutable-intent
 local tag `nir-runner-frozen` identifies the commit containing this runner and
 amendment. Do not move that tag after main inference begins.
+
+The network-isolation amendment is a second freeze, made before main inference
+began. `nir-runner-frozen` was left where it is, so that the state the audit
+examined stays identifiable; the current runner and amendment are tagged
+`nir-runner-frozen-2`. The frozen failure-analysis protocol is tagged
+`nir-failure-analysis-frozen`. From here the same rule applies to all three:
+do not move them once main inference begins.
+
+Runs made before the isolation amendment are not part of the main series and
+must not be merged into it. Any main-series run must carry
+`metadata.json.network_isolation.enforced: true` and probe results showing the
+blocked hosts unreachable; a run without that evidence is not a measured run.
