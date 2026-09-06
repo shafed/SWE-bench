@@ -147,6 +147,81 @@ because the agent cannot run without its provider. Neither hosts the repository
 under test or its upstream fix. The claim is "no access to the fix", not "no
 network".
 
+## Snapshot completeness and the series driver
+
+Added 2026-09-06, before main inference began. Third freeze.
+
+### `partial_snapshot` was firing on healthy runs
+
+Completeness of the token snapshot was defined as "no trace events after the
+final `result` event". That is too strong for the observed CLI. In the real
+MULTI validation trace
+`runs/network-isolation-validation-20260906/sympy__sympy-20590/multi`, `result`
+is event 140 of 143 and is followed by three `system` events —
+`background_tasks_changed`, then `task_updated` and `task_notification` for the
+backgrounded delegation task being torn down. The run was successful,
+`parse_errors: 0`, `is_error: false`, and the totals were the final cumulative
+ones, yet it was recorded `partial_snapshot`.
+
+Token usage is reported only on `assistant` and `result` events; a `system`
+event carries none and therefore cannot invalidate a cumulative snapshot. Since
+MULTI ends with that teardown almost every time, the old rule would have marked
+most MULTI runs partial and destroyed the distinction from a genuinely truncated
+measurement — exactly the runs where resource outcomes matter most.
+
+`read_trace` now counts both: `events_after_result` (all, unchanged meaning) and
+`usage_events_after_result` (excluding `type: system`). Completeness uses the
+latter; both are written to `metrics.json` so the judgement stays auditable.
+Nothing about the totals themselves changed: recomputing the validation trace
+gives the same
+`{input 1201, output 8994, cache_read 519830, cache_creation 43604}` and now
+reports `complete`.
+
+This makes the flag less likely to fire, so it is stated plainly: a run whose
+CLI emits assistant activity after the final result, times out, errors, or has
+parse errors is still partial. The change was made before any main-series
+outcome existed.
+
+### `run_series.py`
+
+`runner.py` executes one (instance, condition) pair and has no opinion about
+what runs next; until now `run-order.tsv` was read by nothing at all, so the
+frozen order depended entirely on typing 24 commands correctly. The driver
+`experiment/execution/run_series.py` executes the series and refuses to start
+unless the order file describes exactly the instances in `tasks-main.txt` and
+`sha256sum -c runner.sha256` passes, so a series cannot be produced by an
+unfrozen runner. It follows the recorded within-pair order, runs strictly
+sequentially (the profile lock and the shared proxy make concurrency unsafe, and
+interleaved runs would not have comparable wall-clock), skips run directories
+that already exist rather than re-running them, and stops the whole series on
+any nonzero runner exit, naming the preregistered decision that exit requires.
+It writes `series-log.tsv` next to the runs. It adds no retry and no
+substitution logic: both remain human decisions under the preregistered rules.
+
+### `analyze_runs.py` and the harness card
+
+`experiment/execution/analyze_runs.py` builds the prediction files, joins each
+run to the official evaluation report, and produces the paired comparison. It
+is committed now, before any main outcome exists, so the choice of statistical
+test cannot be made after seeing the data: exact McNemar on paired resolution,
+and an exact paired randomisation test (full enumeration of the 2^n sign flips)
+on cost differences. Its docstring is the analysis specification.
+
+One measurement decision is recorded there and repeated here, because it
+changes a preregistered process metric. `result.num_turns` does not describe a
+MULTI session: `runner-freeze-validation/multi` reports 1 turn against 36 tool
+calls and 71 assistant events, and `runner-final-sequential-20260906/multi`
+reports 2 against 21 tool calls, while SINGLE runs of the same instance report
+10-11 turns for 9-10 tool calls. Reported as-is it would make delegation look
+cheaper in turns as a pure artefact. The compared process measure is therefore
+`unique_assistant_messages` from the trace; `num_turns` is kept in the per-run
+table as reported data and is not compared.
+
+`experiment/execution/HARNESS_CARD.md` is the ETCSOVG disclosure of the frozen
+configuration, closing the third finding of the Zhang audit. It is a
+description of the runner, not a second source of truth: where the two
+disagree, the runner is what ran.
+
 ## Verification and freeze
 
 Repository gate: `.venv/bin/pytest --exitfirst --cov`.
@@ -158,10 +233,13 @@ amendment. Do not move that tag after main inference begins.
 
 The network-isolation amendment is a second freeze, made before main inference
 began. `nir-runner-frozen` was left where it is, so that the state the audit
-examined stays identifiable; the current runner and amendment are tagged
-`nir-runner-frozen-2`. The frozen failure-analysis protocol is tagged
-`nir-failure-analysis-frozen`. From here the same rule applies to all three:
-do not move them once main inference begins.
+examined stays identifiable; that runner and amendment are tagged
+`nir-runner-frozen-2`. The snapshot-completeness fix and the series driver are
+a third freeze, `nir-runner-frozen-3`, also made before main inference. The
+frozen failure-analysis protocol is tagged `nir-failure-analysis-frozen`. From
+here the same rule applies to all of them: do not move them once main inference
+begins. The main series must be produced by the runner whose digest matches
+`runner.sha256` at `nir-runner-frozen-3`; the driver checks this itself.
 
 Runs made before the isolation amendment are not part of the main series and
 must not be merged into it. Any main-series run must carry

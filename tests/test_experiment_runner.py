@@ -93,10 +93,27 @@ def test_timeout_keeps_partial_snapshot_without_claiming_full_cost(runner, usage
     assert accounting["totals"]["output_tokens"] == 8055
 
 
-def test_activity_after_result_marks_snapshot_partial(runner, usage_trace):
+def test_usage_bearing_activity_after_result_marks_snapshot_partial(runner, usage_trace):
     with usage_trace.open("a") as f:
-        f.write('\n{"type":"system","subtype":"init"}\n')
-    assert runner.token_accounting(runner.read_trace(usage_trace))["status"] == "partial_snapshot"
+        f.write('\n{"type":"assistant","message":{"id":"m9","model":"claude-sonnet-5"}}\n')
+    trace = runner.read_trace(usage_trace)
+    assert trace["usage_events_after_result"] == 1
+    assert runner.token_accounting(trace)["status"] == "partial_snapshot"
+
+
+def test_trailing_system_housekeeping_does_not_mark_snapshot_partial(runner, usage_trace):
+    # Observed after every backgrounded delegation: the CLI tears the task down
+    # after the final result. These events carry no usage.
+    with usage_trace.open("a") as f:
+        f.write('\n{"type":"system","subtype":"background_tasks_changed","tasks":[]}')
+        f.write('\n{"type":"system","subtype":"task_updated","task_id":"t1"}')
+        f.write('\n{"type":"system","subtype":"task_notification","task_id":"t1"}\n')
+    trace = runner.read_trace(usage_trace)
+    assert trace["events_after_result"] == 3
+    assert trace["usage_events_after_result"] == 0
+    accounting = runner.token_accounting(trace)
+    assert accounting["status"] == "complete"
+    assert accounting["complete"] is True
 
 
 @pytest.mark.parametrize("with_result", [False, True])

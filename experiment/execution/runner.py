@@ -399,6 +399,7 @@ def read_trace(path: Path) -> dict:
         "assistant_events": 0,
         "result_events": 0,
         "events_after_result": 0,
+        "usage_events_after_result": 0,
     }
     if not path.exists():
         return out
@@ -421,8 +422,18 @@ def read_trace(path: Path) -> dict:
             out["result"] = obj
             out["result_events"] += 1
             out["events_after_result"] = 0
+            out["usage_events_after_result"] = 0
         elif out["result"] is not None:
             out["events_after_result"] += 1
+            # Token usage is reported only on assistant and result events. The
+            # CLI keeps emitting `system` housekeeping after the final result
+            # (background_tasks_changed, task_updated, task_notification when a
+            # backgrounded subagent task is torn down), which carries no usage
+            # and cannot invalidate the cumulative snapshot. Counting it would
+            # mark almost every MULTI run partial and destroy the distinction
+            # from a genuinely truncated measurement.
+            if obj.get("type") != "system":
+                out["usage_events_after_result"] += 1
 
         if obj.get("type") != "assistant":
             continue
@@ -507,7 +518,7 @@ def token_accounting(trace: dict, *, timed_out: bool = False) -> dict:
         not timed_out
         and result.get("is_error") is False
         and trace["parse_errors"] == 0
-        and trace["events_after_result"] == 0
+        and trace["usage_events_after_result"] == 0
     )
     accounting.update(
         totals=totals,
@@ -1055,6 +1066,8 @@ def main() -> int:
         "unique_assistant_messages": tr.get("unique_assistant_messages", 0),
         "messages_without_id": tr["messages_without_id"],
         "result_events": tr["result_events"],
+        "events_after_result": tr["events_after_result"],
+        "usage_events_after_result": tr["usage_events_after_result"],
         "assistant_events": tr["assistant_events"],
         "models_seen": models_seen,
         "subagent_stats": subagent_stats,
