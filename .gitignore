@@ -175,3 +175,12 @@ notebooks/
 gold.*.json
 loose-ends.txt
 todo_later.txt
+
+# Keep the controller visible even when local excludes hide experiment data.
+!/experiment/
+/experiment/*
+!/experiment/execution/
+/experiment/execution/*
+!/experiment/execution/runner.py
+!/experiment/execution/RUNNER_AMENDMENT.md
+!/experiment/execution/runner.sha256
