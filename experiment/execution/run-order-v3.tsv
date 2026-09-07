@@ -1,0 +1,13 @@
+position	instance_id	order
+1	sympy__sympy-13878	multi-first
+2	sympy__sympy-16597	multi-first
+3	sympy__sympy-18199	multi-first
+4	django__django-15268	single-first
+5	django__django-16263	multi-first
+6	sympy__sympy-17630	single-first
+7	sphinx-doc__sphinx-11510	multi-first
+8	astropy__astropy-13398	multi-first
+9	sympy__sympy-13852	single-first
+10	django__django-15128	single-first
+11	django__django-15957	single-first
+12	sphinx-doc__sphinx-7590	single-first

@@ -87,17 +87,17 @@ def read_order(path: Path) -> list[dict]:
     return rows
 
 
-def check_sample(rows: list[dict]) -> None:
+def check_sample(rows: list[dict], sample_file: Path = TASKS_MAIN) -> None:
     """The order file and the frozen sample must describe the same 12 tasks."""
     ordered = [r["instance_id"] for r in rows]
     if len(set(ordered)) != len(ordered):
         raise SystemExit("run order contains a duplicate instance")
-    frozen = [l.strip() for l in TASKS_MAIN.read_text().splitlines() if l.strip()]
+    frozen = [l.strip() for l in sample_file.read_text().splitlines() if l.strip()]
     if set(ordered) != set(frozen):
         only_order = sorted(set(ordered) - set(frozen))
         only_frozen = sorted(set(frozen) - set(ordered))
         raise SystemExit(
-            "run order does not match the frozen sample "
+            f"run order does not match the frozen sample ({sample_file}) "
             f"(order only: {only_order}; sample only: {only_frozen})"
         )
 
@@ -150,6 +150,9 @@ def main() -> int:
     p.add_argument("--label", required=True,
                    help="run label; also the directory under experiment/runs/")
     p.add_argument("--order-file", type=Path, default=ORDER_FILE)
+    p.add_argument("--sample-file", type=Path, default=TASKS_MAIN,
+                   help="frozen instance list the order file must match "
+                        "(default: the v1 main sample)")
     p.add_argument("--timeout-seconds", type=int)
     p.add_argument("--from-position", type=int, default=1,
                    help="resume at this position (earlier positions are left alone)")
@@ -161,7 +164,7 @@ def main() -> int:
     args = p.parse_args()
 
     rows = read_order(args.order_file)
-    check_sample(rows)
+    check_sample(rows, args.sample_file)
     digest = "unchecked" if args.allow_unfrozen_runner else check_runner_digest()
 
     plan = [t for t in planned_runs(rows) if t[0] >= args.from_position]
