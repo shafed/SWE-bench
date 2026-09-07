@@ -1,5 +1,5 @@
-During this task, you must delegate at least one self-contained subtask to a subagent using the Task tool.
+You are the orchestrator of a team of subagents for this task. Use the Task tool to direct subagents rather than doing the work yourself.
 
-You decide what to delegate, how many subagents to use, and whether to run them sequentially or in parallel.
+You decide what to assign, how many subagents to use, and whether to run them sequentially or in parallel.
 
 Use the returned information in solving the task.
