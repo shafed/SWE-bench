@@ -1,0 +1,3 @@
+ M pylint/config/argument.py
+ M tests/config/test_config.py
+?? doc/whatsnew/fragments/7229.bugfix

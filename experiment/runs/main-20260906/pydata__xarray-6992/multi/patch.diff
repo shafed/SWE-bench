@@ -1,0 +1,27 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 36f523df..4710c08e 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -79,6 +79,9 @@ Bug fixes
+ - Allow writing NetCDF files including only dimensionless variables using the distributed or multiprocessing scheduler
+   (:issue:`7013`, :pull:`7040`).
+   By `Francesco Nattino <https://github.com/fnattino>`_.
++- Fix bug where ``Dataset.reset_index(..., drop=True)`` did not remove the dropped index variable(s) from
++  ``Dataset._coord_names``, causing an inconsistency between ``Dataset._variables`` and
++  ``Dataset._coord_names`` (e.g. leading to errors in the repr).
+ 
+ Documentation
+ ~~~~~~~~~~~~~
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index 620f32f8..441c1698 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -4177,7 +4177,7 @@ class Dataset(
+         }
+         variables.update(new_variables)
+ 
+-        coord_names = set(new_variables) | self._coord_names
++        coord_names = (set(new_variables) | self._coord_names) - set(drop_variables)
+ 
+         return self._replace(variables, coord_names=coord_names, indexes=indexes)
+ 

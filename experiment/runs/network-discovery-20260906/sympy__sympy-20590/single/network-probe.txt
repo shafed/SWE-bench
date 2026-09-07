@@ -1,0 +1,4 @@
+https://github.com	exit=0	http=200	reachable=True
+https://raw.githubusercontent.com	exit=0	http=301	reachable=True
+https://pypi.org	exit=0	http=200	reachable=True
+https://api.anthropic.com	exit=0	http=404	reachable=True

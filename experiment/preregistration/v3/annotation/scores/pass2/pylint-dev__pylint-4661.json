@@ -1,0 +1,5 @@
+{"instance_id": "pylint-dev__pylint-4661", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 1, "investigation_volume": 0,
+ "change_type": "feature", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single decision -- replace the hand-rolled ~/.pylint.d path with appdirs.user_cache_dir('pylint') and warn if the old directory still exists -- plus the obvious setup.cfg dependency/isort/mypy bookkeeping that follows from adding a new third-party import. The bookkeeping is clerical fallout of one decision, not a second line of reasoning. n_subtasks=0."}

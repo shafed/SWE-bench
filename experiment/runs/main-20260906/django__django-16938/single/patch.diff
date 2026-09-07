@@ -1,0 +1,77 @@
+diff --git a/django/core/serializers/python.py b/django/core/serializers/python.py
+index 36048601af..774fb71bd0 100644
+--- a/django/core/serializers/python.py
++++ b/django/core/serializers/python.py
+@@ -79,7 +79,9 @@ class Serializer(base.Serializer):
+                     return self._value_from_field(value, value._meta.pk)
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name).select_related(None).only("pk")
++                    ).iterator()
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/django/core/serializers/xml_serializer.py b/django/core/serializers/xml_serializer.py
+index 1d3269c41a..67e3348861 100644
+--- a/django/core/serializers/xml_serializer.py
++++ b/django/core/serializers/xml_serializer.py
+@@ -155,7 +155,9 @@ class Serializer(base.Serializer):
+                     self.xml.addQuickElement("object", attrs={"pk": str(value.pk)})
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name).select_related(None).only("pk")
++                    ).iterator()
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/tests/serializers/models/base.py b/tests/serializers/models/base.py
+index af9ca2b20a..c30e42b104 100644
+--- a/tests/serializers/models/base.py
++++ b/tests/serializers/models/base.py
+@@ -30,11 +30,17 @@ class CategoryMetaData(models.Model):
+         return (self.kind, self.name)
+ 
+ 
++class CategoryManager(models.Manager):
++    def get_queryset(self):
++        return super().get_queryset().select_related("meta_data")
++
++
+ class Category(models.Model):
+     name = models.CharField(max_length=20)
+     meta_data = models.ForeignKey(
+         CategoryMetaData, models.SET_NULL, null=True, default=None
+     )
++    objects = CategoryManager()
+ 
+     class Meta:
+         ordering = ("name",)
+diff --git a/tests/serializers/tests.py b/tests/serializers/tests.py
+index 67ae8f43de..054e03a34d 100644
+--- a/tests/serializers/tests.py
++++ b/tests/serializers/tests.py
+@@ -287,6 +287,20 @@ class SerializersTestBase:
+         with self.assertNumQueries(5):
+             serializers.serialize(self.serializer_name, Article.objects.all())
+ 
++    def test_serialize_m2m_target_with_select_related_manager(self):
++        """
++        Serializing a many-to-many relationship whose target model's default
++        manager applies select_related() shouldn't raise a FieldError.
++        """
++        sports = Category.objects.get(name="Sports")
++        article = Article.objects.create(
++            author=Author.objects.create(name="Agnes"),
++            headline="Poker has no place on ESPN",
++            pub_date=datetime(2006, 6, 16, 11, 0),
++        )
++        article.categories.add(sports)
++        serializers.serialize(self.serializer_name, [article])
++
+     def test_serialize_with_null_pk(self):
+         """
+         Serialized data with no primary key results

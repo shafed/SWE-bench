@@ -1,0 +1,20 @@
+{
+  "instance_id": "sympy__sympy-20590",
+  "condition": "single",
+  "position": null,
+  "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-20590:latest",
+  "model": "claude-sonnet-5",
+  "claude_code_requested_version": "2.1.261",
+  "timeout_seconds": 2700,
+  "runner_sha256": "2554afc163c137efa13d02e36564165b6164b1dc7495a3fc8a210523fb1a6f3d",
+  "controller_git_head": "14d89013d0dc34c12d0fbfc77a5c55924b533b0a",
+  "prompt_template_sha256": "a48adb3e67ed45e0eded8fbdfec44419ab196193d195bc7b3542f996586adfe2",
+  "problem_statement_sha256": "e2f8e16a69eabf97334f7852f8675d8d470ef7a3e990ab484c6427bd7ad9ff52",
+  "treatment_sha256": null,
+  "setup_started_at": "2026-09-05T08:42:50.968331+00:00",
+  "claude_code_actual_version": "2.1.261 (Claude Code)",
+  "inference_started_at": "2026-09-05T08:43:31.948020+00:00",
+  "finished_at": "2026-09-05T08:44:34.511539+00:00",
+  "inference_exit_code": 0,
+  "timed_out": false
+}

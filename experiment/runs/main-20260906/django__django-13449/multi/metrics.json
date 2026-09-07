@@ -1,0 +1,179 @@
+{
+  "instance_id": "django__django-13449",
+  "condition": "multi",
+  "position": 1,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 152.85918899599983,
+  "patch_collection_ok": true,
+  "patch_bytes": 3473,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "## Summary\n\nThe bug: `Window.as_sql` compiled its `source_expression` via `compiler.compile()`, which dispatches to `Func.as_sqlite()` (from `SQLiteNumericMixin`). When the window's inner expression had a `DecimalField` output (e.g. `Lag('amount', 7)`), that produced `CAST(LAG(...) AS NUMERIC)` *before* the `OVER (...)` clause was appended, yielding invalid SQL: `CAST(LAG(...) AS NUMERIC) OVER (...)`.\n\nFix in `django/db/models/expressions.py`:\n- `Window` now also inherits `SQLiteNumericMixin`, so on SQLite the `CAST(... AS NUMERIC)` wraps the *entire* `expr OVER (...)` clause when the window's output field is a `DecimalField`.\n- `Window.as_sql` now compiles `source_expression` directly via `.as_sql(compiler, connection)` instead of `compiler.compile()`, bypassing the inner vendor-specific `as_sqlite` cast so it isn't applied twice/in the wrong place.\n\nI delegated the initial fix verification (writing/running a standalone reproduction script against an in-memory SQLite DB) to a subagent, which confirmed the crash is gone and the generated SQL now correctly casts the whole window expression: `CAST(LAG(...) OVER (...) AS NUMERIC)`.\n\nI also added a regression test (`test_lag_decimalfield` in `tests/expressions_window/tests.py`, plus a new `bonus` `DecimalField` on the `Employee` test model) and verified it reproduces the exact `OperationalError: near \"OVER\": syntax error` from the issue when the fix is reverted, and passes with it applied. Full `expressions_window`, `expressions`, `annotations`, and `aggregation` suites pass (350 tests, no failures).",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 28,
+  "total_cost_usd_reported": 0.5246067000000002,
+  "usage_reported": {
+    "input_tokens": 56,
+    "cache_creation_input_tokens": 32185,
+    "cache_read_input_tokens": 998869,
+    "output_tokens": 11643,
+    "output_tokens_details": {
+      "thinking_tokens": 5267
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 32185,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 647,
+        "cache_read_input_tokens": 47334,
+        "cache_creation_input_tokens": 1543,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1543
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 3248,
+      "output_tokens": 13246,
+      "cache_read_input_tokens": 1068251,
+      "cache_creation_input_tokens": 50800,
+      "total_tokens": 1135545
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 3182,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.003277,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 66,
+        "outputTokens": 13227,
+        "cacheReadInputTokens": 1068251,
+        "cacheCreationInputTokens": 50800,
+        "webSearchRequests": 0,
+        "costUSD": 0.5213297000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 5590,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 56,
+      "output_tokens": 184,
+      "cache_read_input_tokens": 998869,
+      "cache_creation_input_tokens": 32185
+    },
+    "toolu_01XweLHZ4Acjbfz5sFsJK8uR": {
+      "input_tokens": 10,
+      "output_tokens": 30,
+      "cache_read_input_tokens": 69382,
+      "cache_creation_input_tokens": 18615
+    }
+  },
+  "unique_assistant_messages": 33,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 61,
+  "models_seen": {
+    "claude-sonnet-5": 61
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 1,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_01XweLHZ4Acjbfz5sFsJK8uR",
+      "parent": "orchestrator",
+      "subagent_type": "general-purpose",
+      "description_chars": 57,
+      "prompt_chars": 1916
+    }
+  ],
+  "delegation_prompt_chars_total": 1916,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 16,
+    "Edit": 6,
+    "Read": 7,
+    "Write": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 13,
+      "Edit": 6,
+      "Read": 7
+    },
+    "toolu_01XweLHZ4Acjbfz5sFsJK8uR": {
+      "Bash": 3,
+      "Write": 1
+    }
+  },
+  "tool_calls_total": 31,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-07T05:29:44.611503+00:00"
+}

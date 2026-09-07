@@ -1,0 +1,5 @@
+{"instance_id": "scikit-learn__scikit-learn-25973", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 2, "investigation_volume": 1,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single root cause: self.cv is a raw generator of splits, but it gets re-consumed on every iteration of the forward/backward feature loop via cross_val_score(cv=self.cv), so after the first iteration the generator is exhausted. Fix normalizes it once with check_cv(...) up front and threads the resulting cv object through the call chain (fit -> _get_best_new_feature_score -> cross_val_score). Passing the object through an added parameter is mechanical propagation of the one decision, not a second subtask. n_subtasks=0."}

@@ -1,0 +1,176 @@
+{
+  "instance_id": "sympy__sympy-20590",
+  "condition": "multi",
+  "position": null,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 112.28296409699988,
+  "patch_collection_ok": true,
+  "patch_bytes": 643,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "num_turns": 2,
+  "total_cost_usd_reported": 0.22857690000000003,
+  "usage_reported": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 1611,
+    "cache_read_input_tokens": 53509,
+    "output_tokens": 371,
+    "output_tokens_details": {
+      "thinking_tokens": 39
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1611,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 275,
+        "cache_read_input_tokens": 27358,
+        "cache_creation_input_tokens": 404,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 404
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1197,
+      "output_tokens": 5810,
+      "cache_read_input_tokens": 435522,
+      "cache_creation_input_tokens": 29516,
+      "total_tokens": 472045
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1155,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001225,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 42,
+        "outputTokens": 5796,
+        "cacheReadInputTokens": 435522,
+        "cacheCreationInputTokens": 29516,
+        "webSearchRequests": 0,
+        "costUSD": 0.22735190000000005,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 937,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 20,
+      "output_tokens": 28,
+      "cache_read_input_tokens": 242341,
+      "cache_creation_input_tokens": 5609
+    },
+    "toolu_014mVEVVtHtRvR7h2b1XhGY6": {
+      "input_tokens": 22,
+      "output_tokens": 31,
+      "cache_read_input_tokens": 193181,
+      "cache_creation_input_tokens": 23907
+    }
+  },
+  "unique_assistant_messages": 21,
+  "messages_without_id": 0,
+  "result_events": 2,
+  "assistant_events": 44,
+  "models_seen": {
+    "claude-sonnet-5": 44
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 1
+    },
+    "started_in_background": 1,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_014mVEVVtHtRvR7h2b1XhGY6",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 31,
+      "prompt_chars": 2313
+    }
+  ],
+  "delegation_prompt_chars_total": 2313,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 14,
+    "Edit": 1,
+    "ListAgents": 1,
+    "Read": 3,
+    "ScheduleWakeup": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 3,
+      "ListAgents": 1,
+      "Read": 2,
+      "ScheduleWakeup": 1
+    },
+    "toolu_014mVEVVtHtRvR7h2b1XhGY6": {
+      "Bash": 11,
+      "Edit": 1,
+      "Read": 1
+    }
+  },
+  "tool_calls_total": 21,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-06T04:58:48.918075+00:00"
+}

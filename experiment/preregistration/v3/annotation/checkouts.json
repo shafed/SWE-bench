@@ -1,0 +1,322 @@
+{
+  "pytest-dev__pytest-7490": {
+    "repo": "pytest-dev/pytest",
+    "base_commit": "7f7a36478abe7dd1fa993b115d22606aa0e35e88",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pytest-dev__pytest-7490"
+  },
+  "astropy__astropy-14369": {
+    "repo": "astropy/astropy",
+    "base_commit": "fa4e8d1cd279acf9b24560813c8652494ccd5922",
+    "checkout": "/home/shafed/.cache/nir-v3-src/astropy__astropy-14369"
+  },
+  "astropy__astropy-7166": {
+    "repo": "astropy/astropy",
+    "base_commit": "26d147868f8a891a6009a25cd6a8576d2e1bd747",
+    "checkout": "/home/shafed/.cache/nir-v3-src/astropy__astropy-7166"
+  },
+  "psf__requests-2931": {
+    "repo": "psf/requests",
+    "base_commit": "5f7a3a74aab1625c2bb65f643197ee885e3da576",
+    "checkout": "/home/shafed/.cache/nir-v3-src/psf__requests-2931"
+  },
+  "django__django-15268": {
+    "repo": "django/django",
+    "base_commit": "0ab58c120939093fea90822f376e1866fc714d1f",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-15268"
+  },
+  "mwaskom__seaborn-3069": {
+    "repo": "mwaskom/seaborn",
+    "base_commit": "54cab15bdacfaa05a88fbc5502a5b322d99f148e",
+    "checkout": "/home/shafed/.cache/nir-v3-src/mwaskom__seaborn-3069"
+  },
+  "sphinx-doc__sphinx-11510": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "6cb783c0024a873722952a67ebb9f41771c8eb6d",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-11510"
+  },
+  "sphinx-doc__sphinx-9367": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "6918e69600810a4664e53653d6ff0290c3c4a788",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-9367"
+  },
+  "sphinx-doc__sphinx-9658": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "232dbe41c5250eb7d559d40438c4743483e95f15",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-9658"
+  },
+  "sympy__sympy-13852": {
+    "repo": "sympy/sympy",
+    "base_commit": "c935e1d106743efd5bf0705fbeedbd18fadff4dc",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-13852"
+  },
+  "pylint-dev__pylint-7277": {
+    "repo": "pylint-dev/pylint",
+    "base_commit": "684a1d6aa0a6791e20078bc524f97c8906332390",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pylint-dev__pylint-7277"
+  },
+  "matplotlib__matplotlib-23299": {
+    "repo": "matplotlib/matplotlib",
+    "base_commit": "3eadeacc06c9f2ddcdac6ae39819faa9fbee9e39",
+    "checkout": "/home/shafed/.cache/nir-v3-src/matplotlib__matplotlib-23299"
+  },
+  "pydata__xarray-3993": {
+    "repo": "pydata/xarray",
+    "base_commit": "8cc34cb412ba89ebca12fc84f76a9e452628f1bc",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pydata__xarray-3993"
+  },
+  "sympy__sympy-17318": {
+    "repo": "sympy/sympy",
+    "base_commit": "d4e0231b08147337745dcf601e62de7eefe2fb2d",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-17318"
+  },
+  "pytest-dev__pytest-6197": {
+    "repo": "pytest-dev/pytest",
+    "base_commit": "e856638ba086fcf5bebf1bebea32d5cf78de87b4",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pytest-dev__pytest-6197"
+  },
+  "matplotlib__matplotlib-20859": {
+    "repo": "matplotlib/matplotlib",
+    "base_commit": "64619e53e9d0ed417daba287ac0d3a06943a54d5",
+    "checkout": "/home/shafed/.cache/nir-v3-src/matplotlib__matplotlib-20859"
+  },
+  "pydata__xarray-7233": {
+    "repo": "pydata/xarray",
+    "base_commit": "51d37d1be95547059251076b3fadaa317750aab3",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pydata__xarray-7233"
+  },
+  "astropy__astropy-13398": {
+    "repo": "astropy/astropy",
+    "base_commit": "6500928dc0e57be8f06d1162eacc3ba5e2eff692",
+    "checkout": "/home/shafed/.cache/nir-v3-src/astropy__astropy-13398"
+  },
+  "pydata__xarray-4356": {
+    "repo": "pydata/xarray",
+    "base_commit": "e05fddea852d08fc0845f954b79deb9e9f9ff883",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pydata__xarray-4356"
+  },
+  "pylint-dev__pylint-4661": {
+    "repo": "pylint-dev/pylint",
+    "base_commit": "1d1619ef913b99b06647d2030bddff4800abdf63",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pylint-dev__pylint-4661"
+  },
+  "django__django-14631": {
+    "repo": "django/django",
+    "base_commit": "84400d2e9db7c51fee4e9bb04c028f665b8e7624",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-14631"
+  },
+  "astropy__astropy-13236": {
+    "repo": "astropy/astropy",
+    "base_commit": "6ed769d58d89380ebaa1ef52b300691eefda8928",
+    "checkout": "/home/shafed/.cache/nir-v3-src/astropy__astropy-13236"
+  },
+  "sphinx-doc__sphinx-8548": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "dd1615c59dc6fff633e27dbb3861f2d27e1fb976",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-8548"
+  },
+  "sympy__sympy-24562": {
+    "repo": "sympy/sympy",
+    "base_commit": "b1cb676cf92dd1a48365b731979833375b188bf2",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-24562"
+  },
+  "scikit-learn__scikit-learn-14053": {
+    "repo": "scikit-learn/scikit-learn",
+    "base_commit": "6ab8c86c383dd847a1be7103ad115f174fe23ffd",
+    "checkout": "/home/shafed/.cache/nir-v3-src/scikit-learn__scikit-learn-14053"
+  },
+  "sympy__sympy-18199": {
+    "repo": "sympy/sympy",
+    "base_commit": "ba80d1e493f21431b4bf729b3e0452cd47eb9566",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-18199"
+  },
+  "scikit-learn__scikit-learn-25973": {
+    "repo": "scikit-learn/scikit-learn",
+    "base_commit": "10dbc142bd17ccf7bd38eec2ac04b52ce0d1009e",
+    "checkout": "/home/shafed/.cache/nir-v3-src/scikit-learn__scikit-learn-25973"
+  },
+  "django__django-11087": {
+    "repo": "django/django",
+    "base_commit": "8180ffba21bf10f4be905cb0d4890dc2bcff2788",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-11087"
+  },
+  "pytest-dev__pytest-10356": {
+    "repo": "pytest-dev/pytest",
+    "base_commit": "3c1534944cbd34e8a41bc9e76818018fadefc9a1",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pytest-dev__pytest-10356"
+  },
+  "pytest-dev__pytest-7236": {
+    "repo": "pytest-dev/pytest",
+    "base_commit": "c98bc4cd3d687fe9b392d8eecd905627191d4f06",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pytest-dev__pytest-7236"
+  },
+  "astropy__astropy-13579": {
+    "repo": "astropy/astropy",
+    "base_commit": "0df94ff7097961e92fd7812036a24b145bc13ca8",
+    "checkout": "/home/shafed/.cache/nir-v3-src/astropy__astropy-13579"
+  },
+  "pytest-dev__pytest-5809": {
+    "repo": "pytest-dev/pytest",
+    "base_commit": "8aba863a634f40560e25055d179220f0eefabe9a",
+    "checkout": "/home/shafed/.cache/nir-v3-src/pytest-dev__pytest-5809"
+  },
+  "psf__requests-6028": {
+    "repo": "psf/requests",
+    "base_commit": "0192aac24123735b3eaf9b08df46429bb770c283",
+    "checkout": "/home/shafed/.cache/nir-v3-src/psf__requests-6028"
+  },
+  "django__django-14011": {
+    "repo": "django/django",
+    "base_commit": "e4430f22c8e3d29ce5d9d0263fba57121938d06d",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-14011"
+  },
+  "django__django-11239": {
+    "repo": "django/django",
+    "base_commit": "d87bd29c4f8dfcdf3f4a4eb8340e6770a2416fe3",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-11239"
+  },
+  "mwaskom__seaborn-3187": {
+    "repo": "mwaskom/seaborn",
+    "base_commit": "22cdfb0c93f8ec78492d87edb810f10cb7f57a31",
+    "checkout": "/home/shafed/.cache/nir-v3-src/mwaskom__seaborn-3187"
+  },
+  "sphinx-doc__sphinx-9229": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "876fa81e0a038cda466925b85ccf6c5452e0f685",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-9229"
+  },
+  "sphinx-doc__sphinx-8265": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "b428cd2404675475a5c3dc2a2b0790ba57676202",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-8265"
+  },
+  "sympy__sympy-17630": {
+    "repo": "sympy/sympy",
+    "base_commit": "58e78209c8577b9890e957b624466e5beed7eb08",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-17630"
+  },
+  "astropy__astropy-14309": {
+    "repo": "astropy/astropy",
+    "base_commit": "cdb66059a2feb44ee49021874605ba90801f9986",
+    "checkout": "/home/shafed/.cache/nir-v3-src/astropy__astropy-14309"
+  },
+  "django__django-16631": {
+    "repo": "django/django",
+    "base_commit": "9b224579875e30203d079cc2fee83b116d98eb78",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-16631"
+  },
+  "sphinx-doc__sphinx-7590": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "2e506c5ab457cba743bb47eb5b8c8eb9dd51d23d",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-7590"
+  },
+  "sympy__sympy-12489": {
+    "repo": "sympy/sympy",
+    "base_commit": "aa9780761ad8c3c0f68beeef3a0ce5caac9e100b",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-12489"
+  },
+  "django__django-15503": {
+    "repo": "django/django",
+    "base_commit": "859a87d873ce7152af73ab851653b4e1c3ffea4c",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-15503"
+  },
+  "sphinx-doc__sphinx-9461": {
+    "repo": "sphinx-doc/sphinx",
+    "base_commit": "939c7bb7ff7c53a4d27df067cea637540f0e1dad",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sphinx-doc__sphinx-9461"
+  },
+  "sympy__sympy-16597": {
+    "repo": "sympy/sympy",
+    "base_commit": "6fd65310fa3167b9626c38a5487e171ca407d988",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-16597"
+  },
+  "django__django-15629": {
+    "repo": "django/django",
+    "base_commit": "694cf458f16b8d340a3195244196980b2dec34fd",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-15629"
+  },
+  "sympy__sympy-13878": {
+    "repo": "sympy/sympy",
+    "base_commit": "7b127bdf71a36d85216315f80c1b54d22b060818",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-13878"
+  },
+  "django__django-15957": {
+    "repo": "django/django",
+    "base_commit": "f387d024fc75569d2a4a338bfda76cc2f328f627",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-15957"
+  },
+  "sympy__sympy-14248": {
+    "repo": "sympy/sympy",
+    "base_commit": "9986b38181cdd556a3f3411e553864f11912244e",
+    "checkout": "/home/shafed/.cache/nir-v3-src/sympy__sympy-14248"
+  },
+  "django__django-12325": {
+    "repo": "django/django",
+    "base_commit": "29c126bb349526b5f1cd78facbe9f25906f18563",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-12325"
+  },
+  "django__django-13212": {
+    "repo": "django/django",
+    "base_commit": "f4e93919e4608cfc50849a1f764fd856e0917401",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-13212"
+  },
+  "django__django-10554": {
+    "repo": "django/django",
+    "base_commit": "14d026cccb144c6877294ba4cd4e03ebf0842498",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-10554"
+  },
+  "django__django-14007": {
+    "repo": "django/django",
+    "base_commit": "619f26d2895d121854b1bed1b535d42b722e2eba",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-14007"
+  },
+  "django__django-12708": {
+    "repo": "django/django",
+    "base_commit": "447980e72ac01da1594dd3373a03ba40b7ee6f80",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-12708"
+  },
+  "django__django-16263": {
+    "repo": "django/django",
+    "base_commit": "321ecb40f4da842926e1bc07e11df4aabe53ca4b",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-16263"
+  },
+  "django__django-13128": {
+    "repo": "django/django",
+    "base_commit": "2d67222472f80f251607ae1b720527afceba06ad",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-13128"
+  },
+  "django__django-11138": {
+    "repo": "django/django",
+    "base_commit": "c84b91b7603e488f7171fdff8f08368ef3d6b856",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-11138"
+  },
+  "django__django-16560": {
+    "repo": "django/django",
+    "base_commit": "51c9bb7cd16081133af4f0ab6d06572660309730",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-16560"
+  },
+  "django__django-11400": {
+    "repo": "django/django",
+    "base_commit": "1f8382d34d54061eddc41df6994e20ee38c60907",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-11400"
+  },
+  "django__django-11885": {
+    "repo": "django/django",
+    "base_commit": "04ac9b45a34440fa447feb6ae934687aacbfc5f4",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-11885"
+  },
+  "django__django-15128": {
+    "repo": "django/django",
+    "base_commit": "cb383753c0e0eb52306e1024d32a782549c27e61",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-15128"
+  },
+  "django__django-13837": {
+    "repo": "django/django",
+    "base_commit": "415f50298f97fb17f841a9df38d995ccf347dfcc",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-13837"
+  },
+  "django__django-13344": {
+    "repo": "django/django",
+    "base_commit": "e39e727ded673e74016b5d3658d23cbe20234d11",
+    "checkout": "/home/shafed/.cache/nir-v3-src/django__django-13344"
+  }
+}

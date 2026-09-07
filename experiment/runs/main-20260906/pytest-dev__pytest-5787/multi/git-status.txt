@@ -1,0 +1,2 @@
+ M src/_pytest/reports.py
+ M testing/test_reports.py

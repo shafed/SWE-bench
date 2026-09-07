@@ -1,0 +1,155 @@
+diff --git a/pylint/pyreverse/inspector.py b/pylint/pyreverse/inspector.py
+index 8fa12202..5b72f05b 100644
+--- a/pylint/pyreverse/inspector.py
++++ b/pylint/pyreverse/inspector.py
+@@ -230,7 +230,16 @@ class Linker(IdGeneratorMixIn, utils.LocalsVisitor):
+         handle instance_attrs_type
+         """
+         try:
+-            values = set(node.infer())
++            values = set()
++            annotation = utils.get_annotation(node)
++            if annotation is not None:
++                values = {
++                    value
++                    for value in annotation.infer()
++                    if value is not astroid.Uninferable
++                }
++            if not values:
++                values = set(node.infer())
+             current = set(parent.instance_attrs_type[node.attrname])
+             parent.instance_attrs_type[node.attrname] = list(current | values)
+         except astroid.InferenceError:
+diff --git a/pylint/pyreverse/utils.py b/pylint/pyreverse/utils.py
+index a24d227e..080a7db3 100644
+--- a/pylint/pyreverse/utils.py
++++ b/pylint/pyreverse/utils.py
+@@ -19,6 +19,9 @@
+ import os
+ import re
+ import sys
++from typing import Optional
++
++from astroid import nodes
+ 
+ RCFILE = ".pyreverserc"
+ 
+@@ -93,6 +96,36 @@ def is_exception(node):
+     return node.type == "exception"
+ 
+ 
++def get_annotation(
++    node: nodes.AssignAttr,
++) -> Optional[nodes.NodeNG]:
++    """return the type annotation of the given node, if any"""
++    ann = None
++    if isinstance(node.parent, nodes.AnnAssign):
++        ann = node.parent.annotation
++    elif (
++        isinstance(node, nodes.AssignAttr)
++        and isinstance(node.parent, nodes.Assign)
++        and isinstance(node.parent.value, nodes.Name)
++    ):
++        init_method = node.scope()
++        if not isinstance(init_method, nodes.FunctionDef):
++            return None
++        arguments = init_method.args
++        index = arguments.find_argname(node.parent.value.name)[0]
++        if index is not None:
++            ann = arguments.annotations[index]
++
++    if ann is None:
++        return None
++
++    if isinstance(ann, nodes.Subscript):
++        # Optional[str] or typing.Optional[str]
++        ann = ann.slice
++
++    return ann
++
++
+ # Helpers #####################################################################
+ 
+ _CONSTRUCTOR = 1
+diff --git a/tests/unittest_pyreverse_inspector.py b/tests/unittest_pyreverse_inspector.py
+index e1ff6378..bcb82d18 100644
+--- a/tests/unittest_pyreverse_inspector.py
++++ b/tests/unittest_pyreverse_inspector.py
+@@ -71,6 +71,77 @@ def test_instance_attrs_resolution(project):
+     assert type_dict["_id"][0] is astroid.Uninferable
+ 
+ 
++def test_instance_attrs_resolution_with_type_annotations():
++    """Constructor parameter with a type annotation and a ``None`` default
++    should resolve to the annotated type instead of ``NoneType``/``Uninferable``.
++    """
++    module = astroid.parse(
++        """
++    class C(object):
++        def __init__(self, a: str = None):
++            self.a = a
++    """
++    )
++    project = inspector.Project()
++    project.add_module(module)
++    linker = inspector.Linker(project)
++    linker.visit(project)
++
++    klass = module["C"]
++    type_dict = klass.instance_attrs_type
++    assert len(type_dict["a"]) == 1
++    assert isinstance(type_dict["a"][0], astroid.ClassDef)
++    assert type_dict["a"][0].name == "str"
++
++
++def test_instance_attrs_resolution_with_ann_assign():
++    """A directly annotated instance attribute (``self.a: str = None``)
++    should resolve to the annotated type.
++    """
++    module = astroid.parse(
++        """
++    class C(object):
++        def __init__(self):
++            self.a: str = None
++    """
++    )
++    project = inspector.Project()
++    project.add_module(module)
++    linker = inspector.Linker(project)
++    linker.visit(project)
++
++    klass = module["C"]
++    type_dict = klass.instance_attrs_type
++    assert len(type_dict["a"]) == 1
++    assert isinstance(type_dict["a"][0], astroid.ClassDef)
++    assert type_dict["a"][0].name == "str"
++
++
++def test_instance_attrs_resolution_with_optional_type_annotations():
++    """A ``typing.Optional[...]`` constructor parameter annotation should
++    unwrap to the inner type.
++    """
++    module = astroid.parse(
++        """
++    from typing import Optional
++
++    class C(object):
++        def __init__(self, b: Optional[int] = None):
++            self.b = b
++    """
++    )
++    project = inspector.Project()
++    project.add_module(module)
++    linker = inspector.Linker(project)
++    linker.visit(project)
++
++    klass = module["C"]
++    type_dict = klass.instance_attrs_type
++    assert len(type_dict["b"]) == 1
++    assert isinstance(type_dict["b"][0], astroid.ClassDef)
++    assert type_dict["b"][0].name == "int"
++
++
+ def test_concat_interfaces():
+     cls = astroid.extract_node(
+         '''

@@ -1,0 +1,32 @@
+95d0a5c0c22eae3537f125aad9f66d7c465aa271
+## main
+95d0a5c0c SWE-bench
+1f8c4d9eb Add test result that was hidden
+07e6b8fef Stop checking minimum name length by default
+fe161df35 Bump pylint to 2.17.5, update changelog (#8887)
+50d924b5c Remove carriage returns from doc file (#8884) (#8886)
+a57dd01c4 Remove carriage returns from doc file (#8884)
+fd293676a [doc] Update `unnecessary-pass` description and examples to be more specific (#8877)
+cc67b331e Bump dill to 0.3.7 on Python 3.12 (#8873)
+4e62b4c4e CI: exclude linting dependencies from the unittest environment. (#8861)
+c4281bcff [pre-commit.ci] pre-commit autoupdate (#8860)
+644f22427 Bump actions/setup-python from 4.6.1 to 4.7.0 (#8858)
+a0745634d Add stdlib deprecations from 3.12 (#8856)
+3655f9549 Bump astroid to 3.0.0a8
+df3b1fc9a Remove double colon in fragment
+124ab70e7 Skip enum.__getattr__ test on Python 3.12 for now
+de45c8762 distutils was removed in 3.12
+a973f2c9d Update news fragment
+32795fc95 typing.Generic no longer has slots
+39a3022fd TypeAlias became a class in python 3.12
+5f48247b6 Adapt unhashable-member tests for slices as dict keys
+d7732fc76 Add max_pyver
+00958e2ce Rotate the deprecated module used in test
+20348747d Cope with DeprecationWarnings becoming SyntaxWarnings
+1ffb291e8 Simulate legacy editable_mode=compat
+000a0af6e Reflect better TokenError linenos in python 3.12
+536dad0e7 Apply dill patch for DeprecationWarnings on 3.12
+afdff7624 Add python 3.12 classifier
+1e4fab8e8 Restore news fragment
+933661516 Remove fragment, update doc
+124425e0e Do not upgrade the primer's upper bound yet

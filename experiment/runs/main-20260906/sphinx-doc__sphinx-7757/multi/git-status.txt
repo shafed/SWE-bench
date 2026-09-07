@@ -1,0 +1,2 @@
+ M sphinx/util/inspect.py
+ M tests/test_util_inspect.py

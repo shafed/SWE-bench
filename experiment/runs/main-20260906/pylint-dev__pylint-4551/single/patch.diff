@@ -1,0 +1,113 @@
+diff --git a/ChangeLog b/ChangeLog
+index c2b1382d..e018ba7f 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -9,6 +9,9 @@ Release date: TBA
+ ..
+   Put new features and bugfixes here and also in 'doc/whatsnew/2.9.rst'
+ 
++* ``pyreverse`` now uses PEP 484 type hints, when present, to display the
++  type of instance attributes
++
+ * astroid has been upgraded to 2.6.0
+ 
+ * ``setuptools_scm`` has been removed and replaced by ``tbump`` in order to not
+diff --git a/pylint/pyreverse/inspector.py b/pylint/pyreverse/inspector.py
+index 8fa12202..b040a773 100644
+--- a/pylint/pyreverse/inspector.py
++++ b/pylint/pyreverse/inspector.py
+@@ -39,6 +39,57 @@ def _astroid_wrapper(func, modname):
+     return None
+ 
+ 
++def _infer_typing_annotation(node):
++    """Infer the type of an astroid.AssignAttr node from its PEP 484
++    type annotation, either on the assignment itself or on the
++    annotated parameter it is copied from.
++
++    Return None if no annotation is found or it can't be resolved to
++    any type, so the caller can fall back to regular value inference.
++    """
++    annotation = _get_annotation(node)
++    if annotation is None:
++        return None
++    try:
++        values = {v for v in annotation.infer() if v is not astroid.Uninferable}
++    except astroid.InferenceError:
++        return None
++    return values or None
++
++
++def _get_annotation(node):
++    """Return the type annotation associated with an astroid.AssignAttr
++    node, either from an annotated assignment (``self.attr: int = 0``)
++    or from the annotated parameter it is assigned from
++    (``self.attr = attr`` where ``attr: int`` appears in the signature).
++    """
++    assign = node.parent
++    if isinstance(assign, astroid.AnnAssign):
++        return assign.annotation
++    if isinstance(assign, astroid.Assign) and isinstance(assign.value, astroid.Name):
++        return _find_arg_annotation(assign.value)
++    return None
++
++
++def _find_arg_annotation(name_node):
++    """Return the annotation of the function argument referred to by
++    `name_node`, or None if it isn't one or has no annotation.
++    """
++    frame = name_node.scope()
++    if not isinstance(frame, astroid.FunctionDef):
++        return None
++    args = frame.args
++    for arg_names, annotations in (
++        (args.args, args.annotations),
++        (args.posonlyargs, args.posonlyargs_annotations),
++        (args.kwonlyargs, args.kwonlyargs_annotations),
++    ):
++        for arg, annotation in zip(arg_names, annotations):
++            if arg.name == name_node.name:
++                return annotation
++    return None
++
++
+ def interfaces(node, herited=True, handler_func=_iface_hdlr):
+     """Return an iterator on interfaces implemented by the given class node."""
+     try:
+@@ -230,7 +281,7 @@ class Linker(IdGeneratorMixIn, utils.LocalsVisitor):
+         handle instance_attrs_type
+         """
+         try:
+-            values = set(node.infer())
++            values = set(_infer_typing_annotation(node) or node.infer())
+             current = set(parent.instance_attrs_type[node.attrname])
+             parent.instance_attrs_type[node.attrname] = list(current | values)
+         except astroid.InferenceError:
+diff --git a/tests/unittest_pyreverse_inspector.py b/tests/unittest_pyreverse_inspector.py
+index e1ff6378..6aa2f5da 100644
+--- a/tests/unittest_pyreverse_inspector.py
++++ b/tests/unittest_pyreverse_inspector.py
+@@ -71,6 +71,23 @@ def test_instance_attrs_resolution(project):
+     assert type_dict["_id"][0] is astroid.Uninferable
+ 
+ 
++def test_instance_attrs_resolution_with_type_hints():
++    module = astroid.parse(
++        """
++    class C(object):
++        def __init__(self, a: str = None):
++            self.a = a
++            self.b: int = 0
++    """
++    )
++    linker = inspector.Linker(None)
++    linker.visit(module)
++    klass = module["C"]
++    type_dict = klass.instance_attrs_type
++    assert [cls.name for cls in type_dict["a"]] == ["str"]
++    assert [cls.name for cls in type_dict["b"]] == ["int"]
++
++
+ def test_concat_interfaces():
+     cls = astroid.extract_node(
+         '''

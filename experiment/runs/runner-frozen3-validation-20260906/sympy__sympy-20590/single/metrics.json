@@ -1,0 +1,93 @@
+{
+  "instance_id": "sympy__sympy-20590",
+  "condition": "single",
+  "position": null,
+  "inference_exit_code": 1,
+  "timed_out": false,
+  "wall_seconds": 4.976634406000812,
+  "patch_collection_ok": true,
+  "patch_bytes": 0,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": true,
+  "result_subtype": "success",
+  "num_turns": 1,
+  "total_cost_usd_reported": 0,
+  "usage_reported": {
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 0,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "unavailable",
+    "complete": false,
+    "totals": null,
+    "by_model": {}
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "unique_assistant_messages": 1,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 1,
+  "models_seen": {},
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {},
+  "tool_calls_by_actor": {},
+  "tool_calls_total": 0,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-06T14:55:27.078783+00:00"
+}

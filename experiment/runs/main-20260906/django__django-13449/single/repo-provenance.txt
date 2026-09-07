@@ -1,0 +1,32 @@
+4dccd8fa2430d4cd8709003a9641956ff080b6bc
+## main
+4dccd8fa24 SWE-bench
+2a55431a56 Fixed #32016 -- Clarified manual logging config docs.
+9e4b1ad33e Fixed #32004 -- Clarified docs for when request.FILES is set.
+75d7af43c1 Corrected docstring quotes in various code.
+f7806193e6 Made indexes tests use required_db_features.
+2d2fbc3a70 Made jinja2 import lazy in django.forms.
+e387f191f7 Fixed #31777 -- Added support for database collations to Char/TextFields.
+ba6b32e5ef Refs #32013 -- Added backward incompatibility note about ModelChoiceIterator changes.
+278b6187d2 Refs #21181 -- Corrected DatabaseFeatures.test_collations for Swedish collation.
+f3901b5899 Doc'd that UpdateCacheMiddleware and cache_page affect downstream caches.
+8c0794ba0d Refs #28939 -- Doc’d Prefetch behavior with multiple DBs.
+b376297d6c Tweaked loaddata command to re-use a calculated value.
+a046bcadbe Fixed #31916 -- Fixed combined queryset crash when combining with ordered combined querysets.
+981a072dd4 Fixed #31843 -- Fixed pickling named values from QuerySet.values_list().
+3a9f192b13 Refs #32007 -- Skipped test_q_expression_annotation_with_aggregation on Oracle.
+b4d46df5ca Fixed #29887 -- Added a cache backend for pymemcache.
+cda0a3d777 Refs #29887, Refs #24212 -- Added more client servers tests for PyLibMCCache.
+eaf9764d3b Fixed #32007 -- Fixed queryset crash with Q() annotation and aggregation.
+7be6a6a4d6 Fixed #31989 -- Fixed return value of django.core.files.locks.lock()/unlock() on POSIX systems.
+580a4341cb Fixed #31636 -- Made BooleanFieldListFilter respect Field.choices.
+fed257ddff Prevented creation of 3D test models if not supported.
+7f2392981d Added DatabaseIntrospection.index_default_access_method hook on the PostgreSQL backend.
+e11d05e0b4 Fixed #31990 -- Fixed QuerySet.ordered for GROUP BY queries on models with Meta.ordering.
+5fab16392f Fixed #32003 -- Added obj argument to has_perm() methods in tests.
+bcc2befd0e Fixed #31789 -- Added a new headers interface to HttpResponse.
+71ae1ab012 Removed hardcoded paths to SpatialRefSys models in tests.
+a7a4ff1026 Refs #26697 -- Removed empty gis_tests.maps.
+3b8857b51a Corrected tests.backends.sqlite.tests.Tests.test_aggregation()'s docstring.
+9a0e5052ed Corrected exception types in QuerySet docs.
+12d6cae7c0 Fixed #31766 -- Made GDALRaster.transform() return a clone for the same SRID and driver.

@@ -225,7 +225,7 @@ def choose_split(rows_by_pool):
     raise SystemExit("ladder exhausted: no pool/split has >=2 candidates per cell")
 
 
-def draw(pools, seed):
+def draw(pools, seed, feat_by_id):
     rng = random.Random(seed)
     result = {}
     for cell in CELL_ORDER:
@@ -233,7 +233,15 @@ def draw(pools, seed):
         if len(pool) < PER_CELL:
             return None
         k = min(PER_CELL + RESERVE_PER_CELL, len(pool))
-        result[cell] = rng.sample(pool, k)
+
+        verified_ids = [i for i in pool if feat_by_id[i]["source"] == "verified"]
+        full_ids = [i for i in pool if feat_by_id[i]["source"] == "full"]
+
+        take_verified = rng.sample(verified_ids, min(k, len(verified_ids)))
+        remaining = k - len(take_verified)
+        take_full = rng.sample(full_ids, min(remaining, len(full_ids)))
+
+        result[cell] = take_verified + take_full
     return result
 
 
@@ -311,9 +319,6 @@ def main():
 
     print(f"# ladder step = {ladder_step}")
 
-    if args.audit:
-        return
-
     rows = rows_by_pool[pool_name]
     feat_by_id = {row["instance_id"]: row for row in rows}
 
@@ -324,10 +329,19 @@ def main():
     for cell in CELL_ORDER:
         pools[cell].sort()
 
+    if pool_name == "combined":
+        for cell in CELL_ORDER:
+            v = sum(1 for i in pools[cell] if feat_by_id[i]["source"] == "verified")
+            f = len(pools[cell]) - v
+            print(f"# cell {cell[0]}/{cell[1]} source mix: verified={v} full={f}")
+
+    if args.audit:
+        return
+
     chosen = None
     used_seed = None
     for seed in range(MAX_SEED):
-        candidate = draw(pools, seed)
+        candidate = draw(pools, seed, feat_by_id)
         if candidate and repo_feasible(candidate, feat_by_id):
             chosen = candidate
             used_seed = seed

@@ -1,0 +1,5 @@
+{"instance_id": "psf__requests-6028", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 1, "investigation_volume": 1,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single-cause, single-location fix: prepend_scheme_if_needed drops the auth component that urllib3's parse_url pulls out of the netloc separately, so it has to be reassembled by hand before use. One line of reasoning, one hunk. n_subtasks=0."}

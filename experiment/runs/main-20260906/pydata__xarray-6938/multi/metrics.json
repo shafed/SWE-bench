@@ -1,0 +1,183 @@
+{
+  "instance_id": "pydata__xarray-6938",
+  "condition": "multi",
+  "position": 11,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 211.52880766100134,
+  "patch_collection_ok": true,
+  "patch_bytes": 538,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "All tests pass. The fix is complete.\n\n**Root cause:** `IndexVariable.to_index_variable()` returns `self` instead of a copy, whereas `Variable.to_index_variable()` always builds a new instance. In `Dataset.swap_dims`, when a variable being promoted to a dimension coordinate was already an `IndexVariable` under the hood (e.g., after `reset_index()`/`reset_coords()`), `var.dims = dims` mutated that shared object in place, corrupting the original Dataset.\n\n**Fix** (`xarray/core/dataset.py`, in `swap_dims`): make a shallow copy when `to_index_variable()` returns the same object before mutating its `.dims`:\n\n```python\nvar = v.to_index_variable()\nif var is v:\n    var = var.copy(deep=False)\nvar.dims = dims\n```\n\nVerified with the issue's exact reproduction (no mutation now occurs) and the full `test_dataset.py`/`test_dataarray.py` suites pass (808 passed).",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 4,
+  "total_cost_usd_reported": 0.5245586,
+  "usage_reported": {
+    "input_tokens": 8,
+    "cache_creation_input_tokens": 2885,
+    "cache_read_input_tokens": 169908,
+    "output_tokens": 891,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2885,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 340,
+        "cache_read_input_tokens": 43291,
+        "cache_creation_input_tokens": 788,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 788
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2082,
+      "output_tokens": 12174,
+      "cache_read_input_tokens": 1219293,
+      "cache_creation_input_tokens": 47199,
+      "total_tokens": 1280748
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2002,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002077,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 80,
+        "outputTokens": 12159,
+        "cacheReadInputTokens": 1219293,
+        "cacheCreationInputTokens": 47199,
+        "webSearchRequests": 0,
+        "costUSD": 0.5224816,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 3043,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 62,
+      "output_tokens": 181,
+      "cache_read_input_tokens": 1069189,
+      "cache_creation_input_tokens": 25917
+    },
+    "toolu_0191YWoP7N7ZXqAPmaGZ1i9Q": {
+      "input_tokens": 18,
+      "output_tokens": 22,
+      "cache_read_input_tokens": 150104,
+      "cache_creation_input_tokens": 21282
+    }
+  },
+  "unique_assistant_messages": 40,
+  "messages_without_id": 0,
+  "result_events": 2,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 78,
+  "models_seen": {
+    "claude-sonnet-5": 78
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 1
+    },
+    "started_in_background": 1,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_0191YWoP7N7ZXqAPmaGZ1i9Q",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 26,
+      "prompt_chars": 4360
+    }
+  ],
+  "delegation_prompt_chars_total": 4360,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 22,
+    "Edit": 5,
+    "ListAgents": 1,
+    "Read": 9,
+    "ScheduleWakeup": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 15,
+      "Edit": 4,
+      "ListAgents": 1,
+      "Read": 6,
+      "ScheduleWakeup": 2
+    },
+    "toolu_0191YWoP7N7ZXqAPmaGZ1i9Q": {
+      "Bash": 7,
+      "Edit": 1,
+      "Read": 3
+    }
+  },
+  "tool_calls_total": 40,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-07T06:50:49.765692+00:00"
+}

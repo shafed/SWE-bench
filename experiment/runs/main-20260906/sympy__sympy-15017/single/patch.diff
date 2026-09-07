@@ -1,0 +1,84 @@
+diff --git a/sympy/tensor/array/dense_ndim_array.py b/sympy/tensor/array/dense_ndim_array.py
+index 9be94a863..41405931b 100644
+--- a/sympy/tensor/array/dense_ndim_array.py
++++ b/sympy/tensor/array/dense_ndim_array.py
+@@ -149,7 +149,7 @@ def _new(cls, iterable, shape, **kwargs):
+         self._shape = shape
+         self._array = list(flat_list)
+         self._rank = len(shape)
+-        self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else 0
++        self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else len(flat_list)
+         return self
+ 
+     def __setitem__(self, index, value):
+@@ -174,7 +174,7 @@ def _new(cls, iterable, shape, **kwargs):
+         self._shape = shape
+         self._array = list(flat_list)
+         self._rank = len(shape)
+-        self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else 0
++        self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else len(flat_list)
+         return self
+ 
+     def __setitem__(self, index, value):
+diff --git a/sympy/tensor/array/sparse_ndim_array.py b/sympy/tensor/array/sparse_ndim_array.py
+index 72b5d5129..91d4faf58 100644
+--- a/sympy/tensor/array/sparse_ndim_array.py
++++ b/sympy/tensor/array/sparse_ndim_array.py
+@@ -130,14 +130,16 @@ def __new__(cls, iterable=None, shape=None, **kwargs):
+ 
+         shape, flat_list = cls._handle_ndarray_creation_inputs(iterable, shape, **kwargs)
+         shape = Tuple(*map(_sympify, shape))
+-        loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else 0
+ 
+         # Sparse array:
+         if isinstance(flat_list, (dict, Dict)):
+             sparse_array = Dict(flat_list)
++            loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else len(sparse_array)
+         else:
++            flat_list = flatten(flat_list)
++            loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else len(flat_list)
+             sparse_array = {}
+-            for i, el in enumerate(flatten(flat_list)):
++            for i, el in enumerate(flat_list):
+                 if el != 0:
+                     sparse_array[i] = _sympify(el)
+ 
+@@ -167,16 +169,18 @@ def __new__(cls, iterable=None, shape=None, **kwargs):
+         self = object.__new__(cls)
+         self._shape = shape
+         self._rank = len(shape)
+-        self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else 0
+ 
+         # Sparse array:
+         if isinstance(flat_list, (dict, Dict)):
+             self._sparse_array = dict(flat_list)
++            self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else len(self._sparse_array)
+             return self
+ 
++        flat_list = flatten(flat_list)
++        self._loop_size = functools.reduce(lambda x,y: x*y, shape) if shape else len(flat_list)
+         self._sparse_array = {}
+ 
+-        for i, el in enumerate(flatten(flat_list)):
++        for i, el in enumerate(flat_list):
+             if el != 0:
+                 self._sparse_array[i] = _sympify(el)
+ 
+diff --git a/sympy/tensor/array/tests/test_immutable_ndim_array.py b/sympy/tensor/array/tests/test_immutable_ndim_array.py
+index 5a576c44f..e1c7752e2 100644
+--- a/sympy/tensor/array/tests/test_immutable_ndim_array.py
++++ b/sympy/tensor/array/tests/test_immutable_ndim_array.py
+@@ -73,11 +73,11 @@ def test_ndim_array_initiation():
+ 
+     from sympy.abc import x
+     rank_zero_array = ImmutableDenseNDimArray(x)
+-    assert len(rank_zero_array) == 0
++    assert len(rank_zero_array) == 1
+     assert rank_zero_array.shape == ()
+     assert rank_zero_array.rank() == 0
+     assert rank_zero_array[()] == x
+-    raises(ValueError, lambda: rank_zero_array[0])
++    assert rank_zero_array[0] == x
+ 
+ 
+ def test_reshape():

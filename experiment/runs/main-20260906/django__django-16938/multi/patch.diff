@@ -1,0 +1,133 @@
+diff --git a/django/core/serializers/python.py b/django/core/serializers/python.py
+index 36048601af..7ec894aa00 100644
+--- a/django/core/serializers/python.py
++++ b/django/core/serializers/python.py
+@@ -79,7 +79,12 @@ class Serializer(base.Serializer):
+                     return self._value_from_field(value, value._meta.pk)
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name)
++                        .select_related(None)
++                        .only("pk")
++                        .iterator()
++                    )
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/django/core/serializers/xml_serializer.py b/django/core/serializers/xml_serializer.py
+index 1d3269c41a..16b69770f6 100644
+--- a/django/core/serializers/xml_serializer.py
++++ b/django/core/serializers/xml_serializer.py
+@@ -1,6 +1,7 @@
+ """
+ XML serializer.
+ """
++
+ import json
+ from xml.dom import pulldom
+ from xml.sax import handler
+@@ -155,7 +156,12 @@ class Serializer(base.Serializer):
+                     self.xml.addQuickElement("object", attrs={"pk": str(value.pk)})
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name)
++                        .select_related(None)
++                        .only("pk")
++                        .iterator()
++                    )
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/tests/serializers/models/base.py b/tests/serializers/models/base.py
+index af9ca2b20a..ca5d50016c 100644
+--- a/tests/serializers/models/base.py
++++ b/tests/serializers/models/base.py
+@@ -163,3 +163,30 @@ class ComplexModel(models.Model):
+     field1 = models.CharField(max_length=10)
+     field2 = models.CharField(max_length=10)
+     field3 = models.CharField(max_length=10)
++
++
++class TestTagMaster(models.Model):
++    name = models.CharField(max_length=10)
++
++
++class TestTagManager(models.Manager):
++    def get_queryset(self):
++        return super().get_queryset().select_related("master")
++
++
++class TestTag(models.Model):
++    name = models.CharField(max_length=10)
++    master = models.ForeignKey(TestTagMaster, models.SET_NULL, null=True)
++
++    objects = TestTagManager()
++
++    def __str__(self):
++        return self.name
++
++
++class TestM2MSelectRelated(models.Model):
++    name = models.CharField(max_length=10)
++    tags = models.ManyToManyField(TestTag, blank=True)
++
++    def __str__(self):
++        return self.name
+diff --git a/tests/serializers/tests.py b/tests/serializers/tests.py
+index 67ae8f43de..7af26ad04e 100644
+--- a/tests/serializers/tests.py
++++ b/tests/serializers/tests.py
+@@ -8,7 +8,12 @@ from django.core.serializers import SerializerDoesNotExist
+ from django.core.serializers.base import ProgressBar
+ from django.db import connection, transaction
+ from django.http import HttpResponse
+-from django.test import SimpleTestCase, override_settings, skipUnlessDBFeature
++from django.test import (
++    SimpleTestCase,
++    TestCase,
++    override_settings,
++    skipUnlessDBFeature,
++)
+ from django.test.utils import Approximate
+ 
+ from .models import (
+@@ -26,6 +31,9 @@ from .models import (
+     ProxyProxyBaseModel,
+     Score,
+     Team,
++    TestM2MSelectRelated,
++    TestTag,
++    TestTagMaster,
+ )
+ 
+ 
+@@ -499,3 +507,25 @@ def register_tests(test_class, method_name, test_func, exclude=()):
+         setattr(
+             test_class, method_name % format_, partialmethod(decorated_func, format_)
+         )
++
++
++class M2MSelectRelatedManagerTests(TestCase):
++    """
++    Serializing an object with a ManyToManyField whose related model's
++    default manager applies select_related() in get_queryset() shouldn't
++    raise a FieldError.
++    """
++
++    def setUp(self):
++        self.master = TestTagMaster.objects.create(name="master")
++        self.tag = TestTag.objects.create(name="tag", master=self.master)
++        self.obj = TestM2MSelectRelated.objects.create(name="obj")
++        self.obj.tags.add(self.tag)
++
++    def test_serialize_json(self):
++        serial_str = serializers.serialize("json", [self.obj])
++        self.assertIn('"tags": [%s]' % self.tag.pk, serial_str)
++
++    def test_serialize_xml(self):
++        serial_str = serializers.serialize("xml", [self.obj])
++        self.assertIn('<object pk="%s"></object>' % self.tag.pk, serial_str)

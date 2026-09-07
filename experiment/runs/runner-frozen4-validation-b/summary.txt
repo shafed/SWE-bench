@@ -1,0 +1,14 @@
+runs 2   complete pairs 1
+
+Quality (official SWE-bench evaluator)
+  SINGLE resolved : 1/1
+  MULTI  resolved : 1/1
+  discordant pairs: 0 (only SINGLE 0, only MULTI 0)
+  exact McNemar p : 1.0000
+
+Cost (MULTI - SINGLE, paired)
+  total tokens         n=1   median    210,699.0 ->    470,868.0  diff   +260,169.0  x2.23  p=1.0000
+  output tokens        n=1   median      1,565.0 ->      6,333.0  diff     +4,768.0  x4.05  p=1.0000
+  wall-clock seconds   n=1   median         73.5 ->         77.9  diff         +4.4  x1.06  p=1.0000
+  model messages       n=1   median         10.0 ->         22.0  diff        +12.0  x2.20  p=1.0000
+  tool calls           n=1   median          9.0 ->         20.0  diff        +11.0  x2.22  p=1.0000

@@ -1,0 +1,3 @@
+ M ChangeLog
+ M pylint/pyreverse/inspector.py
+ M tests/unittest_pyreverse_inspector.py

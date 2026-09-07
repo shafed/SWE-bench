@@ -1,0 +1,5 @@
+{"instance_id": "scikit-learn__scikit-learn-14053", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 1, "investigation_volume": 1,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single-cause fix: tree_.feature contains the sentinel TREE_UNDEFINED for leaf nodes, which is out of range for feature_names when there is only one real feature, so the list comprehension indexes out of bounds. Fix guards the lookup with a check for the sentinel. One location, one line of reasoning. n_subtasks=0."}

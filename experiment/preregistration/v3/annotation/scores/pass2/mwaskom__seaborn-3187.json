@@ -1,0 +1,5 @@
+{"instance_id": "mwaskom__seaborn-3187", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 1,
+ "difficulty_overall": 2, "investigation_volume": 1,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "One root cause (ScalarFormatter's multiplicative offset/scientific notation is silently dropped when building legend labels) fixed by disabling useOffset/scientific in the two places a formatter feeds legend text: Continuous.label's tick formatting and the dummy-axis formatter constructed in utils.py. Same fix, same reasoning, applied to both formatter-construction sites -- mechanical propagation, not independent subtasks. n_subtasks=0."}

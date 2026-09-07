@@ -1,0 +1,5 @@
+{"instance_id": "matplotlib__matplotlib-23299", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 2, "investigation_volume": 2,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single root cause: rc_context copies and later restores rcParams['backend'] verbatim, and restoring 'backend' triggers a validator side-effect that clears Gcf.figs. Fix excludes 'backend' from the copy/restore dict. Finding this required tracing a non-obvious side effect of setting rcParams['backend'] (hence investigation_volume=2), but the fix itself is a single one-line exclusion -- no second subtask. n_subtasks=0."}

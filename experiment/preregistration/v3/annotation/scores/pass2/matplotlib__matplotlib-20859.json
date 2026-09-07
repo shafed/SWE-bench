@@ -1,0 +1,5 @@
+{"instance_id": "matplotlib__matplotlib-20859", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 0, "investigation_volume": 0,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single-line type-check widening: Legend.__init__ checked isinstance(parent, Figure) instead of the common base class FigureBase, so SubFigure was rejected. The reporter even named the exact line and fix in the issue. Trivial, one location, no splittable work. n_subtasks=0."}

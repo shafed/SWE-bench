@@ -1,0 +1,5 @@
+{"instance_id": "pylint-dev__pylint-7277", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 1, "investigation_volume": 0,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single fix, single location: guard the unconditional sys.path.pop(0) with a check that the entry is one of the values pylint itself could have inserted (\"\", \".\", cwd). The problem statement essentially hands over both the location and the exact fix. n_subtasks=0."}

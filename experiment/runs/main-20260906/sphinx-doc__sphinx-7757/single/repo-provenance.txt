@@ -1,0 +1,32 @@
+c7bbdd751ab371b946e3d71e0ff3ee25bf0cfc77
+## master
+c7bbdd751 SWE-bench
+212fd67b9 Merge pull request #7755 from stephenfin/doc/docutils-vs-sphinx
+0e6e66f76 Merge pull request #7759 from tk0miya/fix_docs
+59e0746cb doc: Remove intro.rst (ref: #7751)
+350f5b360 Merge pull request #7751 from stephenfin/doc/intro-section
+6be72c6ed Merge pull request #7752 from stephenfin/doc/latex-rework
+b072c55d5 Merge pull request #7754 from stephenfin/doc/rework-templating
+f3360e692 docs: Fix typo, replace field lists with paragraphs
+aaf2dafd6 docs: Compare docutils with Sphinx
+e4e5c509b doc: Rework "templating" documents
+97d1b323b docs: Merge intro and quickstart guide
+f07ad49c2 docs: Add usage, development index page
+52bb0b02b docs: Fix a typo and some indentation
+ceb72f9cd doc: Rework "latex" document
+9988d5ce2 Update CHANGES for PR #7746
+a6d4381a1 Merge pull request #7710 from tk0miya/github_actions
+928149b73 Merge pull request #7746 from rsokl/patch-1
+339e3a9f3 Merge pull request #7714 from tk0miya/7701_anonymous_indirect_target
+28fe0d639 Merge branch '3.x' into 7701_anonymous_indirect_target
+03559f057 Merge pull request #7738 from tk0miya/7734_napoleon_overescaped_underscore
+7b414d0c9 Update CHANGES for PR #7384
+877055f8b Update CHANGES for PR #7711
+19ad8a430 Merge pull request #7384 from eric-wieser/property-annotation
+18f7d8f4e Merge pull request #7744 from tk0miya/fix_pypi_classifiers
+1d332a2e0 Update test_ext_math.py
+7e97de805 Update mathjax to version 2.7.7
+666c4a4cd Merge pull request #7711 from larsoner/meth
+03bb9ff84 Add py38 to the list of PyPI classifiers
+d5584172a Refactor to simplify format_args, catch TypeError
+79d8bfb9e BUG: Fix check for meth

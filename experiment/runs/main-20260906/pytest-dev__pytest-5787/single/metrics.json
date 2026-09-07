@@ -1,0 +1,162 @@
+{
+  "instance_id": "pytest-dev__pytest-5787",
+  "condition": "single",
+  "position": 7,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 474.7449296579998,
+  "patch_collection_ok": true,
+  "patch_bytes": 10625,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "All green (previous failure was a filesystem-permission flake from a leftover `.pytest_cache` in `/tmp`, unrelated to this change).\n\n## Summary\n\nFixed `TestReport`/`CollectReport` serialization (`_to_json`/`_from_json` in `src/_pytest/reports.py`) to preserve the full chain of chained exceptions (`ExceptionChainRepr`), not just the last exception. Previously only `reprtraceback`/`reprcrash` of the outermost exception were serialized, so plugins like `pytest-xdist` that serialize reports across worker processes lost the \"The above exception was the direct cause...\" / \"During handling of the above exception...\" context.\n\n- `_to_json` now serializes `longrepr.chain` (when present) as a list of `(reprtraceback, reprcrash, description)` tuples.\n- `_from_json` reconstructs an `ExceptionChainRepr` from that data (falling back to the old `ReprExceptionInfo` behavior when there's no chain).\n- Added a `tw_mock` fixture in `testing/conftest.py` and a regression test `test_chained_exceptions` in `testing/test_reports.py` verifying the full chain round-trips through serialization and renders correctly.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 68,
+  "total_cost_usd_reported": 1.1291977999999994,
+  "usage_reported": {
+    "input_tokens": 136,
+    "cache_creation_input_tokens": 64013,
+    "cache_read_input_tokens": 3454974,
+    "output_tokens": 17989,
+    "output_tokens_details": {
+      "thinking_tokens": 4313
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 64013,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 414,
+        "cache_read_input_tokens": 78570,
+        "cache_creation_input_tokens": 350,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 350
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2050,
+      "output_tokens": 18004,
+      "cache_read_input_tokens": 3454974,
+      "cache_creation_input_tokens": 64013,
+      "total_tokens": 3539041
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1914,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001989,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 136,
+        "outputTokens": 17989,
+        "cacheReadInputTokens": 3454974,
+        "cacheCreationInputTokens": 64013,
+        "webSearchRequests": 0,
+        "costUSD": 1.1272087999999996,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 4313,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 136,
+      "output_tokens": 493,
+      "cache_read_input_tokens": 3454974,
+      "cache_creation_input_tokens": 64013
+    }
+  },
+  "unique_assistant_messages": 68,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 123,
+  "models_seen": {
+    "claude-sonnet-5": 123
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 39,
+    "Edit": 11,
+    "Monitor": 1,
+    "Read": 13,
+    "ScheduleWakeup": 1,
+    "ToolSearch": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 39,
+      "Edit": 11,
+      "Monitor": 1,
+      "Read": 13,
+      "ScheduleWakeup": 1,
+      "ToolSearch": 2
+    }
+  },
+  "tool_calls_total": 67,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-07T06:22:47.332401+00:00"
+}

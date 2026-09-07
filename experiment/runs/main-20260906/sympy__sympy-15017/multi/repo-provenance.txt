@@ -1,0 +1,32 @@
+5d920dd014d5b9b0cbd4c2567fd6d7f4bbde97cf
+## master
+5d920dd01 SWE-bench
+6810dee42 Merge pull request #14453 from jashan498/beam_examples
+9d9939b43 Improved ascii diagrams
+b7c5ba2bf Merge pull request #14994 from sidhantnagpal/discrete-docs
+ab4c958d6 Improve the phrasing for discrete docs
+a78cf1d3e Merge pull request #14923 from smichr/14547
+cdda9e6b2 remove checking of Dimension compatibility
+607ef9189 Added ascii diagrams inside :: block
+49a1c33d6 Merge pull request #15003 from bjodah/fix-15002
+011499584 Added ascii diagrams for beam problems
+8e1e05631 Fix gh-15002
+45e7cea6c Merge pull request #14991 from maurogaravello/integrate_14782
+dce76cbf1 remove Dimension postprocessing for Add
+867af52c4 clear mul constants in check_dimensions
+bce87c5fc Merge pull request #14995 from akash9712/Joint_Handmade_
+11546167b Modification in `MarginalDistribution.pdf`
+830e9ebbc Improve documentation in discrete.rst
+f436e03e7 Add docs for discrete module
+db673936d Merge pull request #14989 from akash9712/Joint_Handmade_
+be8ec180e Edited sol in a test in test_ode.py
+a69cf8753 Added error messages in stats/joint_rv.py
+2e8d718ae Merge pull request #14990 from maurogaravello/accumbounds_commuting
+cdcaea6bc Modifications for compound random variables
+bb50fe803 Added `CompoundDistribution`
+be5393958 Added piecewise_fold after Add(*piecewises)
+c1f0840b5 Integrate gives a wrong result
+f808b445b Fix issue 13159
+97b9fd10e Minor fixes
+fbb659c22 Fixed `domain` for `JointPSpace`
+405edb117 Partially fixed failing tests in stats.

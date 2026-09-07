@@ -176,24 +176,5 @@ gold.*.json
 loose-ends.txt
 todo_later.txt
 
-# Keep the controller visible even when local excludes hide experiment data.
-!/experiment/
-/experiment/*
-!/experiment/execution/
-/experiment/execution/*
-!/experiment/execution/runner.py
-!/experiment/execution/run_series.py
-!/experiment/execution/analyze_runs.py
-!/experiment/execution/RUNNER_AMENDMENT.md
-!/experiment/execution/HARNESS_CARD.md
-!/experiment/execution/runner.sha256
-# runner.py will not start without these; they are part of the controller.
-!/experiment/execution/network/
-/experiment/execution/network/*
-!/experiment/execution/network/squid.conf
-!/experiment/execution/network/squid-discovery.conf
-!/experiment/execution/network/allowlist.txt
-!/experiment/execution/network/DISCOVERY.md
-!/experiment/preregistration/
-/experiment/preregistration/*
-!/experiment/preregistration/FAILURE_ANALYSIS_PROTOCOL.md
+# experiment/ is tracked in full (no allowlist) -- see git log for the
+# switch away from the old "only the controller" allowlist scheme.

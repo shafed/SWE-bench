@@ -1,0 +1,119 @@
+{
+  "instance_id": "sympy__sympy-20590",
+  "condition": "multi",
+  "position": null,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 130.18124926200016,
+  "patch_collection_ok": true,
+  "patch_bytes": 648,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "num_turns": 11,
+  "total_cost_usd_reported": 0.3213936,
+  "usage_reported": {
+    "input_tokens": 22,
+    "cache_creation_input_tokens": 7181,
+    "cache_read_input_tokens": 306338,
+    "output_tokens": 2127,
+    "output_tokens_details": {
+      "thinking_tokens": 513
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 7181,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 272,
+        "cache_read_input_tokens": 30938,
+        "cache_creation_input_tokens": 207,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 207
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "usage_summed": {
+    "input_tokens": 96,
+    "cache_creation_input_tokens": 78010,
+    "cache_read_input_tokens": 1068724,
+    "output_tokens": 187
+  },
+  "assistant_events": 48,
+  "models_seen": {
+    "claude-sonnet-5": 48
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 1
+    },
+    "started_in_background": 1,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_01J5qxh9oaxrBmmgfUjCpA8z",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 42,
+      "prompt_chars": 1626
+    }
+  ],
+  "delegation_prompt_chars_total": 1626,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 18,
+    "Edit": 1,
+    "Read": 1,
+    "ScheduleWakeup": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 8,
+      "Edit": 1,
+      "Read": 1,
+      "ScheduleWakeup": 2
+    },
+    "toolu_01J5qxh9oaxrBmmgfUjCpA8z": {
+      "Bash": 10
+    }
+  },
+  "tool_calls_total": 23,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-06T04:38:40.221319+00:00"
+}

@@ -1,0 +1,82 @@
+{
+  "n_runs": 2,
+  "n_pairs": 1,
+  "unpaired_instances": [],
+  "multi_without_confirmed_delegation": [],
+  "single_with_delegation_violation": [],
+  "runs_without_enforced_isolation": [],
+  "quality": {
+    "both_resolved": 1,
+    "only_single": 0,
+    "only_multi": 0,
+    "neither_resolved": 0,
+    "unknown": 0,
+    "discordant": 0,
+    "p_value_exact_mcnemar": 1.0,
+    "single_resolved": 1,
+    "multi_resolved": 1,
+    "n_pairs_scored": 1
+  },
+  "test_fraction": {
+    "n": 1,
+    "excluded": [],
+    "median_difference": 0.0,
+    "mean_difference": 0.0,
+    "p_value_exact_randomization": 1.0,
+    "single_median": 1.0,
+    "multi_median": 1.0,
+    "ratio_of_medians": 1.0
+  },
+  "cost": {
+    "total_tokens": {
+      "n": 1,
+      "excluded": [],
+      "median_difference": 260169,
+      "mean_difference": 260169.0,
+      "p_value_exact_randomization": 1.0,
+      "single_median": 210699,
+      "multi_median": 470868,
+      "ratio_of_medians": 2.2347899135733913
+    },
+    "output_tokens": {
+      "n": 1,
+      "excluded": [],
+      "median_difference": 4768,
+      "mean_difference": 4768.0,
+      "p_value_exact_randomization": 1.0,
+      "single_median": 1565,
+      "multi_median": 6333,
+      "ratio_of_medians": 4.0466453674121405
+    },
+    "wall_seconds": {
+      "n": 1,
+      "excluded": [],
+      "median_difference": 4.350878448000003,
+      "mean_difference": 4.350878448000003,
+      "p_value_exact_randomization": 1.0,
+      "single_median": 73.54528080199998,
+      "multi_median": 77.89615924999998,
+      "ratio_of_medians": 1.0591591792233892
+    },
+    "unique_assistant_messages": {
+      "n": 1,
+      "excluded": [],
+      "median_difference": 12,
+      "mean_difference": 12.0,
+      "p_value_exact_randomization": 1.0,
+      "single_median": 10,
+      "multi_median": 22,
+      "ratio_of_medians": 2.2
+    },
+    "tool_calls_total": {
+      "n": 1,
+      "excluded": [],
+      "median_difference": 11,
+      "mean_difference": 11.0,
+      "p_value_exact_randomization": 1.0,
+      "single_median": 9,
+      "multi_median": 20,
+      "ratio_of_medians": 2.2222222222222223
+    }
+  }
+}

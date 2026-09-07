@@ -1,0 +1,5 @@
+{"instance_id": "psf__requests-2931", "n_subtasks": 0, "independence": 0,
+ "integration_cost": 0, "global_context": 0, "locality": 2,
+ "difficulty_overall": 1, "investigation_volume": 1,
+ "change_type": "bugfix", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Single root cause: to_native_string was applied at the wrong layer, corrupting binary payloads. Fix removes the call from _encode_params (which handles the request body) and re-adds it narrowly in prepare_url (which only ever deals with URL params, safe to coerce to native str). Both hunks are two faces of the same decision about where native-string coercion belongs; not two lines of reasoning. n_subtasks=0."}

@@ -1,0 +1,32 @@
+beb0f4d95fa7c36507422c8aed43fbeaae40d2ba
+## main
+beb0f4d9 SWE-bench
+99589b08 Upgrade astroid to 2.6.0 (#4602)
+cc01ec90 [pre-commit.ci] pre-commit autoupdate (#4601)
+ed03c0bf Bump types-pkg-resources from 0.1.2 to 0.1.3 (#4600)
+421989f0 Update pytest-xdist requirement from ~=2.2 to ~=2.3 (#4597)
+9ca49336 Bump actions/download-artifact from 2.0.9 to 2.0.10 (#4595)
+6353d051 Bump actions/upload-artifact from 2.2.3 to 2.2.4 (#4596)
+fa675924 Bump isort from 5.8.0 to 5.9.0 (#4598)
+ee70d32c Bump types-toml from 0.1.2 to 0.1.3 (#4599)
+077235e1 Remove docs and code associated with the removed W0623 (redefine-in-handler) checker (#4543)
+a1e1774c Recognize cached_property as property (#4594)
+fa144f66 Add a test for too-many-statements when modified by configuration
+cbd3cc07 No crash on bad plugin provided in configuration file
+4dfaddf5 Fix update a functional test with no expected output
+0f08e2e5 Bump pylint to 2.9.0-dev1, update changelog
+63595a94 Add alias for bots in copyrite aliases
+d460da6e Migration from setuptools_scm to tbump
+54a31ee3 Add tbump script for bumbing version
+3f2c1e3e Add a release step in Github Actions
+655a9bf8 Add regression test from #2306 (#4570)
+f3ea3153 Add regression tests for Enum.name and .value inference (#4558)
+e3010e6c Remove deprecated astroid.Index and astroid.ExtSlice nodes (#4568)
+5c23856c Remove deprecated astroid.Ellipsis node (#4567)
+23c82384 Upgrade astroid to 2.6.0-dev0 (#4581)
+7df1f08d Remove appveyor.yml replaced by Github actions
+7769409c Special case for python < 3.8 with worse AST handling
+9f5ae4c3 Refactor the json reporter so handle message work the same way
+304c87c0 Use a NamedTuple from typing directly
+5e723a75 Remove dead code, always return the confidence
+c5075921 Add unit tests for OutputLine

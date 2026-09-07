@@ -1,0 +1,102 @@
+{
+  "instance_id": "sympy__sympy-20590",
+  "condition": "single",
+  "position": null,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 139.8031605430001,
+  "patch_collection_ok": true,
+  "patch_bytes": 476,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "num_turns": 13,
+  "total_cost_usd_reported": 0.13118860000000002,
+  "usage_reported": {
+    "input_tokens": 26,
+    "cache_creation_input_tokens": 11880,
+    "cache_read_input_tokens": 272108,
+    "output_tokens": 2797,
+    "output_tokens_details": {
+      "thinking_tokens": 550
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 11880,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 126,
+        "cache_read_input_tokens": 25195,
+        "cache_creation_input_tokens": 393,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 393
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "usage_summed": {
+    "input_tokens": 50,
+    "cache_creation_input_tokens": 23304,
+    "cache_read_input_tokens": 518562,
+    "output_tokens": 117
+  },
+  "assistant_events": 25,
+  "models_seen": {
+    "claude-sonnet-5": 25
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 9,
+    "Edit": 2,
+    "Read": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 9,
+      "Edit": 2,
+      "Read": 1
+    }
+  },
+  "tool_calls_total": 12,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-06T04:31:25.480698+00:00"
+}

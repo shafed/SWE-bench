@@ -1,0 +1,158 @@
+{
+  "instance_id": "matplotlib__matplotlib-25775",
+  "condition": "single",
+  "position": 12,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 254.66001400700043,
+  "patch_collection_ok": true,
+  "patch_bytes": 4489,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "The implementation is complete and minimal:\n\n- Added a per-artist `antialiased` kwarg to `Text` (and by extension `Annotation`, via kwargs pass-through), defaulting to `rcParams['text.antialiased']`, plus `get_antialiased`/`set_antialiased`.\n- Wired it into `update_from` (so `copy`/style-cloning preserves it) and into `Text.draw`, which now sets it on the `GraphicsContext` via `gc.set_antialiased(...)`.\n- Updated `backend_agg` and `backend_cairo` (the two backends that read `rcParams[\"text.antialiased\"]` directly for non-math text glyph rendering) to read `gc.get_antialiased()` instead, and removed the now-unused `mpl` import in `backend_cairo.py`.\n\nRan `test_text.py`, `test_agg.py`, `test_backend_cairo.py`, `test_backend_pdf.py`, `test_backend_svg.py`, `test_backend_ps.py`, and `test_artist.py` — all pass. Mathtext raster rendering (`_mathtext.py`) still uses the global rcParam since its output is cached independent of any `GraphicsContext`/`Text` instance; threading per-artist control through that cache would be a much larger change beyond the scope of this fix.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 59,
+  "total_cost_usd_reported": 0.8018974000000002,
+  "usage_reported": {
+    "input_tokens": 116,
+    "cache_creation_input_tokens": 44497,
+    "cache_read_input_tokens": 2446952,
+    "output_tokens": 13310,
+    "output_tokens_details": {
+      "thinking_tokens": 3222
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 44497,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 442,
+        "cache_read_input_tokens": 57430,
+        "cache_creation_input_tokens": 1974,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1974
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1228,
+      "output_tokens": 13325,
+      "cache_read_input_tokens": 2446952,
+      "cache_creation_input_tokens": 44497,
+      "total_tokens": 2506002
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1112,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001187,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 116,
+        "outputTokens": 13310,
+        "cacheReadInputTokens": 2446952,
+        "cacheCreationInputTokens": 44497,
+        "webSearchRequests": 0,
+        "costUSD": 0.8007104000000002,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 3222,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 116,
+      "output_tokens": 376,
+      "cache_read_input_tokens": 2446952,
+      "cache_creation_input_tokens": 44497
+    }
+  },
+  "unique_assistant_messages": 58,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 104,
+  "models_seen": {
+    "claude-sonnet-5": 104
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 37,
+    "Edit": 10,
+    "Read": 10,
+    "Write": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 37,
+      "Edit": 10,
+      "Read": 10,
+      "Write": 1
+    }
+  },
+  "tool_calls_total": 58,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-07T06:55:41.235148+00:00"
+}

@@ -1,0 +1,32 @@
+a71417835bd01a65a7982aa49d753d2259ab0407
+## main
+a71417835b SWE-bench
+1136aa5005 Refs #23528 -- Made cosmetic edits to swappable_dependency() docs.
+7d96ce68ae Fixed #23528 -- Doc'd django.db.migrations.swappable_dependency().
+27fed08e5f Fixed #34618 -- Added icon descriptions in "Recent Actions" on the admin index.
+2cf76f2d5d Fixed #34612 -- Fixed QuerySet.only() crash on reverse relationships.
+d9e7018796 Refs #34570 -- Added extra tests for QuerySet.only() noops.
+4142739af1 Added local copy of Django to deps in tox.ini.
+65da6b2ae4 Fixed #34617 -- Enabled user zooming on mobile devices in the admin.
+4037223d0f Fixed #34595 -- Doc'd that format_string arg of format_html() is not escaped.
+24d56e21c3 Fixed #34616 -- Corrected label examples in 5.0 release notes.
+91be6e1818 Fixed #34606 -- Fixed Right() function with zero length on Oracle and SQLite.
+b0a6cc7f57 Fixed #34600 -- Removed references to bleach in docs.
+d3d173425f Optimized @condition decorator a bit.
+881cc139e2 Refs #34574, Refs #34577 -- Mentioned escapeseq filter in escape/autoescape docs.
+1a59a324ce Fixed #34574 -- Noted unexpected outcomes in autoescape/escape docs.
+ea8cbca579 Made MigrationRecorder cache has_table() result if django_migrations table exists.
+9d756afb07 Refs #34593 -- Commented that the extra count is necessary in ChangeList.get_results().
+0c1518ee42 Fixed #34590 -- Reverted "Refs #33308 -- Improved adapting DecimalField values to decimal."
+8b053c1e3c Fixed #34592 -- Removed Safari/Chrome workaround for system fonts.
+eb9df03a43 Corrected documentation of Log database function.
+fc9c90d9c4 Refs #34118 -- Fixed FunctionalTests.test_cached_property_reuse_different_names() on Python 3.12+.
+23abec9192 Refs #31949 -- Made @no_append_slash decorator to work with async functions.
+e5c844d6f2 Fixed #34551 -- Fixed QuerySet.aggregate() crash when referencing subqueries.
+2ee01747c3 Refs #34551 -- Fixed QuerySet.aggregate() crash on precending aggregation reference.
+89f10a80d7 Fixed #34579 -- Added Django Forum to contributing guides.
+f8172f45fc Fixed #34587 -- Allowed customizing table name normalization in inspectdb command.
+c3862735cd Fixed references to django.core.cache in docs.
+0a324f1b66 Fixed #34588 -- Removed usage of nonexistent stylesheet in the 'Congrats' page.
+061a8a1bd8 Fixed #34577 -- Added escapeseq template filter.
+98f6ada0e2 Fixed #34580 -- Avoided unnecessary computation of selected expressions in SQLCompiler.

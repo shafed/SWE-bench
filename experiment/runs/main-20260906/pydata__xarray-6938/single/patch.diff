@@ -1,0 +1,50 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 6d78a47f..604b3695 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -34,6 +34,8 @@ Deprecations
+ Bug fixes
+ ~~~~~~~~~
+ 
++- Fix bug where :py:meth:`Dataset.swap_dims` could modify a data variable of the
++  original object in place if it was already an index variable. (:issue:`6987`)
+ - Allow decoding of 0 sized datetimes(:issue:`1329`, :pull:`6882`)
+   By `Deepak Cherian <https://github.com/dcherian>`_.
+ - Make sure DataArray.name is always a string when used as label for plotting.
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index c775d05c..135a693e 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -3773,6 +3773,8 @@ class Dataset(
+             dims = tuple(dims_dict.get(dim, dim) for dim in v.dims)
+             if k in result_dims:
+                 var = v.to_index_variable()
++                if var is v:
++                    var = var.copy()
+                 var.dims = dims
+                 if k in self._indexes:
+                     indexes[k] = self._indexes[k]
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index 9ea47163..86912b1a 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -2995,6 +2995,19 @@ class TestDataset:
+         assert isinstance(actual.variables["x"], Variable)
+         assert actual.xindexes["y"].equals(expected.xindexes["y"])
+ 
++        # GH 6987: swap_dims should not modify a data variable that is
++        # already backed by an IndexVariable in place
++        ds = Dataset({"a": ("z", [0.0, 1.0]), "b": ("z", [10, 20])})
++        ds = (
++            ds.swap_dims(z="b")
++            .rename_dims(b="z")
++            .reset_index("b")
++            .reset_coords()
++        )
++        expected_dims = ds["b"].dims
++        ds.swap_dims(z="b")
++        assert ds["b"].dims == expected_dims
++
+     def test_expand_dims_error(self) -> None:
+         original = Dataset(
+             {

@@ -1,0 +1,4 @@
+ M lib/matplotlib/backends/backend_agg.py
+ M lib/matplotlib/backends/backend_cairo.py
+ M lib/matplotlib/tests/test_text.py
+ M lib/matplotlib/text.py

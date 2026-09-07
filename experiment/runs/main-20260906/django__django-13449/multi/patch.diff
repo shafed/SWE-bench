@@ -1,0 +1,73 @@
+diff --git a/django/db/models/expressions.py b/django/db/models/expressions.py
+index 90d90119d0..29d6bb3898 100644
+--- a/django/db/models/expressions.py
++++ b/django/db/models/expressions.py
+@@ -1253,7 +1253,7 @@ class OrderBy(BaseExpression):
+         self.descending = True
+ 
+ 
+-class Window(Expression):
++class Window(SQLiteNumericMixin, Expression):
+     template = '%(expression)s OVER (%(window)s)'
+     # Although the main expression may either be an aggregate or an
+     # expression with an aggregate function, the GROUP BY that will
+@@ -1302,7 +1302,7 @@ class Window(Expression):
+         connection.ops.check_expression_support(self)
+         if not connection.features.supports_over_clause:
+             raise NotSupportedError('This backend does not support window expressions.')
+-        expr_sql, params = compiler.compile(self.source_expression)
++        expr_sql, params = self.source_expression.as_sql(compiler, connection)
+         window_sql, window_params = [], []
+ 
+         if self.partition_by is not None:
+diff --git a/tests/expressions_window/models.py b/tests/expressions_window/models.py
+index ce6f6621e9..dd6a34662c 100644
+--- a/tests/expressions_window/models.py
++++ b/tests/expressions_window/models.py
+@@ -12,3 +12,4 @@ class Employee(models.Model):
+     hire_date = models.DateField(blank=False, null=False)
+     age = models.IntegerField(blank=False, null=False)
+     classification = models.ForeignKey('Classification', on_delete=models.CASCADE, null=True)
++    bonus = models.DecimalField(decimal_places=2, max_digits=10, null=True)
+diff --git a/tests/expressions_window/tests.py b/tests/expressions_window/tests.py
+index 30ed64f529..7a0ed6a0b3 100644
+--- a/tests/expressions_window/tests.py
++++ b/tests/expressions_window/tests.py
+@@ -1,4 +1,5 @@
+ import datetime
++from decimal import Decimal
+ from unittest import mock, skipIf
+ 
+ from django.core.exceptions import FieldError
+@@ -202,6 +203,31 @@ class WindowFunctionTests(TestCase):
+             ('Smith', 55000, 'Sales', 53000),
+         ], transform=lambda row: (row.name, row.salary, row.department, row.lag))
+ 
++    def test_lag_decimalfield(self):
++        """
++        Lag() with a DecimalField() output_field doesn't crash on SQLite
++        (#31576).
++        """
++        bonuses = {
++            'Williams': Decimal('370.00'),
++            'Jenson': Decimal('450.00'),
++            'Jones': Decimal('450.00'),
++            'Adams': Decimal('500.00'),
++        }
++        for name, bonus in bonuses.items():
++            Employee.objects.filter(name=name, department='Accounting').update(bonus=bonus)
++        qs = Employee.objects.filter(department='Accounting').annotate(lag=Window(
++            expression=Lag(expression='bonus', offset=1),
++            partition_by=F('department'),
++            order_by=[F('bonus').asc(), F('name').asc()],
++        )).order_by('department', F('bonus').asc(), F('name').asc())
++        self.assertQuerysetEqual(qs, [
++            ('Williams', Decimal('370.00'), 'Accounting', None),
++            ('Jenson', Decimal('450.00'), 'Accounting', Decimal('370.00')),
++            ('Jones', Decimal('450.00'), 'Accounting', Decimal('450.00')),
++            ('Adams', Decimal('500.00'), 'Accounting', Decimal('450.00')),
++        ], transform=lambda row: (row.name, row.bonus, row.department, row.lag))
++
+     def test_first_value(self):
+         qs = Employee.objects.annotate(first_value=Window(
+             expression=FirstValue('salary'),

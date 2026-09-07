@@ -1,0 +1,5 @@
+{"instance_id": "mwaskom__seaborn-3069", "n_subtasks": 1, "independence": 1,
+ "integration_cost": 1, "global_context": 1, "locality": 1,
+ "difficulty_overall": 3, "investigation_volume": 2,
+ "change_type": "feature", "nonproduction_patch": false, "unsolvable": false,
+ "p2_notes": "Problem statement lists three effects (tight axis limits, no grid, y-axis inversion). The gold patch implements them as one cohesive block added to _finalize_figure: compute nticks-based limits (swapping lo/hi for the y axis achieves the inversion) and turn the grid off, all gated on isinstance(scale, Nominal). Limits/inversion is the substantive piece of reasoning (author called it 'trickier than you'd think'); the grid=False line is a one-line, derivative addition alongside it, not a separate line of investigation. So n_subtasks=1, not 2 -- this survives the 'mechanical propagation' exclusion only barely because turning off the grid is a distinct decision, but it required no independent reasoning of its own. The unrelated import-hoisting hunk is pure cleanup."}

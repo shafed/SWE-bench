@@ -7,7 +7,7 @@ benchmark number is a property of the pair `{model, harness}`, so a result
 reported without the harness cannot be compared with anything; this card exists
 so that ours can be.
 
-The experimental factor is **Scheduling** (mandated delegation to subagents).
+The experimental factor is **Scheduling** (whether subagents are available at all).
 Every other dimension is held identical between conditions and is listed here
 so that the claim "only one thing differs" can be checked rather than trusted.
 
@@ -51,7 +51,7 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 | Item | Value |
 | --- | --- |
 | Task prompt | `prompt-template.txt` + the instance problem statement, identical in both conditions; digests recorded per run |
-| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, requiring at least one self-contained delegated subtask |
+| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, framing the model as the orchestrator of a team of subagents. It does not mandate a delegation: the model decides what to assign, how many subagents to use, and whether to run them sequentially or in parallel |
 | Placebo | none; SINGLE receives no compensating appended prompt |
 | Context management | the CLI's own; not configured, not overridden, and not directly observable |
 | Subagent context | native Claude Code semantics: separate context window, but free to explore the repository with its own tools. No artificially fixed context budget is imposed |
@@ -61,7 +61,7 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 
 | Item | SINGLE | MULTI |
 | --- | --- | --- |
-| Delegation | technically disabled (`Task` disallowed) | available and mandated |
+| Delegation | technically disabled (`Task` disallowed) | available, not mandated |
 | Orchestration | none | orchestrator decides what, how many, sequential or parallel |
 | Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1` |
 | Turn budget | none | none |
@@ -120,5 +120,7 @@ treatment and is measured as an outcome, not controlled away.
 3. 12 instances × 1 run per condition does not estimate run-to-run stochastic
    variance. The design is a small paired experiment on one model, not an
    estimate of general harness variance.
-4. The treatment mandates delegation rather than merely allowing it, so the
-   effect measured is the effect of *required* native subagent use.
+4. The treatment assigns MULTI an orchestrator role without requiring a
+   delegation, so the effect measured is the effect of *available* native
+   subagent use. A MULTI run that delegates nothing is a valid observation,
+   not a failed run.

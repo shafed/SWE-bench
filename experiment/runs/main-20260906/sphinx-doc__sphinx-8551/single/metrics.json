@@ -1,0 +1,156 @@
+{
+  "instance_id": "sphinx-doc__sphinx-8551",
+  "condition": "single",
+  "position": 9,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 172.69723746699856,
+  "patch_collection_ok": true,
+  "patch_bytes": 668,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "## Summary\n\nThe `:type:`/`:param:`/`:rtype:` info-field cross-references (`PyXrefMixin.make_xref` in `sphinx/domains/python.py`) always set `refspecific=True` but never populated the `py:module`/`py:class` context on the generated `pending_xref` node — unlike the explicit `:py:class:` role, which copies `env.ref_context` onto the node. Without that context, `PythonDomain.find_obj` had nothing to narrow the search with, so it fell back to fuzzy-matching the name across every module, producing false \"more than one target found\" ambiguity warnings and sometimes resolving to the wrong class.\n\nFix: in `PyXrefMixin.make_xref`, copy `py:module`/`py:class` from `env.ref_context` onto the resulting xref node (guarded for `env` being `None`), matching how the explicit role and `type_to_xref` already behave. Verified against the issue's reproduction case (no warnings, correct resolution to `mod.submod.A`) and the existing `test_domain_py.py` suite (32 passed).",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 41,
+  "total_cost_usd_reported": 0.4840784,
+  "usage_reported": {
+    "input_tokens": 82,
+    "cache_creation_input_tokens": 31703,
+    "cache_read_input_tokens": 1356992,
+    "output_tokens": 8401,
+    "output_tokens_details": {
+      "thinking_tokens": 2883
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 31703,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 364,
+        "cache_read_input_tokens": 46447,
+        "cache_creation_input_tokens": 163,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 163
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1696,
+      "output_tokens": 8417,
+      "cache_read_input_tokens": 1356992,
+      "cache_creation_input_tokens": 31703,
+      "total_tokens": 1398808
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1614,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001694,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 82,
+        "outputTokens": 8401,
+        "cacheReadInputTokens": 1356992,
+        "cacheCreationInputTokens": 31703,
+        "webSearchRequests": 0,
+        "costUSD": 0.48238440000000005,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 2883,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 82,
+      "output_tokens": 330,
+      "cache_read_input_tokens": 1356992,
+      "cache_creation_input_tokens": 31703
+    }
+  },
+  "unique_assistant_messages": 41,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 71,
+  "models_seen": {
+    "claude-sonnet-5": 71
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 29,
+    "Edit": 4,
+    "Read": 7
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 29,
+      "Edit": 4,
+      "Read": 7
+    }
+  },
+  "tool_calls_total": 40,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-07T06:36:22.462975+00:00"
+}

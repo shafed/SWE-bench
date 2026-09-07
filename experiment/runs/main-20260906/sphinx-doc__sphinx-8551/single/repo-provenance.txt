@@ -1,0 +1,32 @@
+0cdf8278d6ad71b36a49493c17f0fb6482e5aeb8
+## master
+0cdf8278d SWE-bench
+57ed10c68 Merge pull request #8548 from tk0miya/741_inherited_ivar
+c0678a4a5 Fix #741: autodoc: inherited-members doesn't support instance attributes on super class
+dd1615c59 Merge pull request #8543 from tk0miya/8534_autoattribute_alias_derived
+e3dc78236 Merge pull request #8546 from tk0miya/8545_slots_attributes_having_docstring
+972132798 Fix #8545: autodoc: a __slots__ attribute is not documented even having docstring
+964392d31 refactor: get_class_members() now returns docstring if available
+18973f6c1 refactor: autodoc: Add get_class_members()
+0dbbf1dd5 Fix #8534: autoattribute failed to document a commented attribute in alias dervied class
+beeab6ced Merge pull request #8542 from tk0miya/8541_autodoc_type_aliases_for_ivar
+559f01df5 Update CHANGES for PR #8542
+385f9f5c1 refactor: autodoc: minor fix
+17a32d963 Merge pull request #8544 from Julian/patch-1
+b96d22873 Minor typo in the contributing info
+55c110f60 Fix #8541: autodoc_type_aliases doesn't work for the instance attrs
+36e684bf8 refactor: Move _getmro() to sphinx.util.inspect module
+bec552c3e Merge pull request #8540 from tk0miya/8534_autoattribute_alias
+caa1d1f3c Fix #8534: autoattribute failed to document a commented attribute in alias class
+3e46fda75 refactor: autodoc: Add NonDataDescriptorMixin
+00db1ea63 Merge pull request #8538 from jdufresne/os-replace
+edb1999ac Update CHANGES for PR #8524
+18b720262 Merge pull request #8524 from rkdarst/rkdarst/template-document-options-url_root
+cb4f76fca Deprecate sphinx.util.osutil.movefile() in favor of os.replace()
+21aecb14a sphinx/themes/basic/layout: Set url_root properly on index, don't use '#'
+5b28d77b3 Merge branch '3.3.x' into 3.x
+8ed1e706c Merge pull request #8527 from tk0miya/8111_pretty_change
+399210c80 Merge pull request #8533 from tk0miya/deprecate_no_docstring
+368c223f0 Merge pull request #8535 from nedbat/nedbat/more-about-intersphinx
+bac6ab8d0 Describe the intersphinx mapping a bit more
+3a85c005a Merge pull request #8531 from jakobandersen/bnavigator-fix-AliasNode-copy

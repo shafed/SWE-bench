@@ -1,0 +1,32 @@
+5ae461f2497ba2a6cc340527cc9b628b06ce9421
+## master
+5ae461f249 SWE-bench
+cffd4e0f86 Merge pull request #20589 from oscarbenjamin/pr_17_series
+dfa8918a18 Fixes Lazy Computation of series having Mul
+fdcc084b7f Merge pull request #20585 from oscarbenjamin/pr_actions_backport
+928d72928b maint(testing): fix name of py2 import test
+53b5a4029d maint(test): reorder actions jobs and test py2 import
+a0654e972b maint(testing): run tests in stages on actions
+25b65287af maint(testing): make jobs conditional on code quality job in actions
+c85726e812 maint(testing): combine flake8 and quality jobs in actions
+56a8e01475 maint(test): test all supported python version on actions
+c7090c8b85 maint(test): make sure spinx warnings fail on actions
+015af0d3de maint(testing): run sphinx build on actions
+b1f8a35319 maint(testing): use TestsFailedError instead of Exception
+399900156e maint(testing): add test_optional_dependencies script for actions
+59c7263923 maint(test): add optional dependency tests to actions
+f243de90d4 Merge pull request #20555 from czgdp1807/1.7
+ba4146fc42 Averted regression in sample_iter
+0947467ad2 Resolved conflicts
+e0f44ac47b Allowed RNG as seed for numpy
+dd05db4a08 Added spacing
+46bce40690 Minor doc addition
+d517d12162 Merge pull request #20542 from oscarbenjamin/pr_add_runtestsyml
+6546310b19 maint(release): add runtests.yml to whitelist
+6d571c6c9a Merge pull request #20528 from czgdp1807/seed_arg
+128435aac1 Resolved merge conflicts
+fdcf3c898e Added seed argument to sample for localising reproducibility to a specific distribution
+bc523213fd Merge pull request #20527 from czgdp1807/fix_scipy
+29efd37188 Merge pull request #20524 from oscarbenjamin/pr_17_actions
+54ea5eb884 Merge pull request #20525 from oscarbenjamin/pr_171_version_bump
+1d4f8ba789 added scipy_rv_map
