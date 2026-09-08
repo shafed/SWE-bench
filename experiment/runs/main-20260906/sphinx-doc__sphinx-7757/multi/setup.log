@@ -1,0 +1,32 @@
+9955d2db682db65c0b2990b21b980a025c398541ef24bd63b48df93277ff95c6
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+bash: line 1: claude: command not found
+Setting up Claude Code...
+
+Checking installation status...
+Installing Claude Code native build 2.1.261...
+Setting up launcher and shell integration...
+⚠ Setup notes:
+  ● Native installation exists but ~/.local/bin is not in your PATH. Run:
+
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> your shell config file && source your shell config file
+
+✔ Claude Code successfully installed!
+
+  Version: 2.1.261
+
+  Location: ~/.local/bin/claude
+
+
+  Next: Run claude --help to get started
+
+⚠ Setup notes:
+  ● Native installation exists but ~/.local/bin is not in your PATH. Run:
+
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> your shell config file && source your shell config file
+
+
+✅ Installation complete!
+

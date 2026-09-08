@@ -1,0 +1,88 @@
+[
+    {
+        "Id": "sha256:2bb0fbd97e306772698041e69f5899a9c74464e37ab13b0f9b93f2b089686777",
+        "RepoTags": [
+            "swebench/sweb.eval.x86_64.sympy_1776_sympy-20590:latest"
+        ],
+        "RepoDigests": [
+            "swebench/sweb.eval.x86_64.sympy_1776_sympy-20590@sha256:2bb0fbd97e306772698041e69f5899a9c74464e37ab13b0f9b93f2b089686777"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-05T09:15:02.2581591+03:00",
+        "Config": {
+            "Env": [
+                "PATH=/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "TZ=Etc/UTC"
+            ],
+            "Cmd": [
+                "/bin/bash"
+            ],
+            "WorkingDir": "/testbed/",
+            "Labels": {
+                "org.opencontainers.image.version": "22.04"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 1093772235,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:c0359c5b6ede84d4a083d06d35ee77f0b338dfb17423771854d007d89953fb3e",
+                "sha256:ad3a465d2404fb1e78c05e5b36cebc4d868e16f72993fa038dabafaa6c84f60f",
+                "sha256:ae2134d7f5297db63d629b0212c3f7bd3f5719883541fe79feddc20c013ba0fd",
+                "sha256:8e28673bcd9f8af069b6b12c8501b59f3a004c4ebf514827d1365e477d68d46a",
+                "sha256:18e15cf4f7a38e269e308ba8b1dfdf146b279c99168ddc1b98ef94e3b34adc7b",
+                "sha256:b55f0f261076880e85d30cafbf4a0119913875083baef509f3eeb3b63a2f47de",
+                "sha256:2d6909cb79ec1a37a23ca4dcfe9b5758e3e94fd541dc667e1248d5fa9919f440",
+                "sha256:f5d23c132a48fb1ed1f1ff1b74f1b5d832a0344819a529ee645eda154445a773",
+                "sha256:47abade3abd47bca812b3c2fe951d7f987d57dbc65229e4dc4efeb6ac5eaf408",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-05T06:37:30.469720694Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:2bb0fbd97e306772698041e69f5899a9c74464e37ab13b0f9b93f2b089686777",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "bpmntnqjxqkhyiw84x6d5bbf5",
+                    "CreatedAt": "2026-09-05T09:37:30.504473899+03:00"
+                }
+            ]
+        }
+    }
+]
+5ef02547a9f50666d2e561420487e77b15ca83c006a4329c4b5148654d3f18a0
+Setting up Claude Code...
+
+Checking installation status...
+Installing Claude Code native build 2.1.261...
+Setting up launcher and shell integration...
+⚠ Setup notes:
+  ● Native installation exists but ~/.local/bin is not in your PATH. Run:
+
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> your shell config file && source your shell config file
+
+✔ Claude Code successfully installed!
+
+  Version: 2.1.261
+
+  Location: ~/.local/bin/claude
+
+
+  Next: Run claude --help to get started
+
+⚠ Setup notes:
+  ● Native installation exists but ~/.local/bin is not in your PATH. Run:
+
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> your shell config file && source your shell config file
+
+
+✅ Installation complete!
+

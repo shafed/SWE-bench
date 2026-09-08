@@ -1,0 +1,23 @@
+  0%|          | 0/1 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/home/shafed/github/nir-harness/SWE-bench/swebench/harness/utils.py", line 104, in run_threadpool
+    future.result()
+  File "/home/shafed/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/shafed/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/shafed/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shafed/github/nir-harness/SWE-bench/swebench/image_builder/docker_build.py", line 176, in build_instance_image
+    build_image(
+  File "/home/shafed/github/nir-harness/SWE-bench/swebench/image_builder/docker_build.py", line 103, in build_image
+    raise BuildImageError(image_spec.name, error_msg, logger)
+swebench.image_builder.docker_build.BuildImageError: Error building image sweb.eval.x86_64.django__django-13449:latest: Docker buildx failed with exit code 1
+Check (logs/image_builder/sweb.eval.x86_64.django__django-13449__latest/build_image.log) for more information.
+100%|██████████| 1/1 [01:32<00:00, 92.05s/it]0 ran successfully, 1 failed: 100%|██████████| 1/1 [01:32<00:00, 92.05s/it]0 ran successfully, 1 failed: 100%|██████████| 1/1 [01:32<00:00, 92.05s/it]
+<class 'swebench.image_builder.docker_build.BuildImageError'>: Error building image sweb.eval.x86_64.django__django-13449:latest: Docker buildx failed with exit code 1
+Check (logs/image_builder/sweb.eval.x86_64.django__django-13449__latest/build_image.log) for more information.
+1 instance images failed to build.
+Successfully built 0 images
+Failed to build 1 images

@@ -178,3 +178,11 @@ todo_later.txt
 
 # experiment/ is tracked in full (no allowlist) -- see git log for the
 # switch away from the old "only the controller" allowlist scheme.
+#
+# The generic *.log rule above was silently dropping setup.log from every
+# preserved infrastructure-failure record (experiment/infrastructure-
+# failures/**), which is the one file that carries the actual docker/stderr
+# evidence the preregistration protocol requires to be kept. Un-ignore logs
+# under experiment/ specifically rather than removing the blanket rule, which
+# exists for unrelated noise elsewhere in the repo.
+!/experiment/**/*.log
