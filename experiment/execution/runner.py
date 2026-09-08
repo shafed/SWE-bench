@@ -706,6 +706,7 @@ def main() -> int:
         "model": MODEL,
         "effort_requested": EFFORT,
         "subagent_effort_policy": "CLAUDE_CODE_EFFORT_LEVEL inherited from parent process",
+        "background_wait_ceiling_ms": 0 if condition == "multi" else None,
         "claude_code_requested_version": CLAUDE_VERSION,
         "timeout_seconds": args.timeout_seconds,
         "max_turns": MAX_TURNS,
@@ -931,6 +932,9 @@ def main() -> int:
             if condition == "multi":
                 # Best-effort only. The authoritative check is models_seen below.
                 claude_env["CLAUDE_CODE_SUBAGENT_MODEL"] = MODEL
+                # Let the runner's wall-clock timeout, not Claude Code's print-mode
+                # background-task ceiling, govern how long subagents may run.
+                claude_env["CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS"] = "0"
 
             claude_command = build_claude_command(condition, present)
             metadata["claude_command"] = claude_command

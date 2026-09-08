@@ -66,6 +66,7 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 | Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1` |
 | Turn budget | none | none |
 | Token budget | none | none |
+| Background-agent wait | not applicable | no CLI-specific ceiling (`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`); bounded by the runner wall-clock limit |
 | Wall-clock | 2700 s | 2700 s |
 
 Tokens are deliberately not equalised: extra compute in MULTI is part of the
