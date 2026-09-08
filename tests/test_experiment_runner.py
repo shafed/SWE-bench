@@ -259,6 +259,9 @@ def test_controller_preserves_new_files_and_commits(
             assert "--safe-mode" in args
             assert args[args.index("--effort") + 1] == "high"
             assert "CLAUDE_CODE_EFFORT_LEVEL=high" in cmd
+            assert ("CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0" in cmd) == (
+                condition == "multi"
+            )
             assert "--max-turns" not in args
             assert "--max-budget-usd" not in args
             assert ("--append-system-prompt" in args) == (condition == "multi")
