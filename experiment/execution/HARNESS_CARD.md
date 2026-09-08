@@ -55,7 +55,7 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 | Item | Value |
 | --- | --- |
 | Task prompt | `prompt-template.txt` + the instance problem statement, identical in both conditions; digests recorded per run |
-| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, framing the model as the orchestrator of a team of subagents and requiring actual subagent use. At least one delegation must complete, but the model decides what to assign, how many additional subagents to use, and whether to run them sequentially or in parallel |
+| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, requiring the model to act as an orchestrator, delegate at least one implementation subtask, fan independent subtasks out to separate subagents (preferably in parallel), and retain integration and final verification |
 | Placebo | none; SINGLE receives no compensating appended prompt |
 | Context management | the CLI's own; not configured, not overridden, and not directly observable |
 | Subagent context | native Claude Code semantics: separate context window, but free to explore the repository with its own tools. No artificially fixed context budget is imposed |
@@ -65,9 +65,9 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 
 | Item | SINGLE | MULTI |
 | --- | --- | --- |
-| Delegation | technically disabled (`Task` disallowed) | required: at least one completed `Task`/`Agent` delegation |
-| Orchestration | none | orchestrator decides what, how many beyond the minimum, sequential or parallel |
-| Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1`; zero completed delegations is a protocol violation |
+| Delegation | technically disabled (`Task` disallowed) | at least one implementation subtask required |
+| Orchestration | none | independent subtasks assigned to separate subagents; orchestrator integrates and verifies |
+| Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1` |
 | Turn budget | none | none |
 | Token budget | none | none |
 | Wall-clock | 2700 s | 2700 s |
@@ -124,8 +124,8 @@ treatment and is measured as an outcome, not controlled away.
 3. 12 instances × 1 run per condition does not estimate run-to-run stochastic
    variance. The design is a small paired experiment on one model, not an
    estimate of general harness variance.
-4. MULTI is required to complete at least one native subagent delegation, but
-   the experiment does not prescribe which subtask is delegated, the number of
-   delegations beyond that minimum, or a sequential/parallel orchestration
-   pattern. A MULTI run with zero completed delegations is noncompliant with the
-   experimental condition.
+4. The treatment assigns MULTI an orchestrator role and requires at least one
+   implementation delegation. It also directs the orchestrator to fan out
+   independent subtasks when available, so the measured effect includes this
+   explicit scheduling policy rather than subagent availability alone. A MULTI
+   run without a completed delegation is a protocol violation.
