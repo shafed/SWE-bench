@@ -5,6 +5,8 @@
 #
 # .anthropic.com      inference (api.anthropic.com)
 # .claude.ai          CLI install script and binary (claude.ai, downloads.claude.ai)
+# claude.com           current redirect target of the CLI install script;
+#                      observed denied on 2026-09-08 before inference started
 # platform.claude.com OAuth token refresh. Added 2026-09-06 on observed
 #                     evidence, not assumption: the discovery run happened to
 #                     carry a fresh access token, so no refresh was attempted
@@ -25,4 +27,5 @@
 
 .anthropic.com
 .claude.ai
+claude.com
 platform.claude.com
