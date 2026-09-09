@@ -21,11 +21,19 @@ any category is assigned.
 
 ## What is being measured
 
-The effect of *having subagents available*. The MULTI arm is not required to
-use any particular pattern. The sample's job is to guarantee that several
-forms of orchestration are objectively *available* — not to force the model to
-use them. If a task offers clean fan-out and MULTI still only runs a reviewer
-after solving it alone, that is a result, not a sampling defect.
+The effect of **mandatory native subagent use** under an orchestrator treatment,
+compared with the same model and harness with delegation disabled. A compliant
+MULTI run must complete at least one subagent delegation. The experiment does
+not prescribe which subtask must be delegated, how many delegations are used
+beyond that minimum, or whether orchestration is sequential or parallel.
+
+The sample's job is to guarantee that different forms of orchestration are
+objectively meaningful for some tasks while being unnecessary or risky for
+others; it does not force one particular orchestration pattern. If a task offers
+clean fan-out and MULTI still solves most of the task itself and uses its required
+delegation only for a reviewer, that is a valid behavioral result, not a sampling
+defect. A MULTI run with zero completed delegations, however, is a protocol
+violation rather than a valid MULTI observation.
 
 The sample is therefore built from the structure of the work, not from
 heuristics about how Claude Code delegates.
