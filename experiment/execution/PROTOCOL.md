@@ -2,7 +2,10 @@
 
 ## Fixed sample
 
-12 frozen SWE-bench Verified main instances from seed 118.
+12 frozen SWE-bench Verified main instances from the v3 orchestration-suitability
+selection: 5 `orchestration-friendly`, 5 matched `single-friendly`, and 2
+`orchestration-risky` tasks. The frozen selection is recorded in
+`../preregistration/v3/selection_v3.json` and `../preregistration/v3/tasks-main.txt`.
 
 Each instance is evaluated under both conditions.
 
@@ -21,6 +24,10 @@ MULTI:
 - Task available
 - at least one completed delegation required by treatment instruction
 - WebFetch and WebSearch disallowed
+
+A MULTI run with zero completed delegations is a protocol violation. The model
+still decides what to delegate, how many delegations to make beyond that
+minimum, and whether to use subagents sequentially or in parallel.
 
 ## Resource policy
 
