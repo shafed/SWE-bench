@@ -7,9 +7,13 @@ benchmark number is a property of the pair `{model, harness}`, so a result
 reported without the harness cannot be compared with anything; this card exists
 so that ours can be.
 
-The experimental factor is **Scheduling** (whether subagents are available at all).
-Every other dimension is held identical between conditions and is listed here
-so that the claim "only one thing differs" can be checked rather than trusted.
+The experimental factor is **Scheduling**: SINGLE has delegation disabled,
+whereas MULTI is assigned an orchestrator role and must complete at least one
+subagent delegation. The MULTI model still decides what to delegate, how many
+subagents to use beyond that minimum, and whether to use them sequentially or
+in parallel. Every other dimension is held identical between conditions and is
+listed here so that the claim "only one thing differs" can be checked rather
+than trusted.
 
 Authoritative sources: `experiment/execution/runner.py` (digest in
 `runner.sha256`), `PROTOCOL.md`, `RUNNER_AMENDMENT.md`,
@@ -51,7 +55,7 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 | Item | Value |
 | --- | --- |
 | Task prompt | `prompt-template.txt` + the instance problem statement, identical in both conditions; digests recorded per run |
-| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, framing the model as the orchestrator of a team of subagents. It does not mandate a delegation: the model decides what to assign, how many subagents to use, and whether to run them sequentially or in parallel |
+| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, framing the model as the orchestrator of a team of subagents and requiring actual subagent use. At least one delegation must complete, but the model decides what to assign, how many additional subagents to use, and whether to run them sequentially or in parallel |
 | Placebo | none; SINGLE receives no compensating appended prompt |
 | Context management | the CLI's own; not configured, not overridden, and not directly observable |
 | Subagent context | native Claude Code semantics: separate context window, but free to explore the repository with its own tools. No artificially fixed context budget is imposed |
@@ -61,9 +65,9 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 
 | Item | SINGLE | MULTI |
 | --- | --- | --- |
-| Delegation | technically disabled (`Task` disallowed) | available, not mandated |
-| Orchestration | none | orchestrator decides what, how many, sequential or parallel |
-| Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1` |
+| Delegation | technically disabled (`Task` disallowed) | required: at least one completed `Task`/`Agent` delegation |
+| Orchestration | none | orchestrator decides what, how many beyond the minimum, sequential or parallel |
+| Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1`; zero completed delegations is a protocol violation |
 | Turn budget | none | none |
 | Token budget | none | none |
 | Wall-clock | 2700 s | 2700 s |
@@ -98,7 +102,7 @@ treatment and is measured as an outcome, not controlled away.
 
 | Item | Value |
 | --- | --- |
-| Sample | 12 SWE-bench Verified instances, seed 118, stratified L/M/D × difficulty, frozen before inference (`tasks-main.txt`) |
+| Sample | 12 SWE-bench Verified instances from the v3 orchestration-suitability selection: 5 `orchestration-friendly`, 5 matched `single-friendly`, and 2 `orchestration-risky`, frozen in `../preregistration/v3/selection_v3.json` and `tasks-main.txt` |
 | Dev instance | `sympy__sympy-20590`, excluded from the sample; all debugging happens there |
 | Order | task order and within-pair condition order randomised and frozen (`run-order.tsv`), enforced by `run_series.py` |
 | Substitution | only for documented infrastructure failure (runner exit 20/40), always paired, from preregistered reserves |
@@ -120,7 +124,8 @@ treatment and is measured as an outcome, not controlled away.
 3. 12 instances × 1 run per condition does not estimate run-to-run stochastic
    variance. The design is a small paired experiment on one model, not an
    estimate of general harness variance.
-4. The treatment assigns MULTI an orchestrator role without requiring a
-   delegation, so the effect measured is the effect of *available* native
-   subagent use. A MULTI run that delegates nothing is a valid observation,
-   not a failed run.
+4. MULTI is required to complete at least one native subagent delegation, but
+   the experiment does not prescribe which subtask is delegated, the number of
+   delegations beyond that minimum, or a sequential/parallel orchestration
+   pattern. A MULTI run with zero completed delegations is noncompliant with the
+   experimental condition.
