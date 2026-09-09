@@ -1,0 +1,156 @@
+{
+  "instance_id": "sympy__sympy-13878",
+  "condition": "single",
+  "position": 1,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 977.1796738559988,
+  "patch_collection_ok": true,
+  "patch_bytes": 8673,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "All 12 test cases from the issue now resolve instantly with correct, exact (non-float where appropriate) symbolic results.\n\n## Summary\n\nAdded `_cdf` methods to `sympy/stats/crv_types.py` for: `ArcsinDistribution`, `DagumDistribution`, `FrechetDistribution`, `GammaDistribution` (which `Erlang` reuses), `GammaInverseDistribution`, `KumaraswamyDistribution`, `LaplaceDistribution`, `LogisticDistribution`, `NakagamiDistribution`, `StudentTDistribution`, and `UniformSumDistribution`, using closed-form CDF expressions from the referenced formulas (arcsin, lower/upper incomplete gamma, hypergeometric for Student's t, etc.) instead of relying on integration.\n\nAlso fixed a latent bug in `Erlang` where `1/l` performed Python float division when `l` wasn't pre-sympified, causing float contamination of otherwise-exact results.\n\nFor `UniformSum`, the naive `Sum` with a symbolic upper limit (`floor(x)`) triggers a pathological slow path in `Sum.doit()`'s hypergeometric-summation algorithm, so for concrete integer `n` the CDF is built as an explicit unrolled `Piecewise` instead, avoiding that hang while remaining exact.\n\nAdded a new test `test_issue_13575` in `sympy/stats/tests/test_continuous_rv.py` covering all the issue's examples, verifying both exact values and (for Kumaraswamy/StudentT) that the derivative of the CDF matches the PDF numerically. Verified no regressions via the existing test suite and doctests (pre-existing environment noise in this Python 3.9 sandbox — unrelated DeprecationWarnings — reproduces identically before and after the change).",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 115,
+  "total_cost_usd_reported": 2.3641298,
+  "usage_reported": {
+    "input_tokens": 230,
+    "cache_creation_input_tokens": 100082,
+    "cache_read_input_tokens": 7658774,
+    "output_tokens": 42955,
+    "output_tokens_details": {
+      "thinking_tokens": 20016
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 100082,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 622,
+        "cache_read_input_tokens": 113948,
+        "cache_creation_input_tokens": 1041,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1041
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2172,
+      "output_tokens": 42974,
+      "cache_read_input_tokens": 7658774,
+      "cache_creation_input_tokens": 100082,
+      "total_tokens": 7804002
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1942,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.0020369999999999997,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 230,
+        "outputTokens": 42955,
+        "cacheReadInputTokens": 7658774,
+        "cacheCreationInputTokens": 100082,
+        "webSearchRequests": 0,
+        "costUSD": 2.3620928,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 20016,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 230,
+      "output_tokens": 725,
+      "cache_read_input_tokens": 7658774,
+      "cache_creation_input_tokens": 100082
+    }
+  },
+  "unique_assistant_messages": 115,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 209,
+  "models_seen": {
+    "claude-sonnet-5": 209
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 72,
+    "Edit": 21,
+    "Read": 21
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 72,
+      "Edit": 21,
+      "Read": 21
+    }
+  },
+  "tool_calls_total": 114,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T08:13:10.426727+00:00"
+}
