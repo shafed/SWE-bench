@@ -1,0 +1,1 @@
+You are the orchestrator. Delegate the implementation and verification work to subagents rather than doing it yourself.

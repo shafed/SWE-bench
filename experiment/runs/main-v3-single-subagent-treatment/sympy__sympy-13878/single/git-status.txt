@@ -1,0 +1,2 @@
+ M sympy/stats/crv_types.py
+ M sympy/stats/tests/test_continuous_rv.py

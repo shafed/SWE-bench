@@ -1,0 +1,181 @@
+{
+  "instance_id": "sympy__sympy-13878",
+  "condition": "multi",
+  "position": 1,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 2164.889535661001,
+  "patch_collection_ok": true,
+  "patch_bytes": 10836,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "I've implemented and spot-verified the fix. Summary:\n\n**Changes** (`sympy/stats/crv_types.py`, `sympy/stats/tests/test_continuous_rv.py`):\n- Added `_cdf` methods to `ArcsinDistribution`, `DagumDistribution`, `FrechetDistribution`, `GammaDistribution` (also fixes `Erlang`), `GammaInverseDistribution`, `KumaraswamyDistribution`, `LaplaceDistribution`, `LogisticDistribution`, `NakagamiDistribution`, `StudentTDistribution`, and `UniformSumDistribution`, each with a closed-form formula (Piecewise where the support is bounded).\n- Fixed a latent bug in `Erlang`: `1/l` was Python true-division, silently turning an integer rate into a float; changed to `S.One/l`.\n- Added corresponding test assertions.\n\nI independently re-ran all 12 cases from the issue — every one now returns a correct, exact closed-form expression (no hangs, no exceptions, no stray floats), e.g. `cdf(Erlang(\"x\",1,1))(1)` → `-exp(-1) + 1` instead of `0.632120558828558`, and `cdf(StudentT(\"x\",10))(2)` resolves via `hyper(...)` instead of hanging.\n\nI kicked off a full run of `sympy/stats/tests/test_continuous_rv.py` in the background to confirm no regressions; I'll report back once it completes.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 13,
+  "total_cost_usd_reported": 2.2395750000000003,
+  "usage_reported": {
+    "input_tokens": 26,
+    "cache_creation_input_tokens": 27522,
+    "cache_read_input_tokens": 464766,
+    "output_tokens": 9674,
+    "output_tokens_details": {
+      "thinking_tokens": 4233
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 27522,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 556,
+        "cache_read_input_tokens": 43901,
+        "cache_creation_input_tokens": 313,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 313
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2140,
+      "output_tokens": 48984,
+      "cache_read_input_tokens": 6711195,
+      "cache_creation_input_tokens": 145584,
+      "total_tokens": 6907903
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1942,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002027,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 198,
+        "outputTokens": 48967,
+        "cacheReadInputTokens": 6711195,
+        "cacheCreationInputTokens": 145584,
+        "webSearchRequests": 0,
+        "costUSD": 2.2375480000000003,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 18891,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 26,
+      "output_tokens": 53,
+      "cache_read_input_tokens": 464766,
+      "cache_creation_input_tokens": 27522
+    },
+    "toolu_01Nf2RQRj32Gr5n5RYfUh6p4": {
+      "input_tokens": 172,
+      "output_tokens": 518,
+      "cache_read_input_tokens": 6246429,
+      "cache_creation_input_tokens": 118062
+    }
+  },
+  "unique_assistant_messages": 99,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 3,
+  "usage_events_after_result": 0,
+  "assistant_events": 206,
+  "models_seen": {
+    "claude-sonnet-5": 206
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 1,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_01Nf2RQRj32Gr5n5RYfUh6p4",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 42,
+      "prompt_chars": 6088
+    }
+  ],
+  "delegation_prompt_chars_total": 6088,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 71,
+    "Edit": 24,
+    "Read": 18,
+    "ScheduleWakeup": 1,
+    "ToolSearch": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 9,
+      "ScheduleWakeup": 1,
+      "ToolSearch": 1
+    },
+    "toolu_01Nf2RQRj32Gr5n5RYfUh6p4": {
+      "Bash": 62,
+      "Edit": 24,
+      "Read": 18
+    }
+  },
+  "tool_calls_total": 116,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T07:55:40.127258+00:00"
+}
