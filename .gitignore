@@ -186,3 +186,7 @@ todo_later.txt
 # under experiment/ specifically rather than removing the blanket rule, which
 # exists for unrelated noise elsewhere in the repo.
 !/experiment/**/*.log
+
+# External task-image repo, cloned per README setup instructions (its own
+# git history; not part of this repo's source).
+/swe-bench-tasks/
