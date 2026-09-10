@@ -1,0 +1,4 @@
+https://github.com	exit=56	http=000	reachable=False
+https://raw.githubusercontent.com	exit=56	http=000	reachable=False
+https://pypi.org	exit=56	http=000	reachable=False
+https://api.anthropic.com	exit=60	http=000	reachable=False
