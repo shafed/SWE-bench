@@ -64,28 +64,49 @@ The main sample is no longer exclusively SWE-bench Verified: `sympy__sympy-19201
 
 Before the v4 main series, the orchestration instruction was refined so that the treatment follows the task's workstream structure instead of enforcing an arbitrary minimum number of subagents.
 
+A subsequent adversarial audit, still before any v4 main outcome, removed two unnecessary confounds from the treatment:
+
+1. the parent is no longer restricted to inspecting the repository "only enough" or forbidden from deriving implementation understanding before delegation; it may inspect enough to understand the task and architecture, while production-code changes still wait until workstreams have been identified;
+2. delegation prompts are no longer artificially restricted to four fields with no repository findings. They may contain relevant repository context and findings needed to make the subtask self-contained, while the subagent remains responsible for solution design and implementation choices.
+
 The authoritative prompt is `experiment/execution/multi-treatment.txt`.
 
-The policy is:
+The resulting policy is:
 
-- before editing production code or deriving implementation details, inspect only enough to identify materially distinct implementation workstreams and their dependencies;
-- delegate every materially distinct implementation workstream that can be meaningfully separated;
+- before making production-code changes, inspect the task and repository enough to identify substantive implementation workstreams and their dependencies;
+- delegate every substantive implementation workstream that can be meaningfully separated;
 - independent workstreams are delegated to separate subagents in parallel;
 - distinct but dependent workstreams are delegated sequentially as prerequisites become available;
 - dependency alone is not a reason to collapse several substantive workstreams into one delegation;
 - if a task genuinely has only one substantive implementation workstream, one implementation delegation is sufficient;
 - review-only or test-only delegation does not satisfy the implementation-workstream requirement;
-- delegation prompts contain objective, relevant scope, constraints, and acceptance criteria, but not a proposed implementation;
+- delegation prompts contain the objective, relevant repository context and scope, constraints, acceptance criteria, and repository findings needed for independent work, while leaving solution design and implementation choices to the subagent;
 - the parent remains responsible for review, integration, conflict resolution, and final verification.
 
 This deliberately does **not** impose `>=2 subagents` on every task. The aim is to test mandatory workstream-oriented orchestration while preserving structural differences between orchestration-friendly, single-friendly, and orchestration-risky tasks. Tier-A friendly tasks should naturally permit parallel fan-out; coupled/sequential friendly tasks may instead use multiple sequential delegations when their workstreams are substantively distinct.
 
 The runner can mechanically verify that at least one delegation completed. Whether all materially distinct workstreams were delegated, and whether independent workstreams were parallelized, is a trajectory-level treatment-adherence question and must be checked from the recorded execution trace rather than inferred from subagent count alone.
 
+## Executable v4 alignment
+
+The v4 sample is executable rather than documentation-only:
+
+- `experiment/preregistration/v4/tasks-main-v4.txt` contains exactly the 12 tasks in `selection_v4.json`;
+- `experiment/execution/run-order-v4.tsv` freezes the task order and within-instance condition order;
+- `experiment/execution/run_series.py` defaults to those two v4 files rather than the historical v1/v3 files.
+
+The v4 order was generated before v4 main inference with Python `random.Random(20260911)`: the 12-task list was shuffled once, then a list of six `multi-first` and six `single-first` labels was shuffled and assigned in that order. No SINGLE/MULTI outcome from the v4 sample was used.
+
 ## Source of truth
 
-Frozen task set: `experiment/preregistration/v4/selection_v4.json`.
+Frozen task set and stratum annotations: `experiment/preregistration/v4/selection_v4.json`.
+
+Executable task list: `experiment/preregistration/v4/tasks-main-v4.txt`.
+
+Frozen execution order: `experiment/execution/run-order-v4.tsv`.
 
 Authoritative MULTI treatment: `experiment/execution/multi-treatment.txt`.
 
-The v3 files remain unchanged as historical preregistration records.
+Current execution description: `experiment/execution/PROTOCOL.md` and `experiment/execution/HARNESS_CARD.md`.
+
+The v1/v3 files remain unchanged as historical preregistration records unless explicitly marked otherwise.
