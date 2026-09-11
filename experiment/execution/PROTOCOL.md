@@ -41,6 +41,7 @@ MULTI:
 - Task available
 - the authoritative treatment is `multi-treatment.txt`
 - WebFetch and WebSearch disallowed
+- admin-managed orchestration hooks observe `SubagentStart` and `Stop`
 
 The MULTI treatment requires workstream-oriented orchestration. Before making
 production-code changes, the parent inspects the task and repository enough to
@@ -53,18 +54,32 @@ implementation workstream, one implementation delegation is sufficient.
 
 Delegation prompts may include the objective, relevant repository context and
 scope, constraints, acceptance criteria, and repository findings needed to make
-the delegation self-contained. They should leave solution design and
-implementation choices to the subagent rather than prescribe a completed
-solution. Review-only or test-only delegation does not satisfy the
-implementation-workstream requirement.
+the delegation self-contained. They leave solution design and implementation
+choices to the subagent rather than prescribe a completed solution. Review-only,
+test-only, confirmation-only, or other post-hoc ceremonial delegation does not
+satisfy the implementation-workstream requirement.
 
 After delegated work returns, the parent reviews and integrates the changes,
 resolves conflicts, and performs final verification.
 
-A MULTI run with zero completed delegations is an automatic protocol violation.
-That check is only the minimum mechanical adherence check. Full treatment
-adherence is coded using the frozen trajectory-level protocol in
-`../preregistration/v4/ADHERENCE_PROTOCOL.md`.
+### Live orchestration gate
+
+MULTI also mounts `orchestration-gate-settings.json` as admin-managed Claude Code
+settings. The hooks call `orchestration_gate.py` on `SubagentStart` and `Stop`.
+A Stop attempt is rejected until at least one real `SubagentStart` has been
+observed. Ordered hook events and gate state are preserved with the run.
+
+This gate is intentionally a **minimum enforcement mechanism only**. It proves
+neither that delegation happened before production-code edits nor that the
+subagent owned substantive implementation work, that every separable workstream
+was delegated, or that independent workstreams were parallelized. A model that
+first solves the task alone and only delegates after a rejected Stop remains a
+measured MULTI run but is treatment-noncompliant under the frozen trajectory
+coding.
+
+A MULTI run with zero completed delegations is also an automatic protocol
+violation in the runner. Full treatment adherence is coded using the frozen
+trajectory-level protocol in `../preregistration/v4/ADHERENCE_PROTOCOL.md`.
 
 The adherence coding checks A0-A7: completed delegation; delegation before the
 first production-code modification; substantive implementation delegation;
@@ -89,7 +104,8 @@ are reported and retained rather than retried or removed.
 - timeout under otherwise functioning infrastructure is an experimental result
 
 Tokens are deliberately not equalized: extra compute produced by MULTI is part
-of the cost-performance effect of the treatment and is measured as an outcome.
+of the resource-performance effect of the treatment and is measured as an
+outcome.
 
 ## Isolation
 
@@ -105,13 +121,14 @@ of the cost-performance effect of the treatment and is measured as an outcome.
 ## Freeze enforcement
 
 The complete v4 execution freeze is recorded in `FREEZE_V4.json`. It stores
-Git blob hashes for the runner, series driver, freeze verifier, MULTI treatment,
-common prompt, v4 sample/order, quantitative analyzer, adherence protocol and
-validator, failure-analysis protocol, and main network configuration.
+Git blob hashes for the runner, runner digest file, series driver, freeze
+verifier, MULTI treatment, orchestration gate code/settings, common prompt, v4
+sample/order, quantitative analyzer, adherence protocol/validator,
+failure-analysis protocol, and main network configuration.
 
 Before any reported v4 main inference, `run_series.py` invokes
 `verify_freeze.py`. Any missing or changed frozen file aborts the series before
-inference. `runner.sha256` remains as an additional legacy runner check.
+inference. `runner.sha256` remains an additional runner-only integrity check.
 
 The only bypass is `--allow-unfrozen-runner`, explicitly reserved for validation
 and never permitted for a reported main series. The manifest deliberately does
