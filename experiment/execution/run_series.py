@@ -12,9 +12,10 @@ series that re-runs an instance are all invisible afterwards.
 Rules enforced here:
 
   * The order file must describe exactly the frozen v4 main sample; a mismatch
-    with `preregistration/v4/tasks-main-v4.txt` stops the series before any inference.
-  * The runner digest must match `runner.sha256`, so a series cannot be
-    produced by an unfrozen runner.
+    with `preregistration/v4/tasks-main-v4.txt` stops the series before inference.
+  * `FREEZE_V4.json` must match every frozen treatment/sample/analysis/network
+    input listed in it; a changed file stops the series before inference.
+  * The legacy runner digest must also match `runner.sha256`.
   * Within a pair the recorded condition order is followed exactly.
   * Runs happen strictly sequentially. The Claude profile lock and the shared
     egress proxy make concurrent runs unsafe, and interleaved wall-clock
@@ -48,6 +49,7 @@ RUNS_DIR = ROOT / "experiment" / "runs"
 RUNNER = EXEC_DIR / "runner.py"
 ORDER_FILE = EXEC_DIR / "run-order-v4.tsv"
 DIGEST_FILE = EXEC_DIR / "runner.sha256"
+FREEZE_VERIFIER = EXEC_DIR / "verify_freeze.py"
 TASKS_MAIN = PREREG_DIR / "v4" / "tasks-main-v4.txt"
 
 ORDER_CONDITIONS = {
@@ -100,6 +102,19 @@ def check_sample(rows: list[dict], sample_file: Path = TASKS_MAIN) -> None:
             f"run order does not match the frozen sample ({sample_file}) "
             f"(order only: {only_order}; sample only: {only_frozen})"
         )
+
+
+def check_freeze_manifest() -> str:
+    proc = subprocess.run(
+        [sys.executable, str(FREEZE_VERIFIER)],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if proc.returncode != 0:
+        raise SystemExit(
+            "v4 freeze manifest verification failed; no main inference may start.\n"
+            f"{proc.stdout}{proc.stderr}"
+        )
+    return proc.stdout.strip()
 
 
 def check_runner_digest() -> str:
@@ -159,21 +174,28 @@ def main() -> int:
     p.add_argument("--dry-run", action="store_true",
                    help="check preconditions and print the plan; run nothing")
     p.add_argument("--allow-unfrozen-runner", action="store_true",
-                   help="VALIDATION ONLY: skip the runner digest check. Never "
-                        "use for a series that is reported as main.")
+                   help="VALIDATION ONLY: skip the v4 freeze-manifest and runner "
+                        "digest checks. Never use for a reported main series.")
     args = p.parse_args()
 
     rows = read_order(args.order_file)
     check_sample(rows, args.sample_file)
-    digest = "unchecked" if args.allow_unfrozen_runner else check_runner_digest()
+    if args.allow_unfrozen_runner:
+        freeze_status = "unchecked (validation override)"
+        digest = "unchecked"
+    else:
+        freeze_status = check_freeze_manifest()
+        digest = check_runner_digest()
 
     plan = [t for t in planned_runs(rows) if t[0] >= args.from_position]
     label_dir = RUNS_DIR / args.label
     todo = [t for t in plan if not (label_dir / t[1] / t[2]).exists()]
 
     print(f"label            : {args.label}")
+    print(f"freeze manifest  : {freeze_status}")
     print(f"runner sha256    : {digest}")
     print(f"order file       : {args.order_file}")
+    print(f"sample file      : {args.sample_file}")
     print(f"planned runs     : {len(plan)}")
     print(f"already present  : {len(plan) - len(todo)}")
     for position, iid, condition in plan:
