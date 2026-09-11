@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /opt/nir/orchestration_gate.py --state-dir /orchestration-gate"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /opt/nir/orchestration_gate.py --state-dir /orchestration-gate"
+          }
+        ]
+      }
+    ]
+  }
+}
