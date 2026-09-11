@@ -62,10 +62,22 @@ After delegated work returns, the parent reviews and integrates the changes,
 resolves conflicts, and performs final verification.
 
 A MULTI run with zero completed delegations is an automatic protocol violation.
-That check is only the minimum mechanical adherence check. Whether all
-materially distinct workstreams were delegated and whether independent
-workstreams were actually parallelized is assessed from the recorded trajectory
-and is not inferred from subagent count alone.
+That check is only the minimum mechanical adherence check. Full treatment
+adherence is coded using the frozen trajectory-level protocol in
+`../preregistration/v4/ADHERENCE_PROTOCOL.md`.
+
+The adherence coding checks A0-A7: completed delegation; delegation before the
+first production-code modification; substantive implementation delegation;
+coverage of materially distinct workstreams; parallel fan-out when independent
+workstreams exist; preservation of subagent solution independence; parent
+review/integration; and parent final verification. The coding template is
+`../preregistration/v4/adherence-template.tsv`, and
+`validate_adherence.py` checks the frozen vocabulary, overall-label rule, exact
+12-instance coverage, and A0 against recorded `metrics.json`.
+
+Adherence is a process/manipulation outcome, not an exclusion rule. The primary
+SINGLE-vs-MULTI analysis remains intention-to-treat: non-compliant MULTI runs
+are reported and retained rather than retried or removed.
 
 ## Resource policy
 
@@ -89,6 +101,21 @@ of the cost-performance effect of the treatment and is measured as an outcome.
 - inference runs as nonroot
 - patch collection occurs after inference as root
 - official SWE-bench evaluator is used unchanged
+
+## Freeze enforcement
+
+The complete v4 execution freeze is recorded in `FREEZE_V4.json`. It stores
+Git blob hashes for the runner, series driver, freeze verifier, MULTI treatment,
+common prompt, v4 sample/order, quantitative analyzer, adherence protocol and
+validator, failure-analysis protocol, and main network configuration.
+
+Before any reported v4 main inference, `run_series.py` invokes
+`verify_freeze.py`. Any missing or changed frozen file aborts the series before
+inference. `runner.sha256` remains as an additional legacy runner check.
+
+The only bypass is `--allow-unfrozen-runner`, explicitly reserved for validation
+and never permitted for a reported main series. The manifest deliberately does
+not hash itself; its role is to freeze the files listed inside it.
 
 ## Ordering
 
