@@ -1,0 +1,65 @@
+{
+  "instance_id": "sphinx-doc__sphinx-8551",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8551:latest",
+  "edits_replayed": 2,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 6,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 31,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 41,
+      "command": "git status; git diff --stat",
+      "checks": [
+        "stat",
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 42,
+      "command": "git diff sphinx/domains/python.py > /tmp/fix.patch && git apply -R /tmp/fix.patch && python -m pytest tests/test_domain_cpp.py::test_mix_decl_duplicate -q 2>&1 | tail -5; git apply /tmp/fix.patch && g",
+      "checks": [
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 43,
+      "command": "rm -rf /tmp/sphinxtest; git diff",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 32,
+  "base_commit": "0cdf8278d6ad71b36a49493c17f0fb6482e5aeb8",
+  "checkpoints_total": 5,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "stat",
+    "status"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 1452
+}

@@ -1,0 +1,116 @@
+diff --git a/django/core/serializers/python.py b/django/core/serializers/python.py
+index 36048601af..7ec894aa00 100644
+--- a/django/core/serializers/python.py
++++ b/django/core/serializers/python.py
+@@ -79,7 +79,12 @@ class Serializer(base.Serializer):
+                     return self._value_from_field(value, value._meta.pk)
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name)
++                        .select_related(None)
++                        .only("pk")
++                        .iterator()
++                    )
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/django/core/serializers/xml_serializer.py b/django/core/serializers/xml_serializer.py
+index 1d3269c41a..3f9955aa23 100644
+--- a/django/core/serializers/xml_serializer.py
++++ b/django/core/serializers/xml_serializer.py
+@@ -155,7 +155,12 @@ class Serializer(base.Serializer):
+                     self.xml.addQuickElement("object", attrs={"pk": str(value.pk)})
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name)
++                        .select_related(None)
++                        .only("pk")
++                        .iterator()
++                    )
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/tests/serializers/models/base.py b/tests/serializers/models/base.py
+index af9ca2b20a..cc009e0f54 100644
+--- a/tests/serializers/models/base.py
++++ b/tests/serializers/models/base.py
+@@ -163,3 +163,29 @@ class ComplexModel(models.Model):
+     field1 = models.CharField(max_length=10)
+     field2 = models.CharField(max_length=10)
+     field3 = models.CharField(max_length=10)
++
++
++class TagMaster(models.Model):
++    name = models.CharField(max_length=120)
++
++
++class TagManager(models.Manager):
++    def get_queryset(self):
++        return super().get_queryset().select_related("master")
++
++
++class ManagedTag(models.Model):
++    objects = TagManager()
++    name = models.CharField(max_length=120)
++    master = models.ForeignKey(TagMaster, models.SET_NULL, null=True)
++
++    def __str__(self):
++        return self.name
++
++
++class Thing(models.Model):
++    name = models.CharField(max_length=120)
++    tags = models.ManyToManyField(ManagedTag, blank=True)
++
++    def __str__(self):
++        return self.name
+diff --git a/tests/serializers/tests.py b/tests/serializers/tests.py
+index 67ae8f43de..94d78027d0 100644
+--- a/tests/serializers/tests.py
++++ b/tests/serializers/tests.py
+@@ -20,12 +20,15 @@ from .models import (
+     Category,
+     Child,
+     ComplexModel,
++    ManagedTag,
+     Movie,
+     Player,
+     ProxyBaseModel,
+     ProxyProxyBaseModel,
+     Score,
++    TagMaster,
+     Team,
++    Thing,
+ )
+ 
+ 
+@@ -435,6 +438,25 @@ class SerializersTestBase:
+         meta_data_sql = ctx[2]["sql"]
+         self.assertIn(connection.ops.quote_name("kind"), meta_data_sql)
+ 
++    def test_serialize_m2m_field_with_select_related_manager(self):
++        """
++        Serializing an m2m field with only the PK doesn't crash when the
++        related model's manager applies select_related() in its
++        get_queryset().
++        """
++        master = TagMaster.objects.create(name="master")
++        tag = ManagedTag.objects.create(name="tag", master=master)
++        thing = Thing.objects.create(name="thing")
++        thing.tags.add(tag)
++
++        data = serializers.serialize(
++            self.serializer_name,
++            [thing],
++            use_natural_foreign_keys=False,
++        )
++        deserial_thing = next(serializers.deserialize(self.serializer_name, data))
++        self.assertEqual(deserial_thing.m2m_data["tags"], [tag.pk])
++
+ 
+ class SerializerAPITests(SimpleTestCase):
+     def test_stream_class(self):

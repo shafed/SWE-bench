@@ -1,0 +1,31 @@
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index c775d05c..135a693e 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -3773,6 +3773,8 @@ class Dataset(
+             dims = tuple(dims_dict.get(dim, dim) for dim in v.dims)
+             if k in result_dims:
+                 var = v.to_index_variable()
++                if var is v:
++                    var = var.copy()
+                 var.dims = dims
+                 if k in self._indexes:
+                     indexes[k] = self._indexes[k]
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index 9ea47163..11cc0e3b 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -2995,6 +2995,13 @@ class TestDataset:
+         assert isinstance(actual.variables["x"], Variable)
+         assert actual.xindexes["y"].equals(expected.xindexes["y"])
+ 
++        # GH 6971 -- swap_dims should not mutate the original object
++        ds = Dataset({"a": ("x", [1, 2, 3]), "b": ("x", [4, 5, 6])})
++        ds2 = ds.swap_dims(x="b").rename_dims(b="x").reset_index("b").reset_coords()
++        ds2_copy = ds2.copy(deep=True)
++        ds2.swap_dims(x="b")
++        assert_identical(ds2, ds2_copy)
++
+     def test_expand_dims_error(self) -> None:
+         original = Dataset(
+             {

@@ -1,0 +1,131 @@
+{
+  "instance_id": "pydata__xarray-6938",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.pydata_1776_xarray-6938:latest",
+  "edits_replayed": 9,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/xarray/core/dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 4,
+      "command": "Read /testbed/xarray/core/dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 13,
+      "command": "Read /testbed/xarray/core/dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 18,
+      "command": "Read /testbed/xarray/core/variable.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 24,
+      "command": "Read /testbed/xarray/tests/test_dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 26,
+      "command": "Read /testbed/xarray/tests/test_dataarray.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 40,
+      "command": "git diff xarray/core/dataset.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 44,
+      "command": "Read /testbed/doc/whats-new.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 48,
+      "command": "Read /testbed/doc/whats-new.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 52,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 58,
+      "command": "git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 59,
+      "command": "git status && git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "diff",
+        "status"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 56,
+  "base_commit": "657aea64c53add57fe3f83b467ddb1e8610b0d87",
+  "checkpoints_total": 12,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "stat",
+    "status"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 4257
+}

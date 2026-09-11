@@ -1,0 +1,50 @@
+{
+  "instance_id": "pydata__xarray-6992",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.pydata_1776_xarray-6992:latest",
+  "edits_replayed": 6,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 3,
+      "command": "Read /testbed/xarray/core/dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 7,
+      "command": "git log --oneline -5 -- xarray/core/dataset.py | head; git diff --stat",
+      "checks": [
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 27,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 25,
+  "base_commit": "e90b06ddb16347185454e6ed9768dcbb57e95c4d",
+  "checkpoints_total": 3,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "full-diff"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 2143
+}

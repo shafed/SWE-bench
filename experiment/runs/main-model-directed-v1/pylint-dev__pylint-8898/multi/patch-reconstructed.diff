@@ -1,0 +1,183 @@
+diff --git a/doc/whatsnew/fragments/8998.bugfix b/doc/whatsnew/fragments/8998.bugfix
+new file mode 100644
+index 000000000..ece3c84c1
+--- /dev/null
++++ b/doc/whatsnew/fragments/8998.bugfix
+@@ -0,0 +1,3 @@
++Fix a crash when a regular expression list option (for example ``bad-names-rgxs`` or ``good-names-rgxs``) contains a comma inside a quantifier, such as ``(foo{1,3})``. Commas found inside ``{...}`` are no longer treated as separators between regular expressions in a comma separated list.
++
++Closes #8998
+diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+index 30a5fd175..3f9984b72 100644
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -111,10 +111,26 @@ def _regex_transformer(value: str) -> Pattern[str]:
+         raise argparse.ArgumentTypeError(msg) from e
+ 
+ 
++def _splitstrip_regexp_csv(value: str) -> list[str]:
++    """Split a comma separated list of regular expressions.
++
++    Unlike a plain comma separated list (see ``pylint.utils._splitstrip``),
++    commas that appear inside curly braces (i.e., as part of a regular
++    expression repetition qualifier such as ``{1,3}``) are not treated as
++    separators, since a single regular expression may legitimately contain
++    a literal comma there.
++    """
++    return [
++        pattern.strip()
++        for pattern in re.split(r",(?![^{]*})", value)
++        if pattern.strip()
++    ]
++
++
+ def _regexp_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+     """Transforms a comma separated list of regular expressions."""
+     patterns: list[Pattern[str]] = []
+-    for pattern in _csv_transformer(value):
++    for pattern in _splitstrip_regexp_csv(value):
+         patterns.append(_regex_transformer(pattern))
+     return patterns
+ 
+@@ -122,7 +138,7 @@ def _regexp_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+ def _regexp_paths_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+     """Transforms a comma separated list of regular expressions paths."""
+     patterns: list[Pattern[str]] = []
+-    for pattern in _csv_transformer(value):
++    for pattern in _splitstrip_regexp_csv(value):
+         patterns.append(
+             re.compile(
+                 str(pathlib.PureWindowsPath(pattern)).replace("\\", "\\\\")
+diff --git a/tests/config/test_argparse_config.py b/tests/config/test_argparse_config.py
+index dfa0fd4dd..0e58d29e8 100644
+--- a/tests/config/test_argparse_config.py
++++ b/tests/config/test_argparse_config.py
+@@ -9,6 +9,7 @@ from os.path import abspath, dirname, join
+ 
+ import pytest
+ 
++from pylint.config.argument import _regexp_csv_transfomer, _regexp_paths_csv_transfomer
+ from pylint.config.arguments_manager import _ArgumentsManager
+ from pylint.config.exceptions import UnrecognizedArgumentAction
+ from pylint.testutils._run import _Run as Run
+@@ -80,3 +81,47 @@ class TestArguments:
+         with pytest.raises(UnrecognizedArgumentAction):
+             # We test with None as that is 'unrecognized'
+             manager._add_parser_option(group, None)  # type: ignore[arg-type]
++
++
++class TestRegexpCsvTransformer:
++    """Tests for the 'regexp_csv' and 'regexp_paths_csv' argument transformers.
++
++    A single regular expression may legitimately contain a literal comma,
++    e.g. as part of a quantifier such as ``{1,3}``. Such commas should not
++    be treated as separators between several regular expressions.
++    """
++
++    @staticmethod
++    def test_regexp_csv_comma_in_quantifier() -> None:
++        """A single regex with a quantifier comma should not crash and should
++        result in a single compiled pattern."""
++        patterns = _regexp_csv_transfomer("(foo{1,3})")
++        assert len(patterns) == 1
++        assert patterns[0].pattern == "(foo{1,3})"
++
++    @staticmethod
++    def test_regexp_csv_multiple_patterns_with_quantifiers() -> None:
++        """Several regexes, each with their own quantifier comma, are still
++        split from one another correctly."""
++        patterns = _regexp_csv_transfomer("foo{1,3},bar{2,4}")
++        assert [p.pattern for p in patterns] == ["foo{1,3}", "bar{2,4}"]
++
++    @staticmethod
++    def test_regexp_csv_simple_list_still_splits() -> None:
++        """Plain comma separated regexes without quantifiers are unaffected."""
++        patterns = _regexp_csv_transfomer("foo,bar")
++        assert [p.pattern for p in patterns] == ["foo", "bar"]
++
++    @staticmethod
++    def test_regexp_csv_strips_whitespace() -> None:
++        """Whitespace around each pattern is stripped, like the plain csv
++        transformer does."""
++        patterns = _regexp_csv_transfomer(" foo , bar{1,2} ")
++        assert [p.pattern for p in patterns] == ["foo", "bar{1,2}"]
++
++    @staticmethod
++    def test_regexp_paths_csv_comma_in_quantifier() -> None:
++        """The 'regexp_paths_csv' transformer should also tolerate a comma
++        inside a quantifier without crashing or mis-splitting."""
++        patterns = _regexp_paths_csv_transfomer("(foo{1,3})")
++        assert len(patterns) == 1
+diff --git a/tests/config/test_config.py b/tests/config/test_config.py
+index 83c8b072e..962d75253 100644
+--- a/tests/config/test_config.py
++++ b/tests/config/test_config.py
+@@ -131,18 +131,35 @@ def test_regex_error(capsys: CaptureFixture) -> None:
+     assert assertString in output.err
+ 
+ 
++def test_csv_regex_comma_in_quantifier_is_not_a_separator() -> None:
++    """Check that a comma found inside a quantifier (e.g. `{1,3}`) of a
++    regular expression is not treated as a separator between two
++    different regular expressions in a comma-separated list of regexes.
++
++    Previously, `(foo{1,3})` would be split on the comma into `(foo{1` and
++    `3})`, neither of which is a valid regular expression, causing a crash.
++    """
++    run = Run(
++        [str(EMPTY_MODULE), r"--bad-names-rgxs=(foo{1,3})"],
++        exit=False,
++    )
++    assert [pattern.pattern for pattern in run.linter.config.bad_names_rgxs] == [
++        "(foo{1,3})"
++    ]
++
++
+ def test_csv_regex_error(capsys: CaptureFixture) -> None:
+     """Check that we correctly error when an option is passed and one
+     of its comma-separated regular expressions values is an invalid regular expression.
+     """
+     with pytest.raises(SystemExit):
+         Run(
+-            [str(EMPTY_MODULE), r"--bad-names-rgx=(foo{1,3})"],
++            [str(EMPTY_MODULE), r"--bad-names-rgx=(foo{1,3}"],
+             exit=False,
+         )
+     output = capsys.readouterr()
+     assert (
+-        r"Error in provided regular expression: (foo{1 beginning at index 0: missing ), unterminated subpattern"
++        r"Error in provided regular expression: (foo{1,3} beginning at index 0: missing ), unterminated subpattern"
+         in output.err
+     )
+ 
+diff --git a/tests/functional/n/name/name_bad_names_rgxs_quantifier.py b/tests/functional/n/name/name_bad_names_rgxs_quantifier.py
+new file mode 100644
+index 000000000..b71f5a7d9
+--- /dev/null
++++ b/tests/functional/n/name/name_bad_names_rgxs_quantifier.py
+@@ -0,0 +1,10 @@
++# pylint: disable=missing-docstring,too-few-public-methods
++"""Regression test for a crash when a ``bad-names-rgxs`` regular expression
++contains a literal comma inside a quantifier, e.g. ``{1,3}``.
++
++The comma used to be (incorrectly) treated as a separator between several
++regular expressions, splitting ``(foo{1,3})`` into ``(foo{1`` and ``3})``,
++both of which fail to compile as a regular expression and crashed pylint.
++"""
++
++foo = 1  # [disallowed-name]
+diff --git a/tests/functional/n/name/name_bad_names_rgxs_quantifier.rc b/tests/functional/n/name/name_bad_names_rgxs_quantifier.rc
+new file mode 100644
+index 000000000..ffa1a0bcc
+--- /dev/null
++++ b/tests/functional/n/name/name_bad_names_rgxs_quantifier.rc
+@@ -0,0 +1,2 @@
++[BASIC]
++bad-names-rgxs=(foo{1,3})
+diff --git a/tests/functional/n/name/name_bad_names_rgxs_quantifier.txt b/tests/functional/n/name/name_bad_names_rgxs_quantifier.txt
+new file mode 100644
+index 000000000..237ca92a1
+--- /dev/null
++++ b/tests/functional/n/name/name_bad_names_rgxs_quantifier.txt
+@@ -0,0 +1 @@
++disallowed-name:10:0:10:3::"Disallowed name ""foo""":HIGH

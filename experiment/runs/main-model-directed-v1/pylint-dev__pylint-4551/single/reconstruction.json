@@ -1,0 +1,110 @@
+{
+  "instance_id": "pylint-dev__pylint-4551",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-4551:latest",
+  "edits_replayed": 7,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/pylint/pyreverse/diagrams.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 4,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 7,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 19,
+      "command": "Read /testbed/tests/unittest_pyreverse_inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 21,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 22,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 24,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 36,
+      "command": "Read /testbed/tests/unittest_pyreverse_inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 41,
+      "command": "Read /testbed/tests/unittest_pyreverse_inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 42,
+      "command": "Read /testbed/tests/unittest_pyreverse_writer.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 48,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 51,
+  "base_commit": "beb0f4d95fa7c36507422c8aed43fbeaae40d2ba",
+  "checkpoints_total": 11,
+  "checkpoints_failed": 0,
+  "final_checks": [],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": null,
+  "untracked_before_staging": [],
+  "patch_bytes": 4293
+}

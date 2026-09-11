@@ -1,0 +1,113 @@
+{
+  "instance_id": "sphinx-doc__sphinx-8551",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8551:latest",
+  "edits_replayed": 1,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 2,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 5,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 6,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 8,
+      "command": "Read /testbed/sphinx/util/docfields.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/sphinx/domains/c.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 15,
+      "command": "Read /testbed/sphinx/util/docfields.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 29,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 36,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 37,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 38,
+      "command": "git diff && echo \"---TESTS---\" && python -m pytest tests/test_domain_py.py -q 2>&1 | tail -15",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 30,
+  "base_commit": "0cdf8278d6ad71b36a49493c17f0fb6482e5aeb8",
+  "checkpoints_total": 11,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "full-diff",
+    "read"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 611
+}

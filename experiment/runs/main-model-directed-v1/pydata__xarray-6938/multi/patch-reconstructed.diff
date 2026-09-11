@@ -1,0 +1,101 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 6d78a47f..13440fd7 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -49,6 +49,9 @@ Bug fixes
+ - Make FacetGrid.set_titles send kwargs correctly using `handle.udpate(kwargs)`.
+   (:issue:`6839`, :pull:`6843`)
+   By `Oliver Lopez <https://github.com/lopezvoliver>`_.
++- Fix :py:meth:`Dataset.swap_dims` and :py:meth:`DataArray.swap_dims` so that they no longer
++  mutate an ``IndexVariable`` of the original object in place when it is reused as the new
++  dimension coordinate.
+ 
+ Documentation
+ ~~~~~~~~~~~~~
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index c775d05c..a907ba24 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -3773,6 +3773,15 @@ class Dataset(
+             dims = tuple(dims_dict.get(dim, dim) for dim in v.dims)
+             if k in result_dims:
+                 var = v.to_index_variable()
++                if var is v:
++                    # IndexVariable.to_index_variable() short-circuits and
++                    # returns `self` when `v` is already an IndexVariable.
++                    # Since `v` may be the exact object stored in this
++                    # Dataset's `_variables` mapping, mutating `var.dims`
++                    # below would corrupt `self` in place. Make a cheap
++                    # (shallow) copy first so we only ever mutate a private
++                    # copy.
++                    var = var.copy(deep=False)
+                 var.dims = dims
+                 if k in self._indexes:
+                     indexes[k] = self._indexes[k]
+diff --git a/xarray/tests/test_dataarray.py b/xarray/tests/test_dataarray.py
+index 298840f3..7cc7d53b 100644
+--- a/xarray/tests/test_dataarray.py
++++ b/xarray/tests/test_dataarray.py
+@@ -1793,6 +1793,27 @@ class TestDataArray:
+         for dim_name in set().union(expected.xindexes.keys(), actual.xindexes.keys()):
+             assert actual.xindexes[dim_name].equals(expected.xindexes[dim_name])
+ 
++    def test_swap_dims_does_not_mutate_original(self) -> None:
++        # Regression test: swap_dims must not mutate the variables of the original
++        # object in place (delegates to Dataset.swap_dims internally).
++        nz = 11
++        ds = Dataset(
++            data_vars={
++                "y": ("z", np.random.rand(nz)),
++                "lev": ("z", np.arange(nz) * 10),
++            },
++        )
++        ds2 = ds.swap_dims(z="lev").rename_dims(lev="z").reset_index("lev")
++        da = ds2["y"]
++        # "lev" is a non-index coordinate here that is the exact same
++        # IndexVariable object stored in ds2's variable mapping.
++        assert da.coords["lev"].dims == ("z",)
++        assert da._coords["lev"] is ds2._variables["lev"]
++
++        da.swap_dims(z="lev")
++        assert da.coords["lev"].dims == ("z",)
++        assert ds2["lev"].dims == ("z",)
++
+     def test_expand_dims_error(self) -> None:
+         array = DataArray(
+             np.random.randn(3, 4),
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index 9ea47163..61d573ed 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -2995,6 +2995,30 @@ class TestDataset:
+         assert isinstance(actual.variables["x"], Variable)
+         assert actual.xindexes["y"].equals(expected.xindexes["y"])
+ 
++    def test_swap_dims_does_not_mutate_original(self) -> None:
++        # Regression test: swap_dims must not mutate the variables of the original
++        # object in place, even when they are IndexVariables produced by
++        # a previous swap_dims/reset_index/reset_coords roundtrip.
++        nz = 11
++        ds = Dataset(
++            data_vars={
++                "y": ("z", np.random.rand(nz)),
++                "lev": ("z", np.arange(nz) * 10),
++            },
++        )
++
++        ds2 = (
++            ds.swap_dims(z="lev")
++            .rename_dims(lev="z")
++            .reset_index("lev")
++            .reset_coords()
++        )
++        assert ds2["lev"].dims == ("z",)
++
++        # calling swap_dims a second time must not corrupt ds2 in place
++        ds2.swap_dims(z="lev")
++        assert ds2["lev"].dims == ("z",)
++
+     def test_expand_dims_error(self) -> None:
+         original = Dataset(
+             {

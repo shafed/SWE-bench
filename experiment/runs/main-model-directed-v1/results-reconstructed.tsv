@@ -1,0 +1,25 @@
+instance_id	condition	resolved	patch_applied	f2p_passed	f2p_total	p2p_passed	p2p_total	eval_run_id	delegations	total_tokens	output_tokens	cost_usd_model_usage	token_status	patch_bytes_reconstructed	edits_replayed	writes_replayed	bash_effects_replayed	replay_failures	checkpoints_total	checkpoints_failed	last_checkpoint_ok
+django__django-13449	multi	True	True	1	1	46	46	main-model-directed-v1-reconstructed-multi	1	1580879	24846	0.7462	complete	3813	4	0	0	0	9	0	True
+django__django-13449	single	True	True	1	1	46	46	main-model-directed-v1-reconstructed-single	0	1194506	16047	0.5373	complete	5074	5	0	0	0	8	0	True
+django__django-16938	multi	True	True	23	23	65	65	main-model-directed-v1-reconstructed-multi	1	1717997	17895	0.6878	complete	4061	10	0	2	0	8	0	True
+django__django-16938	single	True	True	23	23	65	65	main-model-directed-v1-reconstructed-single	0	1630364	9368	0.5499	complete	3836	18	0	1	0	11	0	True
+matplotlib__matplotlib-25775	multi	True	True	7	7	89	89	main-model-directed-v1-reconstructed-multi	1	2103124	18252	0.7865	complete	6421	11	0	0	0	13	0	True
+matplotlib__matplotlib-25775	single	True	True	7	7	89	89	main-model-directed-v1-reconstructed-single	0	1292069	7565	0.4276	complete	4260	7	0	0	0	6	0	True
+pydata__xarray-6938	multi	False	True	0	1	430	430	main-model-directed-v1-reconstructed-multi	1	2353403	28439	0.9727	complete	4257	9	0	0	0	12	0	True
+pydata__xarray-6938	single	False	True	0	1	430	430	main-model-directed-v1-reconstructed-single	0	1690489	13456	0.5946	complete	1305	15	0	0	0	6	0	True
+pydata__xarray-6992	multi	False	True	0	12	945	945	main-model-directed-v1-reconstructed-multi	1	621110	10714	0.3516	complete	1441	4	0	0	0	7	0	True
+pydata__xarray-6992	single	False	True	0	12	945	945	main-model-directed-v1-reconstructed-single	0	844359	9448	0.3522	complete	2143	6	0	0	0	3	0	True
+pylint-dev__pylint-4551	multi	False	True	0	10	0	0	main-model-directed-v1-reconstructed-multi	2	2281918	24701	0.9611	complete	5046	5	0	0	0	15	2	True
+pylint-dev__pylint-4551	single	False	True	0	10	0	0	main-model-directed-v1-reconstructed-single	0	2383483	22789	0.8858	complete	4293	7	0	0	0	11	0	
+pylint-dev__pylint-8898	multi	True	True	1	1	18	18	main-model-directed-v1-reconstructed-multi	1	4004282	31994	1.3897	complete	8088	6	4	0	0	16	0	True
+pylint-dev__pylint-8898	single	True	True	1	1	18	18	main-model-directed-v1-reconstructed-single	0	2131558	13755	0.7392	complete	5093	7	1	3	0	11	0	True
+pytest-dev__pytest-5787	multi	True	True	2	2	123	123	main-model-directed-v1-reconstructed-multi	1	2219761	27495	0.9798	complete	10971	7	0	0	0	16	0	True
+pytest-dev__pytest-5787	single	True	True	2	2	123	123	main-model-directed-v1-reconstructed-single	0	6157753	29097	1.8259	complete	7694	7	0	5	1	17	0	True
+scikit-learn__scikit-learn-25102	multi	True	True	2	2	59	59	main-model-directed-v1-reconstructed-multi	1	3194353	34062	1.2656	complete	8992	6	0	0	0	19	0	True
+scikit-learn__scikit-learn-25102	single	True	True	2	2	59	59	main-model-directed-v1-reconstructed-single	0	2047465	23994	0.844	complete	6136	5	0	0	0	6	0	
+sphinx-doc__sphinx-7757	multi	True	True	1	1	33	33	main-model-directed-v1-reconstructed-multi	1	604164	11706	0.3467	complete	2184	2	0	0	0	6	0	True
+sphinx-doc__sphinx-7757	single	True	True	1	1	33	33	main-model-directed-v1-reconstructed-single	0	464382	5364	0.2173	complete	1728	1	0	0	0	3	0	
+sphinx-doc__sphinx-8551	multi	True	True	1	1	32	32	main-model-directed-v1-reconstructed-multi	1	1156960	12168	0.5224	complete	611	1	0	0	0	11	0	True
+sphinx-doc__sphinx-8551	single	True	True	1	1	32	32	main-model-directed-v1-reconstructed-single	0	1650815	11587	0.5735	complete	1452	2	0	0	0	5	0	True
+sympy__sympy-15017	multi	False	True	0	1	14	14	main-model-directed-v1-reconstructed-multi	1	889284	11400	0.3929	complete	3193	6	0	0	0	9	0	True
+sympy__sympy-15017	single	True	True	1	1	14	14	main-model-directed-v1-reconstructed-single	0	1923955	15560	0.7095	complete	2753	7	0	2	0	10	0	True

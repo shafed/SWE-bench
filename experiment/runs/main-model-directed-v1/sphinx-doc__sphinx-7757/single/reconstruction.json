@@ -1,0 +1,44 @@
+{
+  "instance_id": "sphinx-doc__sphinx-7757",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-7757:latest",
+  "edits_replayed": 1,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 2,
+      "command": "Read /testbed/sphinx/domains/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 7,
+      "command": "Read /testbed/sphinx/writers/html.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/sphinx/util/inspect.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 12,
+  "base_commit": "c7bbdd751ab371b946e3d71e0ff3ee25bf0cfc77",
+  "checkpoints_total": 3,
+  "checkpoints_failed": 0,
+  "final_checks": [],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": null,
+  "untracked_before_staging": [],
+  "patch_bytes": 1728
+}

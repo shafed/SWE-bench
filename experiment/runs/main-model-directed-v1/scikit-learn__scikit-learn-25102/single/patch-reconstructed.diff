@@ -1,0 +1,174 @@
+diff --git a/doc/whats_new/v1.3.rst b/doc/whats_new/v1.3.rst
+index 08ebf4abc..125427e9f 100644
+--- a/doc/whats_new/v1.3.rst
++++ b/doc/whats_new/v1.3.rst
+@@ -76,6 +76,11 @@ Changes impacting all modules
+   by :user:`John Pangas <jpangas>`, :user:`Rahil Parikh <rprkh>` ,
+   and :user:`Alex Buzenet <albuzenet>`.
+ 
++- |Enhancement| When configured to output pandas DataFrames, transformers now
++  preserve the dtype of columns whose values are left unchanged, such as those
++  simply selected or reordered by the transformer, e.g. `float32` or
++  `category` dtypes.
++
+ Changelog
+ ---------
+ 
+diff --git a/sklearn/utils/_set_output.py b/sklearn/utils/_set_output.py
+index 335773c6a..6bb6665fc 100644
+--- a/sklearn/utils/_set_output.py
++++ b/sklearn/utils/_set_output.py
+@@ -1,5 +1,6 @@
+ from functools import wraps
+ 
++import numpy as np
+ from scipy.sparse import issparse
+ 
+ from . import check_pandas_support
+@@ -7,11 +8,54 @@ from .._config import get_config
+ from ._available_if import available_if
+ 
+ 
++def _is_column_unchanged(orig_column, new_column):
++    """Check whether two columns hold the same values, ignoring dtype.
++
++    NaNs are treated as equal so that missing values do not prevent dtype
++    preservation.
++    """
++    orig_column = np.asarray(orig_column)
++    new_column = np.asarray(new_column)
++    if orig_column.shape != new_column.shape:
++        return False
++    try:
++        return bool(np.array_equal(orig_column, new_column, equal_nan=True))
++    except TypeError:
++        # equal_nan is only supported for numeric dtypes
++        return bool(np.array_equal(orig_column, new_column))
++
++
++def _get_dtypes_to_preserve(original_input, dataframe, pd):
++    """Get a mapping from column name to dtype for unchanged columns.
++
++    If `original_input` is a pandas DataFrame, columns of `dataframe` that
++    have the same name and hold the exact same values as a column of
++    `original_input` will keep the dtype of `original_input`. This allows
++    transformers that only select or reorder columns (and thus do not
++    modify the values) to preserve the original dtypes, e.g. `category` or
++    reduced precision dtypes such as `float32`.
++
++    Returns None if there are no dtypes that should be preserved.
++    """
++    if not isinstance(original_input, pd.DataFrame):
++        return None
++
++    dtypes = {}
++    for column in dataframe.columns:
++        if column not in original_input.columns:
++            continue
++        orig_column = original_input[column]
++        if _is_column_unchanged(orig_column, dataframe[column]):
++            dtypes[column] = orig_column.dtype
++    return dtypes or None
++
++
+ def _wrap_in_pandas_container(
+     data_to_wrap,
+     *,
+     columns,
+     index=None,
++    original_input=None,
+ ):
+     """Create a Pandas DataFrame.
+ 
+@@ -36,6 +80,12 @@ def _wrap_in_pandas_container(
+     index : array-like, default=None
+         Index for data.
+ 
++    original_input : {ndarray, dataframe} of shape (n_samples, n_features_in), \
++            default=None
++        Original input, used to preserve the dtype of columns that are
++        unchanged by the transformation, e.g. because they are simply
++        selected or reordered.
++
+     Returns
+     -------
+     dataframe : DataFrame
+@@ -52,14 +102,19 @@ def _wrap_in_pandas_container(
+ 
+     pd = check_pandas_support("Setting output container to 'pandas'")
+ 
+-    if isinstance(data_to_wrap, pd.DataFrame):
++    if not isinstance(data_to_wrap, pd.DataFrame):
++        data_to_wrap = pd.DataFrame(data_to_wrap, index=index, columns=columns)
++    else:
+         if columns is not None:
+             data_to_wrap.columns = columns
+         if index is not None:
+             data_to_wrap.index = index
+-        return data_to_wrap
+ 
+-    return pd.DataFrame(data_to_wrap, index=index, columns=columns)
++    dtypes = _get_dtypes_to_preserve(original_input, data_to_wrap, pd)
++    if dtypes:
++        data_to_wrap = data_to_wrap.astype(dtypes)
++
++    return data_to_wrap
+ 
+ 
+ def _get_output_config(method, estimator=None):
+@@ -131,6 +186,7 @@ def _wrap_data_with_container(method, data_to_wrap, original_input, estimator):
+         data_to_wrap=data_to_wrap,
+         index=getattr(original_input, "index", None),
+         columns=estimator.get_feature_names_out,
++        original_input=original_input,
+     )
+ 
+ 
+diff --git a/sklearn/utils/tests/test_set_output.py b/sklearn/utils/tests/test_set_output.py
+index ac73ca094..15bdbd760 100644
+--- a/sklearn/utils/tests/test_set_output.py
++++ b/sklearn/utils/tests/test_set_output.py
+@@ -239,6 +239,43 @@ def test__wrap_in_pandas_container_column_errors():
+     assert_array_equal(X_wrapped.columns, range(X_np.shape[1]))
+ 
+ 
++def test__wrap_in_pandas_container_preserves_unchanged_dtypes():
++    """Columns whose values are unchanged should keep their original dtype."""
++    pd = pytest.importorskip("pandas")
++
++    X_df = pd.DataFrame(
++        {
++            "a": np.array([1, 2, 3], dtype=np.float16),
++            "b": pd.Categorical(["x", "y", "x"]),
++            "c": np.array([1, 2, 3], dtype=np.float64),
++        }
++    )
++    # simulate a transformer that selects/reorders columns "a" and "b" and
++    # returns them as a plain ndarray, losing their dtypes in the process
++    X_out = X_df[["b", "a"]].to_numpy(dtype=object)
++
++    X_wrapped = _wrap_in_pandas_container(
++        X_out, columns=["b", "a"], index=X_df.index, original_input=X_df
++    )
++
++    assert X_wrapped["a"].dtype == np.float16
++    assert isinstance(X_wrapped["b"].dtype, pd.CategoricalDtype)
++
++
++def test__wrap_in_pandas_container_does_not_preserve_changed_dtypes():
++    """Columns whose values changed must not keep the original dtype."""
++    pd = pytest.importorskip("pandas")
++
++    X_df = pd.DataFrame({"a": np.array([1, 2, 3], dtype=np.float16)})
++    X_out = np.asarray([[2.0], [4.0], [6.0]])
++
++    X_wrapped = _wrap_in_pandas_container(
++        X_out, columns=["a"], index=X_df.index, original_input=X_df
++    )
++
++    assert X_wrapped["a"].dtype == np.float64
++
++
+ def test_set_output_mro():
+     """Check that multi-inheritance resolves to the correct class method.
+ 

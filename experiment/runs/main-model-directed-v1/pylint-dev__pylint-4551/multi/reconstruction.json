@@ -1,0 +1,159 @@
+{
+  "instance_id": "pylint-dev__pylint-4551",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-4551:latest",
+  "edits_replayed": 5,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 4,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 8,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 9,
+      "command": "Read /testbed/pylint/pyreverse/diagrams.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 13,
+      "command": "Read /testbed/tests/unittest_pyreverse_inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 20,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 22,
+      "command": "Read /testbed/tests/unittest_pyreverse_inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 26,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 27,
+      "command": "Read /testbed/tests/unittest_pyreverse_inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 49,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 56,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 57,
+      "command": "git status && echo ---- && git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "status"
+      ],
+      "problems": [
+        "status untracked: recorded ['classes.dot'] replay []"
+      ]
+    },
+    {
+      "op": 58,
+      "command": "Read /testbed/pylint/pyreverse/inspector.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 59,
+      "command": "git status --porcelain | grep classes.dot; git check-ignore -v classes.dot; cat .gitignore | grep -i dot",
+      "checks": [
+        "porcelain"
+      ],
+      "problems": [
+        "porcelain: recorded [] + ?? ['classes.dot'], replay ['ChangeLog', 'pylint/pyreverse/inspector.py', 'tests/unittest_pyreverse_inspector.py'] + ?? []"
+      ]
+    },
+    {
+      "op": 60,
+      "command": "rm -f /testbed/classes.dot && git status --porcelain",
+      "checks": [
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 65,
+      "command": "python -m pytest tests/ -k pyreverse -q 2>&1 | tail -10 && rm -f classes.dot && git status --porcelain",
+      "checks": [
+        "porcelain"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 53,
+  "base_commit": "beb0f4d95fa7c36507422c8aed43fbeaae40d2ba",
+  "checkpoints_total": 15,
+  "checkpoints_failed": 2,
+  "final_checks": [
+    "diff",
+    "full-diff",
+    "porcelain",
+    "read",
+    "status"
+  ],
+  "final_checks_failed": 2,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 5046
+}

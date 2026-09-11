@@ -1,0 +1,128 @@
+diff --git a/ChangeLog b/ChangeLog
+index c2b1382d..e431c714 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -50,6 +50,9 @@ modules are added.
+ 
+ * Fix raising false-positive ``no-member`` on abstract properties
+ 
++* ``pyreverse``: Fix PEP 484 type hints on ``__init__`` parameters being ignored
++  when resolving the type of instance attributes assigned from them
++
+ * Created new error message called ``arguments-renamed`` which identifies any changes at the parameter
+   names of overridden functions.
+ 
+diff --git a/pylint/pyreverse/inspector.py b/pylint/pyreverse/inspector.py
+index 8fa12202..4579d720 100644
+--- a/pylint/pyreverse/inspector.py
++++ b/pylint/pyreverse/inspector.py
+@@ -230,12 +230,64 @@ class Linker(IdGeneratorMixIn, utils.LocalsVisitor):
+         handle instance_attrs_type
+         """
+         try:
+-            values = set(node.infer())
++            values = Linker._infer_assignattr_types(node)
+             current = set(parent.instance_attrs_type[node.attrname])
+             parent.instance_attrs_type[node.attrname] = list(current | values)
+         except astroid.InferenceError:
+             pass
+ 
++    @staticmethod
++    def _infer_assignattr_types(node):
++        """Infer the types assigned by an astroid.AssignAttr node.
++
++        If the assigned value is a Name referring to a PEP 484 annotated
++        argument of the enclosing function (e.g. ``self.a = a`` where the
++        signature is ``def __init__(self, a: str = None)``), prefer the
++        type(s) inferred from the annotation: it is more precise than
++        inferring the value itself, which would otherwise resolve to the
++        type of the default value (e.g. NoneType).
++
++        Falls back to plain value inference (``node.infer()``) whenever
++        the value isn't a simple annotated-argument reference, or when
++        the annotation itself can't be inferred.
++        """
++        annotation = Linker._get_annotation_for_assignattr(node)
++        if annotation is not None:
++            try:
++                return set(annotation.infer())
++            except astroid.InferenceError:
++                pass
++        return set(node.infer())
++
++    @staticmethod
++    def _get_annotation_for_assignattr(node):
++        """Return the PEP 484 annotation node for the argument referenced by
++        the value assigned in ``node`` (an astroid.AssignAttr), or None if
++        it can't be determined (value isn't a simple Name, doesn't refer to
++        an argument of the enclosing function, or that argument has no
++        annotation).
++        """
++        assign = node.parent
++        value = getattr(assign, "value", None)
++        if not isinstance(value, astroid.Name):
++            return None
++        frame = node.frame()
++        if not isinstance(frame, astroid.FunctionDef):
++            return None
++        args = frame.args
++        posonlyargs = getattr(args, "posonlyargs", None) or []
++        posonlyargs_annotations = getattr(args, "posonlyargs_annotations", None) or []
++        arg_groups = (
++            (posonlyargs, posonlyargs_annotations),
++            (args.args or [], args.annotations or []),
++            (args.kwonlyargs or [], args.kwonlyargs_annotations or []),
++        )
++        for arg_names, arg_annotations in arg_groups:
++            for arg_name, arg_annotation in zip(arg_names, arg_annotations):
++                if arg_name.name == value.name and arg_annotation is not None:
++                    return arg_annotation
++        return None
++
+     def visit_import(self, node):
+         """visit an astroid.Import node
+ 
+diff --git a/tests/unittest_pyreverse_inspector.py b/tests/unittest_pyreverse_inspector.py
+index e1ff6378..c67ffc2c 100644
+--- a/tests/unittest_pyreverse_inspector.py
++++ b/tests/unittest_pyreverse_inspector.py
+@@ -20,6 +20,7 @@ import pytest
+ from unittest_pyreverse_writer import get_project
+ 
+ from pylint.pyreverse import inspector
++from pylint.pyreverse.inspector import Project
+ 
+ 
+ @pytest.fixture
+@@ -71,6 +72,31 @@ def test_instance_attrs_resolution(project):
+     assert type_dict["_id"][0] is astroid.Uninferable
+ 
+ 
++def test_instance_attrs_resolution_uses_annotation():
++    """PEP 484 annotations on __init__ arguments should be used to resolve
++    the type of an attribute assigned from that argument, even when the
++    argument's default value would otherwise lead inference astray (e.g.
++    ``a: str = None`` shouldn't resolve to NoneType).
++    """
++    module = astroid.parse(
++        """
++    class Alpha:
++        def __init__(self, a: str = None):
++            self.a = a
++    """
++    )
++    project = Project("test")
++    project.add_module(module)
++    linker = inspector.Linker(project)
++    linker.visit(project)
++    klass = module["Alpha"]
++    assert hasattr(klass, "instance_attrs_type")
++    type_dict = klass.instance_attrs_type
++    assert list(type_dict.keys()) == ["a"]
++    assert len(type_dict["a"]) == 1
++    assert type_dict["a"][0].name == "str"
++
++
+ def test_concat_interfaces():
+     cls = astroid.extract_node(
+         '''

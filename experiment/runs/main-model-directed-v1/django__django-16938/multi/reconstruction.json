@@ -1,0 +1,97 @@
+{
+  "instance_id": "django__django-16938",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.django_1776_django-16938:latest",
+  "edits_replayed": 10,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 2,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 9,
+      "command": "Read /testbed/django/core/serializers/python.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/django/core/serializers/xml_serializer.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 20,
+      "command": "Read /testbed/tests/serializers/tests.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 21,
+      "command": "Read /testbed/tests/serializers/models/base.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 42,
+      "command": "git stash pop && git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 44,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 48,
+      "command": "git status --short && echo --- && git diff -- django/core/serializers/python.py django/core/serializers/xml_serializer.py",
+      "checks": [
+        "diff",
+        "diff",
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 49,
+      "command": "git diff -- tests/serializers/models/base.py tests/serializers/tests.py",
+      "checks": [
+        "diff",
+        "diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 45,
+  "base_commit": "a71417835bd01a65a7982aa49d753d2259ab0407",
+  "checkpoints_total": 8,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "porcelain"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 4061
+}

@@ -1,0 +1,48 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 36f523df..f2d1f927 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -79,6 +79,10 @@ Bug fixes
+ - Allow writing NetCDF files including only dimensionless variables using the distributed or multiprocessing scheduler
+   (:issue:`7013`, :pull:`7040`).
+   By `Francesco Nattino <https://github.com/fnattino>`_.
++- Fixed a bug where :py:meth:`Dataset.reset_index` with ``drop=True`` could leave a
++  dataset with more coordinate names than variables, breaking things like the repr
++  (:issue:`6982`).
++  By `Benoît Bovy <https://github.com/benbovy>`_.
+ 
+ Documentation
+ ~~~~~~~~~~~~~
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index 620f32f8..441c1698 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -4177,7 +4177,7 @@ class Dataset(
+         }
+         variables.update(new_variables)
+ 
+-        coord_names = set(new_variables) | self._coord_names
++        coord_names = (set(new_variables) | self._coord_names) - set(drop_variables)
+ 
+         return self._replace(variables, coord_names=coord_names, indexes=indexes)
+ 
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index fc2806c7..7fbf5791 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -3253,6 +3253,15 @@ class TestDataset:
+         with pytest.raises(ValueError, match=r".*not coordinates with an index"):
+             ds.reset_index("y")
+ 
++    def test_reset_index_drop_dims(self) -> None:
++        # regression test for GH6982: dropping a multi-index used to leave
++        # more names in `_coord_names` than in `_variables`, breaking len()
++        # and the repr of `data_vars`.
++        ds = Dataset(coords={"a": ("x", [1, 2, 3]), "b": ("x", ["a", "b", "c"])})
++        reset = ds.set_index(z=["a", "b"]).reset_index("z", drop=True)
++        assert len(reset.data_vars) == 0
++        assert set(reset._coord_names) <= set(reset._variables)
++
+     def test_reset_index_keep_attrs(self) -> None:
+         coord_1 = DataArray([1, 2], dims=["coord_1"], attrs={"attrs": True})
+         ds = Dataset({}, {"coord_1": coord_1})

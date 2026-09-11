@@ -1,0 +1,157 @@
+{
+  "instance_id": "pytest-dev__pytest-5787",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-5787:latest",
+  "edits_replayed": 7,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 4,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 5,
+      "command": "Read /testbed/src/_pytest/_code/code.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 8,
+      "command": "Read /testbed/testing/test_reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 10,
+      "command": "Read /testbed/src/_pytest/_code/code.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 16,
+      "command": "Read /testbed/src/_pytest/_code/code.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 20,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 23,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 31,
+      "command": "git diff --stat; git status",
+      "checks": [
+        "stat",
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 33,
+      "command": "Read /testbed/testing/test_reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 38,
+      "command": "git diff -- src/_pytest/reports.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 39,
+      "command": "git diff -- testing/test_reports.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 40,
+      "command": "git status && git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 41,
+      "command": "git diff src/_pytest/reports.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 42,
+      "command": "git diff testing/test_reports.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 46,
+      "command": "git status && git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "status"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 34,
+  "base_commit": "b32361f0accbefc2e6200fd85113d404f5ab4907",
+  "checkpoints_total": 16,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "stat",
+    "status"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 10971
+}

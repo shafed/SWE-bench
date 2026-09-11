@@ -1,0 +1,84 @@
+{
+  "instance_id": "pydata__xarray-6992",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.pydata_1776_xarray-6992:latest",
+  "edits_replayed": 4,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 2,
+      "command": "Read /testbed/xarray/core/dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 3,
+      "command": "Read /testbed/xarray/core/dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 10,
+      "command": "Read /testbed/xarray/tests/test_dataset.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 14,
+      "command": "python -c \"\nimport xarray as xr\nds = xr.Dataset(coords={'a': ('x', [1, 2, 3]), 'b': ('x', ['a', 'b', 'c'])})\nresult = ds.set_index(z=['a', 'b']).reset_index('z', drop=True)\nprint(result)\nprint(list(re",
+      "checks": [
+        "diff",
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 17,
+      "command": "Read /testbed/doc/whats-new.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 18,
+      "command": "python -m pytest xarray/tests/test_dataset.py -k \"reset_index or set_index or data_vars\" -q 2>&1 | tail -20\necho \"---\"\npython -m pytest xarray/tests/test_dataset.py -q 2>&1 | tail -10\necho \"---FINAL D",
+      "checks": [
+        "diff",
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 20,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 16,
+  "base_commit": "e90b06ddb16347185454e6ed9768dcbb57e95c4d",
+  "checkpoints_total": 7,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "full-diff",
+    "read"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 1441
+}

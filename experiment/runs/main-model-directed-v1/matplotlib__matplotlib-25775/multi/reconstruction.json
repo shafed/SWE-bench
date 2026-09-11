@@ -1,0 +1,139 @@
+{
+  "instance_id": "matplotlib__matplotlib-25775",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25775:latest",
+  "edits_replayed": 11,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 5,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 9,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 10,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 22,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 23,
+      "command": "Read /testbed/lib/matplotlib/backends/backend_agg.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 24,
+      "command": "Read /testbed/lib/matplotlib/_mathtext.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 26,
+      "command": "Read /testbed/lib/matplotlib/mathtext.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 29,
+      "command": "Read /testbed/lib/matplotlib/backends/backend_cairo.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 35,
+      "command": "Read /testbed/lib/matplotlib/backends/backend_cairo.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 39,
+      "command": "Read /testbed/lib/matplotlib/tests/test_text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 48,
+      "command": "git diff --stat && echo ---- && git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "diff",
+        "stat",
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 52,
+      "command": "git status --short && echo \"---DIFF---\" && git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "diff",
+        "porcelain"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 40,
+  "base_commit": "d811f7148ca605ccfed1773f272c0fbe94dac2b9",
+  "checkpoints_total": 13,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "porcelain",
+    "stat"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 6421
+}

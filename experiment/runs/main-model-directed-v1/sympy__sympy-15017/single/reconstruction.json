@@ -1,0 +1,110 @@
+{
+  "instance_id": "sympy__sympy-15017",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.sympy_1776_sympy-15017:latest",
+  "edits_replayed": 7,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 2,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/sympy/tensor/array/ndim_array.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 3,
+      "command": "Read /testbed/sympy/tensor/array/dense_ndim_array.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 7,
+      "command": "Read /testbed/sympy/tensor/array/sparse_ndim_array.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 8,
+      "command": "Read /testbed/sympy/tensor/array/sparse_ndim_array.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 18,
+      "command": "Read /testbed/sympy/tensor/array/ndim_array.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 21,
+      "command": "Read /testbed/sympy/tensor/array/dense_ndim_array.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 29,
+      "command": "git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 31,
+      "command": "cp sympy/tensor/array/dense_ndim_array.py /tmp/dense_new.py\ncp sympy/tensor/array/sparse_ndim_array.py /tmp/sparse_new.py\ncp /tmp/dense_orig.py sympy/tensor/array/dense_ndim_array.py\ncp /tmp/sparse_or",
+      "checks": [
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 32,
+      "command": "Read /testbed/sympy/tensor/array/arrayop.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 50,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 49,
+  "base_commit": "5d920dd014d5b9b0cbd4c2567fd6d7f4bbde97cf",
+  "checkpoints_total": 10,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "full-diff"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 2753
+}

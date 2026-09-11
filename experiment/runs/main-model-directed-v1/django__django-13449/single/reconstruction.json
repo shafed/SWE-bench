@@ -1,0 +1,89 @@
+{
+  "instance_id": "django__django-13449",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.django_1776_django-13449:latest",
+  "edits_replayed": 5,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 4,
+      "command": "Read /testbed/django/db/models/functions/mixins.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 10,
+      "command": "Read /testbed/django/db/models/expressions.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 12,
+      "command": "Read /testbed/django/db/models/expressions.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 14,
+      "command": "Read /testbed/django/db/models/sql/compiler.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 17,
+      "command": "Read /testbed/django/db/models/functions/window.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 26,
+      "command": "Read /testbed/tests/expressions_window/tests.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 28,
+      "command": "Read /testbed/tests/expressions_window/tests.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 33,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 30,
+  "base_commit": "4dccd8fa2430d4cd8709003a9641956ff080b6bc",
+  "checkpoints_total": 8,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "full-diff"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 5074
+}

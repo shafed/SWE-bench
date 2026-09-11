@@ -1,0 +1,119 @@
+{
+  "instance_id": "pylint-dev__pylint-8898",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-8898:latest",
+  "edits_replayed": 7,
+  "writes_replayed": 1,
+  "bash_effects_replayed": 3,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/pylint/config/argument.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 14,
+      "command": "Read /testbed/pylint/utils/utils.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 16,
+      "command": "Read /testbed/pylint/utils/utils.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 20,
+      "command": "Read /testbed/pylint/utils/__init__.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 25,
+      "command": "Read /testbed/tests/config/test_config.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 26,
+      "command": "Read /testbed/tests/config/test_config.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 43,
+      "command": "git status && git stash list",
+      "checks": [
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 45,
+      "command": "git stash apply 2>&1; git status",
+      "checks": [
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 47,
+      "command": "git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 50,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 52,
+      "command": "Read /testbed/pylint/utils/utils.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 51,
+  "base_commit": "95d0a5c0c22eae3537f125aad9f66d7c465aa271",
+  "checkpoints_total": 11,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "read"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [
+    "doc/whatsnew/fragments/7229.bugfix"
+  ],
+  "patch_bytes": 5093
+}

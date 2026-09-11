@@ -1,0 +1,73 @@
+{
+  "instance_id": "matplotlib__matplotlib-25775",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-25775:latest",
+  "edits_replayed": 7,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 2,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 3,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 12,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 25,
+      "command": "Read /testbed/lib/matplotlib/text.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 33,
+      "command": "Read /testbed/doc/users/next_whats_new/get_suptitle.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 38,
+      "command": "git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 21,
+  "base_commit": "d811f7148ca605ccfed1773f272c0fbe94dac2b9",
+  "checkpoints_total": 6,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "read",
+    "stat"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 4260
+}

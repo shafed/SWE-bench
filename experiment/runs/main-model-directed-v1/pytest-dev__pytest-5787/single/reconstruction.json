@@ -1,0 +1,168 @@
+{
+  "instance_id": "pytest-dev__pytest-5787",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-5787:latest",
+  "edits_replayed": 7,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 5,
+  "replay_failures": [
+    {
+      "op": 76,
+      "tool": "Bash",
+      "command": "git stash drop 'stash@{0}'; git stash drop 'stash@{0}'",
+      "error": "Dropped stash@{0} (d1e241a45835a1886f74934465d8eee6cbb252ae)\nerror: stash@{0} is not a valid reference"
+    }
+  ],
+  "checkpoints": [
+    {
+      "op": 4,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 5,
+      "command": "Read /testbed/src/_pytest/_code/code.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 7,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 8,
+      "command": "Read /testbed/src/_pytest/_code/code.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 13,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 15,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 36,
+      "command": "git status; echo ---; git stash list; echo ---; ls -la .git/logs/ 2>&1; echo ---; whoami; stat .git/logs/HEAD 2>&1",
+      "checks": [
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 38,
+      "command": "git stash apply && git status",
+      "checks": [
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 41,
+      "command": "git status; git stash list",
+      "checks": [
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 75,
+      "command": "git stash apply stash@{0} && git status && git diff --stat",
+      "checks": [
+        "stat",
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 77,
+      "command": "git diff --stat; python -m pytest testing/test_reports.py testing/test_terminal.py testing/code/test_excinfo.py -q 2>&1 | tail -15",
+      "checks": [
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 78,
+      "command": "git diff src/_pytest/reports.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 80,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 82,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 83,
+      "command": "Read /testbed/src/_pytest/reports.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 88,
+      "command": "git diff --stat; git diff src/_pytest/reports.py | head -200",
+      "checks": [
+        "diff",
+        "stat"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 84,
+  "base_commit": "b32361f0accbefc2e6200fd85113d404f5ab4907",
+  "checkpoints_total": 17,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "stat"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 7694
+}

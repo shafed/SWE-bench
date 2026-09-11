@@ -1,0 +1,169 @@
+{
+  "instance_id": "pylint-dev__pylint-8898",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.pylint-dev_1776_pylint-8898:latest",
+  "edits_replayed": 6,
+  "writes_replayed": 4,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/pylint/config/argument.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 6,
+      "command": "Read /testbed/pylint/config/argument.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 7,
+      "command": "Read /testbed/pylint/utils/utils.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 20,
+      "command": "Read /testbed/tests/config/test_functional_config_loading.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 22,
+      "command": "Read /testbed/tests/config/functional/toml/rich_types.toml",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 23,
+      "command": "Read /testbed/tests/config/functional/toml/rich_types.result.json",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 29,
+      "command": "Read /testbed/pylint/checkers/base/name_checker/checker.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 42,
+      "command": "Read /testbed/tests/config/test_argparse_config.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 63,
+      "command": "git status --short; echo ---; git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 68,
+      "command": "rm -rf /tmp/regexp_bug_check; git diff -- pylint/config/argument.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 73,
+      "command": "git diff --stat -- pylint/config/argument.py; git status --short",
+      "checks": [
+        "stat",
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 76,
+      "command": "git diff -- tests/config/test_argparse_config.py tests/config/test_config.py; echo \"=== NEW FILES ===\"; for f in doc/whatsnew/fragments/8998.bugfix tests/functional/n/name/name_bad_names_rgxs_quantifi",
+      "checks": [
+        "diff",
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 79,
+      "command": "git diff --stat; git status --short",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 80,
+      "command": "git status --short && echo --- && git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 81,
+      "command": "git diff pylint/config/argument.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 82,
+      "command": "git diff tests/config/test_config.py tests/config/test_argparse_config.py; echo ---FUNCTIONAL---; cat tests/functional/n/name/name_bad_names_rgxs_quantifier.py tests/functional/n/name/name_bad_names_r",
+      "checks": [
+        "diff",
+        "diff"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 58,
+  "base_commit": "95d0a5c0c22eae3537f125aad9f66d7c465aa271",
+  "checkpoints_total": 16,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "porcelain",
+    "stat"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [
+    "doc/whatsnew/fragments/8998.bugfix",
+    "tests/functional/n/name/name_bad_names_rgxs_quantifier.py",
+    "tests/functional/n/name/name_bad_names_rgxs_quantifier.rc",
+    "tests/functional/n/name/name_bad_names_rgxs_quantifier.txt"
+  ],
+  "patch_bytes": 8088
+}

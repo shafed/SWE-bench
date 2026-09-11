@@ -1,0 +1,103 @@
+diff --git a/django/core/serializers/python.py b/django/core/serializers/python.py
+index 36048601af..7ec894aa00 100644
+--- a/django/core/serializers/python.py
++++ b/django/core/serializers/python.py
+@@ -79,7 +79,12 @@ class Serializer(base.Serializer):
+                     return self._value_from_field(value, value._meta.pk)
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name)
++                        .select_related(None)
++                        .only("pk")
++                        .iterator()
++                    )
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/django/core/serializers/xml_serializer.py b/django/core/serializers/xml_serializer.py
+index 1d3269c41a..3f9955aa23 100644
+--- a/django/core/serializers/xml_serializer.py
++++ b/django/core/serializers/xml_serializer.py
+@@ -155,7 +155,12 @@ class Serializer(base.Serializer):
+                     self.xml.addQuickElement("object", attrs={"pk": str(value.pk)})
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name)
++                        .select_related(None)
++                        .only("pk")
++                        .iterator()
++                    )
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/tests/serializers/models/base.py b/tests/serializers/models/base.py
+index af9ca2b20a..06404110c0 100644
+--- a/tests/serializers/models/base.py
++++ b/tests/serializers/models/base.py
+@@ -43,6 +43,29 @@ class Category(models.Model):
+         return self.name
+ 
+ 
++class SelectRelatedTagMaster(models.Model):
++    name = models.CharField(max_length=120)
++
++
++class SelectRelatedTagManager(models.Manager):
++    def get_queryset(self):
++        return super().get_queryset().select_related("master")
++
++
++class SelectRelatedTag(models.Model):
++    objects = SelectRelatedTagManager()
++    name = models.CharField(max_length=120)
++    master = models.ForeignKey(SelectRelatedTagMaster, models.SET_NULL, null=True)
++
++    def __str__(self):
++        return self.name
++
++
++class TagHolder(models.Model):
++    name = models.CharField(max_length=120)
++    tags = models.ManyToManyField(SelectRelatedTag, blank=True)
++
++
+ class Author(models.Model):
+     name = models.CharField(max_length=20)
+ 
+diff --git a/tests/serializers/tests.py b/tests/serializers/tests.py
+index 67ae8f43de..3354199280 100644
+--- a/tests/serializers/tests.py
++++ b/tests/serializers/tests.py
+@@ -25,6 +25,9 @@ from .models import (
+     ProxyBaseModel,
+     ProxyProxyBaseModel,
+     Score,
++    SelectRelatedTag,
++    SelectRelatedTagMaster,
++    TagHolder,
+     Team,
+ )
+ 
+@@ -287,6 +290,18 @@ class SerializersTestBase:
+         with self.assertNumQueries(5):
+             serializers.serialize(self.serializer_name, Article.objects.all())
+ 
++    def test_serialize_m2m_with_select_related_manager(self):
++        """
++        M2M fields with a default manager that uses select_related() don't
++        cause a FieldError when serialized (#34506).
++        """
++        tag_master = SelectRelatedTagMaster.objects.create(name="master")
++        tag = SelectRelatedTag.objects.create(name="tag", master=tag_master)
++        holder = TagHolder.objects.create(name="holder")
++        holder.tags.add(tag)
++        serial_str = serializers.serialize(self.serializer_name, [holder])
++        self.assertIn(str(tag.pk), serial_str)
++
+     def test_serialize_with_null_pk(self):
+         """
+         Serialized data with no primary key results

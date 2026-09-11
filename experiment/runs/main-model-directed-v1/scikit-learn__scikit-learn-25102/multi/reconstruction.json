@@ -1,0 +1,189 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-25102",
+  "condition": "multi",
+  "image": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-25102:latest",
+  "edits_replayed": 6,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 4,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 10,
+      "command": "Read /testbed/sklearn/utils/tests/test_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 12,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 15,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 16,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 18,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 28,
+      "command": "git status && git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 34,
+      "command": "git -C /testbed worktree remove /tmp/sklearn_clean_test --force 2>&1; rm -rf /tmp/sklearn_clean_test\ncd /testbed\ncp sklearn/utils/_set_output.py /tmp/_set_output_mine.py\ncp sklearn/utils/tests/test_se",
+      "checks": [
+        "status"
+      ],
+      "problems": []
+    },
+    {
+      "op": 35,
+      "command": "git diff --stat && python -m pytest sklearn/utils/tests/test_set_output.py sklearn/feature_selection sklearn/compose -q 2>&1 | tail -10",
+      "checks": [
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 40,
+      "command": "Read /testbed/doc/whats_new/v1.3.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 41,
+      "command": "Read /testbed/doc/whats_new/v1.3.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 42,
+      "command": "Read /testbed/doc/whats_new/v1.3.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 45,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 49,
+      "command": "git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 50,
+      "command": "git status --short && echo ---DIFF--- && git diff -- sklearn/utils/_set_output.py",
+      "checks": [
+        "diff",
+        "porcelain"
+      ],
+      "problems": []
+    },
+    {
+      "op": 52,
+      "command": "git diff -- sklearn/utils/tests/test_set_output.py",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 54,
+      "command": "git diff -- doc/whats_new/v1.3.rst; echo ---; git stash && python -m pytest \"sklearn/preprocessing\" -k \"pandas or set_output or dtype\" -q 2>&1 | tail -10; git stash pop",
+      "checks": [
+        "diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 55,
+      "command": "git status --short && git diff --stat",
+      "checks": [
+        "stat",
+        "stat",
+        "stat",
+        "porcelain"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 44,
+  "base_commit": "f538a4fea9e9b6d1a7487ad20e7534dc4d670fad",
+  "checkpoints_total": 19,
+  "checkpoints_failed": 0,
+  "final_checks": [
+    "diff",
+    "full-diff",
+    "porcelain",
+    "stat"
+  ],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": true,
+  "untracked_before_staging": [],
+  "patch_bytes": 8992
+}

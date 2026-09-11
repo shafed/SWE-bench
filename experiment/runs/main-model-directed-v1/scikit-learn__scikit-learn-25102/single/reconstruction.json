@@ -1,0 +1,70 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-25102",
+  "condition": "single",
+  "image": "swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-25102:latest",
+  "edits_replayed": 5,
+  "writes_replayed": 0,
+  "bash_effects_replayed": 0,
+  "replay_failures": [],
+  "checkpoints": [
+    {
+      "op": 1,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 11,
+      "command": "Read /testbed/sklearn/utils/_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 28,
+      "command": "git diff --stat; git stash list",
+      "checks": [
+        "stat"
+      ],
+      "problems": []
+    },
+    {
+      "op": 31,
+      "command": "Read /testbed/sklearn/utils/tests/test_set_output.py",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    },
+    {
+      "op": 36,
+      "command": "git diff",
+      "checks": [
+        "diff",
+        "diff",
+        "full-diff"
+      ],
+      "problems": []
+    },
+    {
+      "op": 39,
+      "command": "Read /testbed/doc/whats_new/v1.3.rst",
+      "checks": [
+        "read"
+      ],
+      "problems": []
+    }
+  ],
+  "last_change_op": 40,
+  "base_commit": "f538a4fea9e9b6d1a7487ad20e7534dc4d670fad",
+  "checkpoints_total": 6,
+  "checkpoints_failed": 0,
+  "final_checks": [],
+  "final_checks_failed": 0,
+  "last_checkpoint_ok": null,
+  "untracked_before_staging": [],
+  "patch_bytes": 6136
+}

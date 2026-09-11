@@ -1,0 +1,47 @@
+diff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py
+index 15f0d66e2..b3889fd0a 100644
+--- a/sphinx/util/inspect.py
++++ b/sphinx/util/inspect.py
+@@ -521,10 +521,16 @@ def signature_from_str(signature: str) -> inspect.Signature:
+     params = []
+ 
+     if hasattr(args, "posonlyargs"):
+-        for arg in args.posonlyargs:  # type: ignore
++        for i, arg in enumerate(args.posonlyargs):  # type: ignore
++            if len(args.posonlyargs) - i + len(args.args) <= len(args.defaults):
++                defaults_index = -len(args.posonlyargs) + i - len(args.args)
++                default = ast_unparse(args.defaults[defaults_index])
++            else:
++                default = Parameter.empty
++
+             annotation = ast_unparse(arg.annotation) or Parameter.empty
+             params.append(Parameter(arg.arg, Parameter.POSITIONAL_ONLY,
+-                                    annotation=annotation))
++                                    default=default, annotation=annotation))
+ 
+     for i, arg in enumerate(args.args):
+         if len(args.args) - i <= len(args.defaults):
+diff --git a/tests/test_util_inspect.py b/tests/test_util_inspect.py
+index f16feb698..70dc07ef5 100644
+--- a/tests/test_util_inspect.py
++++ b/tests/test_util_inspect.py
+@@ -341,6 +341,19 @@ def test_signature_from_str_positionaly_only_args():
+     assert sig.parameters['b'].kind == Parameter.POSITIONAL_OR_KEYWORD
+ 
+ 
++@pytest.mark.skipif(sys.version_info < (3, 8),
++                    reason='python-3.8 or above is required')
++def test_signature_from_str_positionaly_only_args_with_default():
++    sig = inspect.signature_from_str('(a, b=0, /, c=1)')
++    assert list(sig.parameters.keys()) == ['a', 'b', 'c']
++    assert sig.parameters['a'].kind == Parameter.POSITIONAL_ONLY
++    assert sig.parameters['a'].default == Parameter.empty
++    assert sig.parameters['b'].kind == Parameter.POSITIONAL_ONLY
++    assert sig.parameters['b'].default == '0'
++    assert sig.parameters['c'].kind == Parameter.POSITIONAL_OR_KEYWORD
++    assert sig.parameters['c'].default == '1'
++
++
+ def test_signature_from_str_invalid():
+     with pytest.raises(SyntaxError):
+         inspect.signature_from_str('')

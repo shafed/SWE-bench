@@ -1,0 +1,34 @@
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index 620f32f8..441c1698 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -4177,7 +4177,7 @@ class Dataset(
+         }
+         variables.update(new_variables)
+ 
+-        coord_names = set(new_variables) | self._coord_names
++        coord_names = (set(new_variables) | self._coord_names) - set(drop_variables)
+ 
+         return self._replace(variables, coord_names=coord_names, indexes=indexes)
+ 
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index fc2806c7..0fdc7859 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -3260,6 +3260,16 @@ class TestDataset:
+         assert_identical(obj, ds, check_default_indexes=False)
+         assert len(obj.xindexes) == 0
+ 
++    def test_reset_index_drop_dims(self) -> None:
++        # regression test: dropping a multi-index built from dataset
++        # coordinates should not leave stale entries in `_coord_names`
++        # that no longer exist in `_variables`.
++        ds = Dataset(coords={"a": ("x", [1, 2, 3]), "b": ("x", ["a", "b", "c"])})
++        obj = ds.set_index(z=["a", "b"]).reset_index("z", drop=True)
++        assert len(obj.xindexes) == 0
++        assert set(obj.coords) == {"a", "b"}
++        assert len(obj.data_vars) == 0
++
+     def test_reorder_levels(self) -> None:
+         ds = create_test_multiindex()
+         mindex = ds["x"].to_index()

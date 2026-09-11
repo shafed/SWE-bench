@@ -1,0 +1,166 @@
+diff --git a/lib/matplotlib/backends/backend_agg.py b/lib/matplotlib/backends/backend_agg.py
+index 7d038a998f..22907b00d9 100644
+--- a/lib/matplotlib/backends/backend_agg.py
++++ b/lib/matplotlib/backends/backend_agg.py
+@@ -206,7 +206,7 @@ class RendererAgg(RendererBase):
+         # space) in the following call to draw_text_image).
+         font.set_text(s, 0, flags=get_hinting_flag())
+         font.draw_glyphs_to_bitmap(
+-            antialiased=mpl.rcParams['text.antialiased'])
++            antialiased=gc.get_antialiased())
+         d = font.get_descent() / 64.0
+         # The descent needs to be adjusted for the angle.
+         xo, yo = font.get_bitmap_offset()
+diff --git a/lib/matplotlib/backends/backend_cairo.py b/lib/matplotlib/backends/backend_cairo.py
+index 9ccadcdf1c..196e414788 100644
+--- a/lib/matplotlib/backends/backend_cairo.py
++++ b/lib/matplotlib/backends/backend_cairo.py
+@@ -25,7 +25,6 @@ except ImportError:
+             "cairo backend requires that pycairo>=1.14.0 or cairocffi "
+             "is installed") from err
+ 
+-import matplotlib as mpl
+ from .. import _api, cbook, font_manager
+ from matplotlib.backend_bases import (
+     _Backend, FigureCanvasBase, FigureManagerBase, GraphicsContextBase,
+@@ -205,7 +204,7 @@ class RendererCairo(RendererBase):
+             ctx.set_font_size(self.points_to_pixels(prop.get_size_in_points()))
+             opts = cairo.FontOptions()
+             opts.set_antialias(
+-                cairo.ANTIALIAS_DEFAULT if mpl.rcParams["text.antialiased"]
++                cairo.ANTIALIAS_DEFAULT if gc.get_antialiased()
+                 else cairo.ANTIALIAS_NONE)
+             ctx.set_font_options(opts)
+             if angle:
+diff --git a/lib/matplotlib/tests/test_text.py b/lib/matplotlib/tests/test_text.py
+index f86b9f111b..9cbc0f05ba 100644
+--- a/lib/matplotlib/tests/test_text.py
++++ b/lib/matplotlib/tests/test_text.py
+@@ -586,6 +586,34 @@ def test_hinting_factor_backends():
+                                rtol=0.1)
+ 
+ 
++def test_get_set_antialiased():
++    txt = Text(.5, .5, "foo")
++    # Defaults to the rcParam when not set explicitly.
++    assert txt.get_antialiased() == mpl.rcParams['text.antialiased']
++
++    txt2 = Text(.5, .5, "foo", antialiased=True)
++    assert txt2.get_antialiased() is True
++    txt3 = Text(.5, .5, "foo", antialiased=False)
++    assert txt3.get_antialiased() is False
++
++    txt.set_antialiased(True)
++    assert txt.get_antialiased() is True
++    txt.set_antialiased(False)
++    assert txt.get_antialiased() is False
++    # Passing None resets to the rcParam value.
++    txt.set_antialiased(None)
++    assert txt.get_antialiased() == mpl.rcParams['text.antialiased']
++
++    with plt.rc_context({'text.antialiased': False}):
++        txt4 = Text(.5, .5, "foo")
++        assert txt4.get_antialiased() is False
++
++    fig, ax = plt.subplots()
++    t = ax.text(0.5, 0.5, "foo", antialiased=True)
++    assert t.get_antialiased() is True
++    fig.canvas.draw()  # Should not raise.
++
++
+ @needs_usetex
+ def test_usetex_is_copied():
+     # Indirectly tests that update_from (which is used to copy tick label
+diff --git a/lib/matplotlib/text.py b/lib/matplotlib/text.py
+index 4591316cf9..94e350cc31 100644
+--- a/lib/matplotlib/text.py
++++ b/lib/matplotlib/text.py
+@@ -79,6 +79,7 @@ def _get_text_metrics_with_cache_impl(
+ 
+ @_docstring.interpd
+ @_api.define_aliases({
++    "antialiased": ["aa"],
+     "color": ["c"],
+     "fontfamily": ["family"],
+     "fontproperties": ["font", "font_properties"],
+@@ -115,6 +116,7 @@ class Text(Artist):
+                  wrap=False,
+                  transform_rotates_text=False,
+                  parse_math=None,    # defaults to rcParams['text.parse_math']
++                 antialiased=None,   # defaults to rcParams['text.antialiased']
+                  **kwargs
+                  ):
+         """
+@@ -149,6 +151,7 @@ class Text(Artist):
+             transform_rotates_text=transform_rotates_text,
+             linespacing=linespacing,
+             rotation_mode=rotation_mode,
++            antialiased=antialiased,
+         )
+         self.update(kwargs)
+ 
+@@ -167,6 +170,7 @@ class Text(Artist):
+         transform_rotates_text=False,
+         linespacing=None,
+         rotation_mode=None,
++        antialiased=None,
+     ):
+         self.set_text(text)
+         self.set_color(
+@@ -175,6 +179,7 @@ class Text(Artist):
+         self.set_usetex(usetex)
+         self.set_parse_math(parse_math if parse_math is not None else
+                             mpl.rcParams['text.parse_math'])
++        self.set_antialiased(antialiased)
+         self.set_wrap(wrap)
+         self.set_verticalalignment(verticalalignment)
+         self.set_horizontalalignment(horizontalalignment)
+@@ -318,6 +323,7 @@ class Text(Artist):
+         self._horizontalalignment = other._horizontalalignment
+         self._fontproperties = other._fontproperties.copy()
+         self._usetex = other._usetex
++        self._antialiased = other._antialiased
+         self._rotation = other._rotation
+         self._transform_rotates_text = other._transform_rotates_text
+         self._picker = other._picker
+@@ -737,6 +743,7 @@ class Text(Artist):
+             gc.set_foreground(self.get_color())
+             gc.set_alpha(self.get_alpha())
+             gc.set_url(self._url)
++            gc.set_antialiased(self._antialiased)
+             self._set_gc_clip(gc)
+ 
+             angle = self.get_rotation()
+@@ -770,6 +777,10 @@ class Text(Artist):
+         renderer.close_group('text')
+         self.stale = False
+ 
++    def get_antialiased(self):
++        """Return whether antialiased rendering is used."""
++        return self._antialiased
++
+     def get_color(self):
+         """Return the color of the text."""
+         return self._color
+@@ -947,6 +958,21 @@ class Text(Artist):
+         self._update_clip_properties()
+         self.stale = True
+ 
++    def set_antialiased(self, antialiased):
++        """
++        Set whether to use antialiased rendering.
++
++        Parameters
++        ----------
++        antialiased : bool or None
++            Whether to use antialiased rendering, ``None`` means to use
++            :rc:`text.antialiased`.
++        """
++        if antialiased is None:
++            antialiased = mpl.rcParams['text.antialiased']
++        self._antialiased = antialiased
++        self.stale = True
++
+     def set_color(self, color):
+         """
+         Set the foreground color of the text
