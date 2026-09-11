@@ -1,0 +1,12 @@
+sympy__sympy-19201
+django__django-12508
+astropy__astropy-13398
+sphinx-doc__sphinx-7590
+django__django-11400
+django__django-15957
+sphinx-doc__sphinx-11510
+sympy__sympy-17630
+django__django-15268
+django__django-15128
+sympy__sympy-16597
+django__django-16263

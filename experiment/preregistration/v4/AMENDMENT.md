@@ -1,0 +1,143 @@
+# v4 task-selection amendment
+
+Date: 2026-09-11
+
+Status: frozen before any main-series SINGLE/MULTI outcome for this sample.
+
+## Why v3 selection was amended
+
+A post-v3 construct audit showed that several tasks that looked decomposable from issue text or gold-patch spread did not satisfy the stronger requirement needed by the current MULTI treatment: substantive workstreams should be natural from the task/repository, not merely mechanical propagation, and the official evaluator should require the relevant branches.
+
+The audit was extended beyond SWE-bench Verified to the full SWE-bench task collection. Non-Verified tasks were not accepted automatically; each selected candidate was manually checked against the task statement, accepted patch, evaluator tests, and workstream structure.
+
+No task was selected using SINGLE/MULTI outcomes. Earlier v1 main tasks with known outcomes remain excluded.
+
+## Frozen orchestration-friendly arm
+
+1. `sympy__sympy-19201` — Tier A, parallel implementation across str/pretty/LaTeX printer families.
+2. `django__django-12508` — Tier A, backend-specific dbshell implementations after a shared API contract.
+3. `astropy__astropy-13398` — Tier B, sequential/mixed location plumbing plus observed-frame/refraction work.
+4. `sphinx-doc__sphinx-7590` — Tier B, lexical parsing plus AST/signature/ID support for C++ user-defined literals.
+5. `django__django-11400` — Tier B-, two evaluator-covered ordering defects with a shared mechanism; retained as the weakest friendly slot, not claimed to be strict parallel implementation.
+
+The first two are the cleanest early fan-out cases. The latter three intentionally represent useful but more coupled orchestration rather than pretending that SWE-bench supplies five equally clean parallel tasks.
+
+## Why other strong-looking candidates were not selected
+
+- `sympy__sympy-14248`: strong printer fan-out, but too close in topic and orchestration structure to `sympy__sympy-19201`; kept as reserve to avoid same-topic duplication.
+- `sympy__sympy-13878`: excellent logical fan-out, but FAIL_TO_PASS does not require the full distribution set.
+- `sympy__sympy-13852`: two natural polylog lines, but evaluator coverage is concentrated on special values.
+- `django__django-11138`: backend split is natural, but grader does not independently require all backend branches.
+- `django__django-14631`: apparent BoundField split is not fully required by FAIL_TO_PASS.
+- `django__django-16256`: evaluator coverage is good, but implementation is largely a mechanical async-wrapper sweep.
+- `mwaskom__seaborn-3069`: several task-visible behaviors collapse to one cohesive implementation block.
+- `matplotlib__matplotlib-25775`: structurally strong, but excluded because an earlier main series already exposed SINGLE/MULTI outcomes.
+
+## Control and risky strata
+
+The five v3 single-friendly controls are retained unchanged:
+
+- `django__django-15957`
+- `sphinx-doc__sphinx-11510`
+- `sympy__sympy-17630`
+- `django__django-15268`
+- `django__django-15128`
+
+The two v3 orchestration-risky tasks are also retained:
+
+- `sympy__sympy-16597`
+- `django__django-16263`
+
+This gives 12 main instances and therefore 24 measured runs at one run per condition per instance.
+
+## Pairing interpretation
+
+The old v3 exact-matching optimum is not claimed for v4 because two accepted friendly tasks come from outside the v3 annotation population. `selection_v4.json` records descriptive control pairs only.
+
+This does **not** affect the primary paired comparison: every instance is still run once in SINGLE and once in MULTI, so the treatment comparison remains within-instance. Friendly-vs-single comparisons should be interpreted as stratum-level heterogeneity analysis rather than as five newly optimized exact matched pairs.
+
+## Benchmark-status limitation
+
+The main sample is no longer exclusively SWE-bench Verified: `sympy__sympy-19201` and `django__django-12508` are original SWE-bench instances outside Verified. They were manually subjected to the same construct/evaluator audit, but they do not carry the SWE-bench Verified engineer-verification label. This must be reported as a limitation.
+
+## MULTI treatment refinement
+
+Before the v4 main series, the orchestration instruction was refined so that the treatment follows the task's workstream structure instead of enforcing an arbitrary minimum number of subagents.
+
+A subsequent adversarial audit, still before any v4 main outcome, removed two unnecessary confounds from the treatment:
+
+1. the parent is no longer restricted to inspecting the repository "only enough" or forbidden from deriving implementation understanding before delegation; it may inspect enough to understand the task and architecture, while production-code changes still wait until workstreams have been identified;
+2. delegation prompts are no longer artificially restricted to four fields with no repository findings. They may contain relevant repository context and findings needed to make the subtask self-contained, while the subagent remains responsible for solution design and implementation choices.
+
+The authoritative prompt is `experiment/execution/multi-treatment.txt`.
+
+The resulting policy is:
+
+- before making production-code changes, inspect the task and repository enough to identify substantive implementation workstreams and their dependencies;
+- delegate every substantive implementation workstream that can be meaningfully separated;
+- independent workstreams are delegated to separate subagents in parallel;
+- distinct but dependent workstreams are delegated sequentially as prerequisites become available;
+- dependency alone is not a reason to collapse several substantive workstreams into one delegation;
+- if a task genuinely has only one substantive implementation workstream, one implementation delegation is sufficient;
+- review-only or test-only delegation does not satisfy the implementation-workstream requirement;
+- delegation prompts contain the objective, relevant repository context and scope, constraints, acceptance criteria, and repository findings needed for independent work, while leaving solution design and implementation choices to the subagent;
+- the parent remains responsible for review, integration, conflict resolution, and final verification.
+
+This deliberately does **not** impose `>=2 subagents` on every task. The aim is to test mandatory workstream-oriented orchestration while preserving structural differences between orchestration-friendly, single-friendly, and orchestration-risky tasks. Tier-A friendly tasks should naturally permit parallel fan-out; coupled/sequential friendly tasks may instead use multiple sequential delegations when their workstreams are substantively distinct.
+
+The runner can mechanically verify that at least one delegation completed. Whether all materially distinct workstreams were delegated, and whether independent workstreams were parallelized, is a trajectory-level treatment-adherence question and must be checked from the recorded execution trace rather than inferred from subagent count alone.
+
+## Executable v4 alignment
+
+The v4 sample is executable rather than documentation-only:
+
+- `experiment/preregistration/v4/tasks-main-v4.txt` contains exactly the 12 tasks in `selection_v4.json`;
+- `experiment/execution/run-order-v4.tsv` freezes the task order and within-instance condition order;
+- `experiment/execution/run_series.py` defaults to those two v4 files rather than the historical v1/v3 files.
+
+The v4 order was generated before v4 main inference with Python `random.Random(20260911)`: the 12-task list was shuffled once, then a list of six `multi-first` and six `single-first` labels was shuffled and assigned in that order. No SINGLE/MULTI outcome from the v4 sample was used.
+
+## Final pre-main freeze
+
+A single machine-checkable freeze manifest now protects the complete v4 experimental package: `experiment/execution/FREEZE_V4.json`.
+
+The manifest pins Git blob hashes for the runner, series driver, freeze verifier, MULTI treatment, common prompt, v4 sample and order, quantitative analyzer, main network configuration, frozen failure-analysis protocol, and the treatment-adherence protocol/validator. `run_series.py` calls `verify_freeze.py` before any reported main inference and aborts on any mismatch. The existing `runner.sha256` remains an additional runner-only check.
+
+The validation-only flag `--allow-unfrozen-runner` may bypass these checks for excluded development validation. It must not be used for any reported v4 main run.
+
+## Frozen treatment-adherence check
+
+Trajectory-level adherence is preregistered in `experiment/preregistration/v4/ADHERENCE_PROTOCOL.md` before v4 main outcomes.
+
+Every MULTI run is coded on A0-A7:
+
+- completed delegation;
+- implementation delegation before the parent's first production-code modification;
+- substantive implementation ownership rather than ceremonial review/test delegation;
+- coverage of materially distinct separable workstreams;
+- parallel fan-out when independent workstreams exist;
+- preservation of subagent solution independence;
+- parent review/integration after delegated work;
+- parent final verification.
+
+The frozen coding schema is `adherence-template.tsv`. `experiment/execution/validate_adherence.py` enforces the allowed vocabulary, exact 12-instance set, the overall `full` / `clear_violation` / `unclear` rule, and A0 consistency with run metrics.
+
+Adherence is a manipulation/process result, not an exclusion criterion. The primary SINGLE-vs-MULTI comparison remains intention-to-treat: non-compliant MULTI runs stay in the analysis and are reported rather than retried or dropped. Adherence coding should be completed without consulting gold patches or official evaluator outcomes whenever operationally possible.
+
+## Source of truth
+
+Frozen task set and stratum annotations: `experiment/preregistration/v4/selection_v4.json`.
+
+Executable task list: `experiment/preregistration/v4/tasks-main-v4.txt`.
+
+Frozen execution order: `experiment/execution/run-order-v4.tsv`.
+
+Authoritative MULTI treatment: `experiment/execution/multi-treatment.txt`.
+
+Machine-checkable freeze: `experiment/execution/FREEZE_V4.json`.
+
+Trajectory adherence protocol: `experiment/preregistration/v4/ADHERENCE_PROTOCOL.md`.
+
+Current execution description: `experiment/execution/PROTOCOL.md` and `experiment/execution/HARNESS_CARD.md`.
+
+The v1/v3 files remain unchanged as historical preregistration records unless explicitly marked otherwise.

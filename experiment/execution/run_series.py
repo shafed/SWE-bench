@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
-run_series.py -- drive the frozen run order for the SINGLE vs MULTI study.
+run_series.py -- drive the frozen v4 run order for the SINGLE vs MULTI study.
 
 `runner.py` executes exactly one (instance, condition) run. This driver is the
 only thing that decides *which* run happens next, and it takes that decision
-from `run-order.tsv`, which was randomized and frozen before any main
+from `run-order-v4.tsv`, which was randomized and frozen before any v4 main
 inference. Doing it by hand is how a series silently stops being the
 preregistered one: a skipped pair, a reversed within-pair order or a resumed
 series that re-runs an instance are all invisible afterwards.
 
 Rules enforced here:
 
-  * The order file must describe exactly the frozen main sample; a mismatch
-    with `tasks-main.txt` stops the series before any inference.
-  * The runner digest must match `runner.sha256`, so a series cannot be
-    produced by an unfrozen runner.
+  * The order file must describe exactly the frozen v4 main sample; a mismatch
+    with `preregistration/v4/tasks-main-v4.txt` stops the series before inference.
+  * `FREEZE_V4.json` must match every frozen treatment/sample/analysis/network
+    input listed in it; a changed file stops the series before inference.
+  * The legacy runner digest must also match `runner.sha256`.
   * Within a pair the recorded condition order is followed exactly.
   * Runs happen strictly sequentially. The Claude profile lock and the shared
     egress proxy make concurrent runs unsafe, and interleaved wall-clock
@@ -46,9 +47,10 @@ EXEC_DIR = ROOT / "experiment" / "execution"
 PREREG_DIR = ROOT / "experiment" / "preregistration"
 RUNS_DIR = ROOT / "experiment" / "runs"
 RUNNER = EXEC_DIR / "runner.py"
-ORDER_FILE = EXEC_DIR / "run-order.tsv"
+ORDER_FILE = EXEC_DIR / "run-order-v4.tsv"
 DIGEST_FILE = EXEC_DIR / "runner.sha256"
-TASKS_MAIN = PREREG_DIR / "tasks-main.txt"
+FREEZE_VERIFIER = EXEC_DIR / "verify_freeze.py"
+TASKS_MAIN = PREREG_DIR / "v4" / "tasks-main-v4.txt"
 
 ORDER_CONDITIONS = {
     "single-first": ("single", "multi"),
@@ -102,6 +104,19 @@ def check_sample(rows: list[dict], sample_file: Path = TASKS_MAIN) -> None:
         )
 
 
+def check_freeze_manifest() -> str:
+    proc = subprocess.run(
+        [sys.executable, str(FREEZE_VERIFIER)],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if proc.returncode != 0:
+        raise SystemExit(
+            "v4 freeze manifest verification failed; no main inference may start.\n"
+            f"{proc.stdout}{proc.stderr}"
+        )
+    return proc.stdout.strip()
+
+
 def check_runner_digest() -> str:
     proc = subprocess.run(
         ["sha256sum", "-c", str(DIGEST_FILE)],
@@ -152,28 +167,35 @@ def main() -> int:
     p.add_argument("--order-file", type=Path, default=ORDER_FILE)
     p.add_argument("--sample-file", type=Path, default=TASKS_MAIN,
                    help="frozen instance list the order file must match "
-                        "(default: the v1 main sample)")
+                        "(default: the v4 main sample)")
     p.add_argument("--timeout-seconds", type=int)
     p.add_argument("--from-position", type=int, default=1,
                    help="resume at this position (earlier positions are left alone)")
     p.add_argument("--dry-run", action="store_true",
                    help="check preconditions and print the plan; run nothing")
     p.add_argument("--allow-unfrozen-runner", action="store_true",
-                   help="VALIDATION ONLY: skip the runner digest check. Never "
-                        "use for a series that is reported as main.")
+                   help="VALIDATION ONLY: skip the v4 freeze-manifest and runner "
+                        "digest checks. Never use for a reported main series.")
     args = p.parse_args()
 
     rows = read_order(args.order_file)
     check_sample(rows, args.sample_file)
-    digest = "unchecked" if args.allow_unfrozen_runner else check_runner_digest()
+    if args.allow_unfrozen_runner:
+        freeze_status = "unchecked (validation override)"
+        digest = "unchecked"
+    else:
+        freeze_status = check_freeze_manifest()
+        digest = check_runner_digest()
 
     plan = [t for t in planned_runs(rows) if t[0] >= args.from_position]
     label_dir = RUNS_DIR / args.label
     todo = [t for t in plan if not (label_dir / t[1] / t[2]).exists()]
 
     print(f"label            : {args.label}")
+    print(f"freeze manifest  : {freeze_status}")
     print(f"runner sha256    : {digest}")
     print(f"order file       : {args.order_file}")
+    print(f"sample file      : {args.sample_file}")
     print(f"planned runs     : {len(plan)}")
     print(f"already present  : {len(plan) - len(todo)}")
     for position, iid, condition in plan:
