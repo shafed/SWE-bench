@@ -1,14 +1,19 @@
 {
   "version": "v4",
   "frozen_at": "2026-09-11",
-  "status": "frozen_before_v4_main_outcomes",
+  "status": "frozen_before_v4_main_outcomes_after_merge_resolution",
   "hash_algorithm": "git-blob-sha1",
-  "note": "The manifest intentionally does not hash itself. run_series.py calls verify_freeze.py before any reported main inference; any mismatch aborts the series. Validation may bypass the check only with the explicit validation-only override.",
+  "note": "The manifest intentionally does not hash itself. run_series.py calls verify_freeze.py before reported main inference; any mismatch aborts the series. The validation-only override must not be used for reported v4 main runs.",
   "files": [
     {
       "path": "experiment/execution/runner.py",
-      "git_blob_sha1": "b4a5e0a911e5d59d498c8cfea8634b874ca3c995",
-      "role": "single-run execution"
+      "git_blob_sha1": "49cc7bfa9ebe5e69f475c9922cc86bd7685370de",
+      "role": "single-run execution including MULTI gate integration"
+    },
+    {
+      "path": "experiment/execution/runner.sha256",
+      "git_blob_sha1": "a41d25b8ecc7d582f8f19726a9c9b7af884013cb",
+      "role": "runner sha256 integrity check used by series driver"
     },
     {
       "path": "experiment/execution/run_series.py",
@@ -22,8 +27,18 @@
     },
     {
       "path": "experiment/execution/multi-treatment.txt",
-      "git_blob_sha1": "65088f678f9a57d9cfbbd2d5a84429c8b66f8e91",
-      "role": "MULTI treatment"
+      "git_blob_sha1": "957e23debdaa5b70b63ca81af41a4c26c2b47fcd",
+      "role": "authoritative workstream-oriented MULTI treatment"
+    },
+    {
+      "path": "experiment/execution/orchestration_gate.py",
+      "git_blob_sha1": "f9ce215ea66b966afba6d1e0be62e31bb9278e1c",
+      "role": "MULTI minimum live orchestration gate"
+    },
+    {
+      "path": "experiment/execution/orchestration-gate-settings.json",
+      "git_blob_sha1": "7e08e42d99f21db667881cedce40457eef1f5278",
+      "role": "admin-managed hook configuration for MULTI gate"
     },
     {
       "path": "experiment/execution/prompt-template.txt",
