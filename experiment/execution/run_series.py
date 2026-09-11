@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-run_series.py -- drive the frozen run order for the SINGLE vs MULTI study.
+run_series.py -- drive the frozen v4 run order for the SINGLE vs MULTI study.
 
 `runner.py` executes exactly one (instance, condition) run. This driver is the
 only thing that decides *which* run happens next, and it takes that decision
-from `run-order.tsv`, which was randomized and frozen before any main
+from `run-order-v4.tsv`, which was randomized and frozen before any v4 main
 inference. Doing it by hand is how a series silently stops being the
 preregistered one: a skipped pair, a reversed within-pair order or a resumed
 series that re-runs an instance are all invisible afterwards.
 
 Rules enforced here:
 
-  * The order file must describe exactly the frozen main sample; a mismatch
-    with `tasks-main.txt` stops the series before any inference.
+  * The order file must describe exactly the frozen v4 main sample; a mismatch
+    with `preregistration/v4/tasks-main-v4.txt` stops the series before any inference.
   * The runner digest must match `runner.sha256`, so a series cannot be
     produced by an unfrozen runner.
   * Within a pair the recorded condition order is followed exactly.
@@ -46,9 +46,9 @@ EXEC_DIR = ROOT / "experiment" / "execution"
 PREREG_DIR = ROOT / "experiment" / "preregistration"
 RUNS_DIR = ROOT / "experiment" / "runs"
 RUNNER = EXEC_DIR / "runner.py"
-ORDER_FILE = EXEC_DIR / "run-order.tsv"
+ORDER_FILE = EXEC_DIR / "run-order-v4.tsv"
 DIGEST_FILE = EXEC_DIR / "runner.sha256"
-TASKS_MAIN = PREREG_DIR / "tasks-main.txt"
+TASKS_MAIN = PREREG_DIR / "v4" / "tasks-main-v4.txt"
 
 ORDER_CONDITIONS = {
     "single-first": ("single", "multi"),
@@ -152,7 +152,7 @@ def main() -> int:
     p.add_argument("--order-file", type=Path, default=ORDER_FILE)
     p.add_argument("--sample-file", type=Path, default=TASKS_MAIN,
                    help="frozen instance list the order file must match "
-                        "(default: the v1 main sample)")
+                        "(default: the v4 main sample)")
     p.add_argument("--timeout-seconds", type=int)
     p.add_argument("--from-position", type=int, default=1,
                    help="resume at this position (earlier positions are left alone)")
