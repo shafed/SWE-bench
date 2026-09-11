@@ -1,0 +1,79 @@
+{
+  "version": "v4",
+  "frozen_at": "2026-09-11",
+  "status": "frozen_before_v4_main_outcomes",
+  "hash_algorithm": "git-blob-sha1",
+  "note": "The manifest intentionally does not hash itself. run_series.py calls verify_freeze.py before any reported main inference; any mismatch aborts the series. Validation may bypass the check only with the explicit validation-only override.",
+  "files": [
+    {
+      "path": "experiment/execution/runner.py",
+      "git_blob_sha1": "b4a5e0a911e5d59d498c8cfea8634b874ca3c995",
+      "role": "single-run execution"
+    },
+    {
+      "path": "experiment/execution/run_series.py",
+      "git_blob_sha1": "17c7ef0be672935cb6b5d2e334f8cfffd5845bad",
+      "role": "v4 series driver"
+    },
+    {
+      "path": "experiment/execution/verify_freeze.py",
+      "git_blob_sha1": "ccaeea3cd2ad02be923215b3ca8f038c22c09e6b",
+      "role": "freeze verifier"
+    },
+    {
+      "path": "experiment/execution/multi-treatment.txt",
+      "git_blob_sha1": "65088f678f9a57d9cfbbd2d5a84429c8b66f8e91",
+      "role": "MULTI treatment"
+    },
+    {
+      "path": "experiment/execution/prompt-template.txt",
+      "git_blob_sha1": "1930e3c1a3979124d65a5b9a141b122dc2e75565",
+      "role": "common task prompt"
+    },
+    {
+      "path": "experiment/execution/run-order-v4.tsv",
+      "git_blob_sha1": "c49ac9bee21ae8ccdca8eff9cf4fe396a2707d66",
+      "role": "frozen v4 task and condition order"
+    },
+    {
+      "path": "experiment/execution/analyze_runs.py",
+      "git_blob_sha1": "7991867e8e93b717d9b188a0778accda9e3a9f1a",
+      "role": "preregistered quantitative analysis"
+    },
+    {
+      "path": "experiment/execution/network/allowlist.txt",
+      "git_blob_sha1": "8a2165a0c1e009d436a16bc2c1aad25cd7612fde",
+      "role": "main-run network allowlist"
+    },
+    {
+      "path": "experiment/execution/network/squid.conf",
+      "git_blob_sha1": "048ce40ec8e490fccb6b5ab74cfa2747eaf735e7",
+      "role": "main-run egress policy"
+    },
+    {
+      "path": "experiment/preregistration/v4/selection_v4.json",
+      "git_blob_sha1": "21ea926d465495ebe06c8790f99cecf1dca1c905",
+      "role": "frozen v4 selection metadata"
+    },
+    {
+      "path": "experiment/preregistration/v4/tasks-main-v4.txt",
+      "git_blob_sha1": "2b5398a5f1da3779ac406d3d9e7dee1f48ea3726",
+      "role": "executable v4 sample"
+    },
+    {
+      "path": "experiment/preregistration/v4/ADHERENCE_PROTOCOL.md",
+      "git_blob_sha1": "592102c8f8d1cddf5c3dc6810190ca29f6388272",
+      "role": "frozen trajectory-level MULTI manipulation check"
+    },
+    {
+      "path": "experiment/preregistration/v4/adherence-template.tsv",
+      "git_blob_sha1": "07f5b1fa02fbc30a9fbcdf6444b38f1f44016737",
+      "role": "frozen adherence coding schema"
+    },
+    {
+      "path": "experiment/preregistration/FAILURE_ANALYSIS_PROTOCOL.md",
+      "git_blob_sha1": "7824d589be1cb253a597390333f56c5bec213b8e",
+      "role": "frozen qualitative failure analysis"
+    }
+  ]
+}
