@@ -97,6 +97,33 @@ The v4 sample is executable rather than documentation-only:
 
 The v4 order was generated before v4 main inference with Python `random.Random(20260911)`: the 12-task list was shuffled once, then a list of six `multi-first` and six `single-first` labels was shuffled and assigned in that order. No SINGLE/MULTI outcome from the v4 sample was used.
 
+## Final pre-main freeze
+
+A single machine-checkable freeze manifest now protects the complete v4 experimental package: `experiment/execution/FREEZE_V4.json`.
+
+The manifest pins Git blob hashes for the runner, series driver, freeze verifier, MULTI treatment, common prompt, v4 sample and order, quantitative analyzer, main network configuration, frozen failure-analysis protocol, and the treatment-adherence protocol/validator. `run_series.py` calls `verify_freeze.py` before any reported main inference and aborts on any mismatch. The existing `runner.sha256` remains an additional runner-only check.
+
+The validation-only flag `--allow-unfrozen-runner` may bypass these checks for excluded development validation. It must not be used for any reported v4 main run.
+
+## Frozen treatment-adherence check
+
+Trajectory-level adherence is preregistered in `experiment/preregistration/v4/ADHERENCE_PROTOCOL.md` before v4 main outcomes.
+
+Every MULTI run is coded on A0-A7:
+
+- completed delegation;
+- implementation delegation before the parent's first production-code modification;
+- substantive implementation ownership rather than ceremonial review/test delegation;
+- coverage of materially distinct separable workstreams;
+- parallel fan-out when independent workstreams exist;
+- preservation of subagent solution independence;
+- parent review/integration after delegated work;
+- parent final verification.
+
+The frozen coding schema is `adherence-template.tsv`. `experiment/execution/validate_adherence.py` enforces the allowed vocabulary, exact 12-instance set, the overall `full` / `clear_violation` / `unclear` rule, and A0 consistency with run metrics.
+
+Adherence is a manipulation/process result, not an exclusion criterion. The primary SINGLE-vs-MULTI comparison remains intention-to-treat: non-compliant MULTI runs stay in the analysis and are reported rather than retried or dropped. Adherence coding should be completed without consulting gold patches or official evaluator outcomes whenever operationally possible.
+
 ## Source of truth
 
 Frozen task set and stratum annotations: `experiment/preregistration/v4/selection_v4.json`.
@@ -106,6 +133,10 @@ Executable task list: `experiment/preregistration/v4/tasks-main-v4.txt`.
 Frozen execution order: `experiment/execution/run-order-v4.tsv`.
 
 Authoritative MULTI treatment: `experiment/execution/multi-treatment.txt`.
+
+Machine-checkable freeze: `experiment/execution/FREEZE_V4.json`.
+
+Trajectory adherence protocol: `experiment/preregistration/v4/ADHERENCE_PROTOCOL.md`.
 
 Current execution description: `experiment/execution/PROTOCOL.md` and `experiment/execution/HARNESS_CARD.md`.
 
