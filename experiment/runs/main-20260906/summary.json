@@ -1,0 +1,82 @@
+{
+  "n_runs": 24,
+  "n_pairs": 12,
+  "unpaired_instances": [],
+  "multi_without_confirmed_delegation": [],
+  "single_with_delegation_violation": [],
+  "runs_without_enforced_isolation": [],
+  "quality": {
+    "both_resolved": 8,
+    "only_single": 1,
+    "only_multi": 0,
+    "neither_resolved": 3,
+    "unknown": 0,
+    "discordant": 1,
+    "p_value_exact_mcnemar": 1.0,
+    "single_resolved": 9,
+    "multi_resolved": 8,
+    "n_pairs_scored": 12
+  },
+  "test_fraction": {
+    "n": 12,
+    "excluded": [],
+    "median_difference": 0.0,
+    "mean_difference": -0.005555555555555554,
+    "p_value_exact_randomization": 1.0,
+    "single_median": 1.0,
+    "multi_median": 1.0,
+    "ratio_of_medians": 1.0
+  },
+  "cost": {
+    "total_tokens": {
+      "n": 12,
+      "excluded": [],
+      "median_difference": 314193.5,
+      "mean_difference": 84909.33333333333,
+      "p_value_exact_randomization": 0.70654296875,
+      "single_median": 1480006.5,
+      "multi_median": 1418102.5,
+      "ratio_of_medians": 0.958173156671947
+    },
+    "output_tokens": {
+      "n": 12,
+      "excluded": [],
+      "median_difference": 4756.0,
+      "mean_difference": 3724.3333333333335,
+      "p_value_exact_randomization": 0.029296875,
+      "single_median": 13800.0,
+      "multi_median": 13933.0,
+      "ratio_of_medians": 1.0096376811594203
+    },
+    "wall_seconds": {
+      "n": 12,
+      "excluded": [],
+      "median_difference": -5.140617463000126,
+      "mean_difference": -29.327723734666808,
+      "p_value_exact_randomization": 0.31982421875,
+      "single_median": 218.01191832650056,
+      "multi_median": 165.43013912350034,
+      "ratio_of_medians": 0.7588123639907964
+    },
+    "unique_assistant_messages": {
+      "n": 12,
+      "excluded": [],
+      "median_difference": 8.0,
+      "mean_difference": 4.916666666666667,
+      "p_value_exact_randomization": 0.2314453125,
+      "single_median": 39.0,
+      "multi_median": 43.0,
+      "ratio_of_medians": 1.1025641025641026
+    },
+    "tool_calls_total": {
+      "n": 12,
+      "excluded": [],
+      "median_difference": 13.0,
+      "mean_difference": 6.666666666666667,
+      "p_value_exact_randomization": 0.13525390625,
+      "single_median": 38.0,
+      "multi_median": 42.5,
+      "ratio_of_medians": 1.118421052631579
+    }
+  }
+}

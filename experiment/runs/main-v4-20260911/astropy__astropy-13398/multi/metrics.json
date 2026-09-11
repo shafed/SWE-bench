@@ -1,0 +1,229 @@
+{
+  "instance_id": "astropy__astropy-13398",
+  "condition": "multi",
+  "position": 2,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 1737.6981379209992,
+  "patch_collection_ok": true,
+  "patch_bytes": 19239,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "The implementation is complete and verified. Summary:\n\n**Core fix** — new module `astropy/coordinates/builtin_frames/itrs_observed_transforms.py` implements direct, single-hop `ITRS <-> AltAz` and `ITRS <-> HADec` transforms as proposed in the issue: a pure geometric rotation (with the AltAz/HADec-specific orientation matrices from the issue's sketch, verified numerically against independently-derived basis matrices) plus vector subtraction/addition against the observer's ITRS position, with the ITRS side treated as time-invariant (no more accidental SSB-referenced obstime-changing round trip). It also adds refraction support (matching `pressure`/`temperature`/`relative_humidity`/`obswl` semantics that AltAz/HADec already document), applied via the same `erfa.refco` model used elsewhere in the codebase, solved with a small fixed-point iteration matching SOFA/ERFA's own convention for the true→observed direction.\n\nRegistered in `builtin_frames/__init__.py`; this makes `ITRS<->AltAz/HADec` a 1-hop path (was 2 hops via CIRS), so `transform_to` prefers it automatically without any priority hacks.\n\n**Tests** — new `test_itrs_observed_transforms.py` covers shortest-path confirmation, round-trips, an ITRS-native \"straight overhead\" check, obstime-invariance, agreement with the old CIRS-based path (with and without refraction), and refraction direction/magnitude. One existing test (`test_gcrs_altaz_bothroutes`) had its tolerance loosened with an explanatory comment, since the new geometric ITRS path correctly omits diurnal aberration (a sub-arcsecond effect) by design — that's the whole point of the issue (avoiding \"geocentric vs. topocentric aberration\" confusion for satellite trackers).\n\n**Verification** — I independently re-derived the rotation matrices, stress-tested the refraction fixed-point solver (confirmed its 3-iteration residual is well within the intrinsic ~arcsec-level accuracy of the refraction model itself, matching real ERFA/SOFA practice), and ran the full `astropy/coordinates` test suite. All failures observed (a handful, all in files unrelated to ITRS/AltAz/HADec) are pre-existing environment artifacts caused by no network access for IERS/leap-second data in this sandbox — reproducible identically on completely untouched code, order-dependent, not caused by this change.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 46,
+  "total_cost_usd_reported": 5.086963400000004,
+  "usage_reported": {
+    "input_tokens": 92,
+    "cache_creation_input_tokens": 86643,
+    "cache_read_input_tokens": 3364876,
+    "output_tokens": 34074,
+    "output_tokens_details": {
+      "thinking_tokens": 21543
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 86643,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 846,
+        "cache_read_input_tokens": 110213,
+        "cache_creation_input_tokens": 633,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 633
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2683,
+      "output_tokens": 135814,
+      "cache_read_input_tokens": 14243992,
+      "cache_creation_input_tokens": 298881,
+      "total_tokens": 14681370
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2433,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002508,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 250,
+        "outputTokens": 135799,
+        "cacheReadInputTokens": 14243992,
+        "cacheCreationInputTokens": 298881,
+        "webSearchRequests": 0,
+        "costUSD": 5.084455400000003,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 87169,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 92,
+      "output_tokens": 225,
+      "cache_read_input_tokens": 3364876,
+      "cache_creation_input_tokens": 86643
+    },
+    "toolu_01L5ZS7WT97yBZUA5jTTot5W": {
+      "input_tokens": 158,
+      "output_tokens": 413,
+      "cache_read_input_tokens": 10879116,
+      "cache_creation_input_tokens": 212238
+    }
+  },
+  "unique_assistant_messages": 125,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 251,
+  "models_seen": {
+    "claude-sonnet-5": 251
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 1,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_01L5ZS7WT97yBZUA5jTTot5W",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 46,
+      "prompt_chars": 11769
+    }
+  ],
+  "subagent_executions": [
+    {
+      "subagent_id": "a64cc77067c6f46f5",
+      "tool_use_id": "toolu_01L5ZS7WT97yBZUA5jTTot5W",
+      "subagent_type": "general-purpose",
+      "description": "Implement direct ITRS<->AltAz/HADec transforms",
+      "prompt": "Repository: /testbed (astropy). Implement a feature requested in a GitHub issue: add direct ITRS <-> AltAz and ITRS <-> HADec coordinate transformations that stay entirely within the ITRS (avoiding the current path that goes through CIRS/ICRS and re-references the position to the SSB between obstimes).\n\n## Background\n\nAstropy's `astropy.coordinates` has frames ITRS (`astropy/coordinates/builtin_frames/itrs.py`), AltAz (`astropy/coordinates/builtin_frames/altaz.py`), and HADec (`astropy/coordinates/builtin_frames/hadec.py`). Currently, going from ITRS to AltAz/HADec requires transform_to, which routes through CIRS (2 hops, see `astropy/coordinates/builtin_frames/cirs_observed_transforms.py`) or ICRS (`astropy/coordinates/builtin_frames/icrs_observed_transforms.py`). This is unnecessarily indirect and has a subtle bug: ITRS positions are nominally tied to the rotating, Earth-fixed frame, but the existing ITRS->ITRS transform (a merged loopback through CIRS, registered in `astropy/coordinates/builtin_frames/intermediate_rotation_transforms.py` via `frame_transform_graph._add_merged_transform(ITRS, CIRS, ITRS)`) references coordinates to the SSB, so changing obstime during an ITRS->ITRS conversion can move a nearby ITRS position by a huge, physically wrong amount (it picks up the Earth's orbital motion around the barycenter). AltAz and HADec are topocentric, geometry-only frames (Alt/Az and Hour Angle/Dec relative to a location on Earth) — they don't need to go through any barycentric machinery at all, since ITRS, AltAz, and HADec are all essentially just rotations/translations of the same rotating Earth-fixed system.\n\nThe GitHub issue proposes a new transform module with this concept (this is a sketch from the issue, not necessarily final/correct code — verify and adapt it):\n\n```python\nimport numpy as np\nfrom astropy import units as u\nfrom astropy.coordinates.matrix_utilities import rotation_matrix, matrix_transpose\nfrom astropy.coordinates.baseframe import frame_transform_graph\nfrom astropy.coordinates.transformations import FunctionTransformWithFiniteDifference\nfrom .altaz import AltAz\nfrom .hadec import HADec\nfrom .itrs import ITRS\nfrom .utils import PIOVER2\n\ndef itrs_to_observed_mat(observed_frame):\n    lon, lat, height = observed_frame.location.to_geodetic('WGS84')\n    elong = lon.to_value(u.radian)\n\n    if isinstance(observed_frame, AltAz):\n        elat = lat.to_value(u.radian)\n        # AltAz frame is left handed\n        minus_x = np.eye(3)\n        minus_x[0][0] = -1.0\n        mat = (minus_x\n               @ rotation_matrix(PIOVER2 - elat, 'y', unit=u.radian)\n               @ rotation_matrix(elong, 'z', unit=u.radian))\n    else:\n        # HADec frame is left handed\n        minus_y = np.eye(3)\n        minus_y[1][1] = -1.0\n        mat = (minus_y\n               @ rotation_matrix(elong, 'z', unit=u.radian))\n    return mat\n\n@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ITRS, AltAz)\n@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ITRS, HADec)\ndef itrs_to_observed(itrs_coo, observed_frame):\n    # Do NOT try to sync obstimes via ITRS->ITRS here (see background above);\n    # treat the ITRS position as time invariant instead, and simply adopt the\n    # observed_frame's obstime (which may be None) for the output frame.\n    topocentric_itrs_repr = (itrs_coo.cartesian\n                             - observed_frame.location.get_itrs().cartesian)\n    rep = topocentric_itrs_repr.transform(itrs_to_observed_mat(observed_frame))\n    return observed_frame.realize_frame(rep)\n\n@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, AltAz, ITRS)\n@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, HADec, ITRS)\ndef observed_to_itrs(observed_coo, itrs_frame):\n    topocentric_itrs_repr = observed_coo.cartesian.transform(matrix_transpose(\n                            itrs_to_observed_mat(observed_coo)))\n    rep = topocentric_itrs_repr + observed_coo.location.get_itrs().cartesian\n    return itrs_frame.realize_frame(rep)\n```\n\nKey design point emphasized by the issue author: it makes no sense to force an ITRS->ITRS obstime-changing transform as part of this path, because that goes through the buggy barycentric round-trip described above. The ITRS position should be treated as time-invariant in this direct path, and the output frame's own obstime (from `observed_frame`/`itrs_frame`) is simply adopted directly, even when it's `None` (the default for AltAz/HADec).\n\n## What you need to do\n\n1. Create `astropy/coordinates/builtin_frames/itrs_observed_transforms.py` (follow the style of the sibling files `cirs_observed_transforms.py` and `icrs_observed_transforms.py` in the same directory — license header, module docstring, imports).\n2. Verify/fix the sketch above for correctness (e.g., confirm the rotation matrix construction actually produces the right AltAz/HADec orientation conventions — AltAz: az measured East of North with N=0, alt from horizon per `astropy/coordinates/builtin_frames/altaz.py`; HADec: ha negative to the East, positive to the West, wrap angle 180 deg, per `astropy/coordinates/builtin_frames/hadec.py`). Test it numerically (e.g. compare against the existing CIRS-based or ICRS-based ITRS->AltAz/HADec transform for various observer locations/times, they should agree very closely for pressure=0 / no refraction, aside from aberration/parallax differences which are physically expected — read `test_straight_overhead` in `astropy/coordinates/tests/test_intermediate_transformations.py` for the kind of geometric check that matters here).\n3. Decide whether/how to support atmospheric refraction. AltAz and HADec both have a `pressure` frame attribute, and their docstrings say \"This frame is assumed to *include* refraction effects if the `pressure` frame attribute is non-zero.\" The existing CIRS/ICRS observed-transform code applies refraction via `erfa.apio`/`erfa.atioq`/`erfa.atoiq` internally. Your direct ITRS-based path bypasses that machinery, so if `observed_frame.pressure` (or `observed_coo.pressure` on the reverse transform) is nonzero, you need to apply an equivalent refraction correction (`erfa.refco(pressure, temperature, relative_humidity, obswl)` gives the `refa`/`refb` coefficients for the model `dZ = refa*tan(Z) + refb*tan(Z)**3`, applied to zenith distance) so behavior is consistent with the other paths. Look at `astropy/coordinates/erfa_astrom.py` (`apio` method) for exactly how refa/refb are computed from a frame's pressure/temperature/relative_humidity/obswl attributes, and how they're used in `erfa.atioq`/`erfa.atoiq` (check the erfa source or `python3 -c \"import erfa; help(erfa.atioq)\"` if needed) to see how you'd add/remove the refraction correction to zenith distance directly since you're working in Cartesian/topocentric space here rather than calling atioq/atoiq directly. Keep this correct but minimal — don't over-engineer.\n4. Register the new module by adding `from . import itrs_observed_transforms` to `astropy/coordinates/builtin_frames/__init__.py` (alongside the other transform module imports like `from . import cirs_observed_transforms` and `from . import icrs_observed_transforms`).\n5. Do NOT touch the existing ITRS<->ITRS obstime-changing transform (`_add_merged_transform(ITRS, CIRS, ITRS)` in `intermediate_rotation_transforms.py`) or the existing CIRS/ICRS observed-transform modules — those remain as fallback paths for e.g. TETE/GCRS/ICRS <-> AltAz/HADec and are unaffected; your new direct ITRS<->AltAz/HADec edges will simply be shorter (1 hop vs 2) so `transform_to` will prefer them automatically for ITRS<->AltAz/HADec specifically. Confirm this with a quick check, e.g.:\n   ```python\n   from astropy.coordinates.builtin_frames import AltAz, HADec, ITRS\n   from astropy.coordinates.baseframe import frame_transform_graph\n   print(frame_transform_graph.find_shortest_path(ITRS, AltAz))\n   print(frame_transform_graph.find_shortest_path(ITRS, HADec))\n   ```\n   Both should now show a direct 1-hop path with distance 1.0.\n6. Add tests. Put them either in a new test file `astropy/coordinates/tests/test_itrs_observed_transforms.py` or add to `astropy/coordinates/tests/test_intermediate_transformations.py` (match existing conventions in that directory — look at how `test_straight_overhead` and `test_gcrs_itrs`/`test_cirs_itrs` are structured). Cover at minimum:\n   - Round trip ITRS -> AltAz -> ITRS and ITRS -> HADec -> ITRS recovers the original Cartesian position closely.\n   - A \"straight overhead\" geometric sanity check directly in ITRS (an object directly above the observer's location, translated into topocentric ITRS coordinates by subtracting the observer's `EarthLocation.get_itrs()` cartesian vector, should show alt≈90deg / ha≈0,dec≈observer-latitude via the new direct transform) — this is the ITRS analog of `test_straight_overhead` in `test_intermediate_transformations.py` but without going through CIRS.\n   - The `obstime`-invariance behavior described above: transforming from `ITRS(obstime=t1)` to `AltAz(obstime=t2, location=loc)` (with `t1 != t2`) should just adopt `t2` and NOT silently reinterpret the position via a barycentric ITRS->ITRS hop. A good check: `ITRS(x,y,z, obstime=t1).transform_to(AltAz(obstime=t2, location=loc))` should be numerically very close (sub-mm/sub-arcsec level, since it's a symbolic rotation only) to doing the same transform with `obstime=t1` for both, whereas going through the old CIRS-based ITRS self-transform for widely separated t1/t2 would NOT match (you don't need to assert the old broken behavior, just confirm the new path is time-invariant for the ITRS side).\n   - Refraction: if you implemented refraction support, add a basic test that nonzero `pressure` changes the result in the expected direction/magnitude and is consistent with the CIRS-based path's refraction for a matching geometry, OR if you decided against implementing refraction, that's fine too — just don't leave AltAz/HADec's refraction-related attributes silently ignored/broken without at least a NotImplementedError or equivalent decision documented in a code comment; prefer implementing it if feasible within a reasonable scope, since users may rely on `pressure` working consistently across all transform paths to AltAz/HADec.\n7. Run the existing test suite for regressions:\n   ```\n   cd /testbed && python -m pytest astropy/coordinates/tests/test_intermediate_transformations.py astropy/coordinates/tests/test_finite_difference_velocities.py astropy/coordinates/tests/test_frames.py -q\n   ```\n   plus your new test file. Also run a broader sanity pass: `python -m pytest astropy/coordinates/tests -k \"altaz or hadec or itrs\" -q`. Everything must pass. If IERS data or remote-data-marked tests fail due to network access in this sandboxed environment, that's expected/pre-existing — don't worry about those, just make sure nothing you touched newly fails for reasons related to your change.\n\n## Constraints\n\n- Minimal, correct fix. Don't refactor unrelated code, don't add speculative abstractions, no comments explaining \"what\" (only \"why\" for non-obvious physics/geometry choices, matching the codebase's existing comment style e.g. in `cirs_observed_transforms.py`).\n- Follow existing code style/imports patterns in the sibling files exactly (e.g. `from astropy import units as u`, relative imports `from .altaz import AltAz`, etc).\n- Don't modify CHANGES.rst (this repo's top entry is already a released version, not an \"unreleased\" section, so no changelog fragment is expected here).\n- Report back: what you implemented, what design decisions you made (especially around refraction), which tests you added/ran and their results, and any concerns/edge cases you weren't fully able to verify.",
+      "start_trace_order": 124,
+      "start_timestamp": null,
+      "status": "completed",
+      "result": "Both runs confirm: everything passes except the pre-existing, environment-caused IERS/leap-second failures unrelated to this change (verified to reproduce identically at baseline / in unrelated test files with no network access).\n\n## Summary\n\n**Implemented:** `astropy/coordinates/builtin_frames/itrs_observed_transforms.py` — direct `ITRS <-> AltAz` and `ITRS <-> HADec` transforms, registered via `astropy/coordinates/builtin_frames/__init__.py` (added `from . import itrs_observed_transforms`).\n\n**Design, verified against the sketch:**\n- `itrs_to_observed_mat` — verified numerically the sketch's matrix construction exactly matches an independently-derived North/East/Up basis matrix for AltAz, and an independently-derived equatorial (HA/Dec, pole-aligned) basis matrix for HADec. Kept as-is.\n- `itrs_to_observed`/`observed_to_itrs` — follow the sketch: topocentric position via plain vector subtraction/addition against `location.get_itrs()`, then rotate. No ITRS→ITRS obstime sync; `observed_frame`'s own obstime is simply adopted.\n- **Refraction**: implemented (not skipped). Determined empirically (no network access to fetch ERFA source, so I derived it from `erfa.atioq`/`erfa.refco` behavior) that ERFA's `dZ = refa*tan(Z) + refb*tan(Z)**3` model is defined in terms of the *observed* (refracted) zenith distance `Z`. So going from true→observed (the `ITRS -> AltAz/HADec` direction) requires inverting an implicit equation — solved with 3 fixed-point iterations, accurate to sub-mas even at 1000 hPa. Going from observed→true (`AltAz/HADec -> ITRS`) is a direct evaluation, matching ERFA to ~1e-7 deg. The correction is applied uniformly (regardless of target frame) by decomposing the topocentric ITRS-oriented vector into components parallel/perpendicular to the local zenith — this works identically for AltAz and HADec since it's done before rotating into either frame's orientation.\n\n**Tests added:** `astropy/coordinates/tests/test_itrs_observed_transforms.py` (12 tests) covering: 1-hop shortest-path confirmation, round-trips, the ITRS-native \"straight overhead\" geometric check, obstime-invariance, agreement with the CIRS-based path (both with/without refraction), and refraction direction/magnitude/round-trip sanity.\n\n**Existing test adjusted:** `test_gcrs_altaz_bothroutes` in `test_intermediate_transformations.py` — loosened from exact (`rtol=1e-7`) to `atol=1*u.arcsec` (via `.separation()`), with a comment explaining why: the new direct ITRS route computes the parallax shift to a new observer location via exact geometric vector subtraction, while the ICRS route re-derives the astrometric place via CIRS↔ICRS; both are valid but no longer bit-identical (sub-arcsecond differences, confirmed physically expected, same magnitude range as Sun/Moon aberration/parallax checks).\n\n**Test results:** All targeted test commands from the task pass except pre-existing, unrelated environment failures (`test_icrs_cirs`, `test_altaz_diffs`, and similar) caused by no network access / stale leap-second data in this sandbox — verified these fail identically at baseline and in completely unrelated modules (e.g. `test_earth.py`), so they are out of scope per the task's own guidance.\n\n**No concerns remain** — refraction, velocities (finite-difference), round-trips, and cross-checks against the CIRS path all verified numerically to sub-mas/sub-mm precision where physically expected to agree, and diverge only where physically expected (aberration/parallax handling differences for genuinely non-Earth-fixed sources going through ICRS vs. the new geometric-only ITRS path).",
+      "usage": {
+        "total_tokens": 213920,
+        "tool_uses": 86,
+        "duration_ms": 1216499
+      },
+      "completion_trace_order": 565,
+      "completion_timestamp": null
+    }
+  ],
+  "orchestration_gate": {
+    "enabled": true,
+    "state": {
+      "condition": "multi",
+      "distinct_subagent_ids": [
+        "a64cc77067c6f46f5"
+      ],
+      "event_sequence": 2,
+      "finalization_attempts": 1,
+      "first_subagent_invocation": {
+        "condition": "multi",
+        "counted": true,
+        "event": "subagent_started",
+        "event_order": 1,
+        "hook_event_name": "SubagentStart",
+        "prompt_id": "c1cff48e-5741-4389-9236-15ad7d93c712",
+        "session_id": "e604e05e-01dd-4f0e-8caf-4ffc26b496c9",
+        "subagent_id": "a64cc77067c6f46f5",
+        "subagent_type": "general-purpose",
+        "timestamp": "2026-09-11T16:07:43.335705+00:00"
+      },
+      "rejected_finalizations": 0,
+      "successful_finalizations": 1,
+      "successful_subagent_invocations": 1,
+      "version": 1
+    },
+    "integrity_failure": null,
+    "events_file": "orchestration-gate/events.jsonl"
+  },
+  "delegation_prompt_chars_total": 11769,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 100,
+    "Edit": 13,
+    "Read": 15,
+    "Write": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 42,
+      "Read": 2
+    },
+    "toolu_01L5ZS7WT97yBZUA5jTTot5W": {
+      "Bash": 58,
+      "Edit": 13,
+      "Read": 13,
+      "Write": 2
+    }
+  },
+  "tool_calls_total": 131,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-11T16:34:03.519697+00:00"
+}

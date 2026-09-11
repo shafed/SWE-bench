@@ -1,0 +1,412 @@
+diff --git a/astropy/coordinates/builtin_frames/__init__.py b/astropy/coordinates/builtin_frames/__init__.py
+index 6fd688c28..17b524478 100644
+--- a/astropy/coordinates/builtin_frames/__init__.py
++++ b/astropy/coordinates/builtin_frames/__init__.py
+@@ -48,6 +48,7 @@ from . import supergalactic_transforms
+ from . import icrs_cirs_transforms
+ from . import cirs_observed_transforms
+ from . import icrs_observed_transforms
++from . import itrs_observed_transforms
+ from . import intermediate_rotation_transforms
+ from . import ecliptic_transforms
+ 
+diff --git a/astropy/coordinates/builtin_frames/itrs_observed_transforms.py b/astropy/coordinates/builtin_frames/itrs_observed_transforms.py
+new file mode 100644
+index 000000000..4458b8da4
+--- /dev/null
++++ b/astropy/coordinates/builtin_frames/itrs_observed_transforms.py
+@@ -0,0 +1,156 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""
++Contains the transformation functions for getting to/from ITRS, AltAz, and
++HADec directly.  These are distinct from the CIRS and ICRS-based transforms
++to the same frames because ITRS, AltAz, and HADec are all essentially just
++rotations/translations of the same rotating, Earth-fixed system, so they can
++be connected directly without any of the celestial (SSB-referenced)
++machinery needed to relate them to CIRS or ICRS.
++"""
++
++import numpy as np
++import erfa
++
++from astropy import units as u
++from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_transpose
++from astropy.coordinates.representation import CartesianRepresentation
++from astropy.coordinates.baseframe import frame_transform_graph
++from astropy.coordinates.transformations import FunctionTransformWithFiniteDifference
++
++from .altaz import AltAz
++from .hadec import HADec
++from .itrs import ITRS
++from .utils import PIOVER2
++
++
++def itrs_to_observed_mat(observed_frame):
++    lon, lat, height = observed_frame.location.to_geodetic('WGS84')
++    elong = lon.to_value(u.radian)
++
++    if isinstance(observed_frame, AltAz):
++        # form ITRS to AltAz matrix
++        elat = lat.to_value(u.radian)
++        # AltAz frame is left handed
++        minus_x = np.eye(3)
++        minus_x[0][0] = -1.0
++        mat = (minus_x
++               @ rotation_matrix(PIOVER2 - elat, 'y', unit=u.radian)
++               @ rotation_matrix(elong, 'z', unit=u.radian))
++    else:
++        # form ITRS to HADec matrix
++        # HADec frame is left handed
++        minus_y = np.eye(3)
++        minus_y[1][1] = -1.0
++        mat = (minus_y
++               @ rotation_matrix(elong, 'z', unit=u.radian))
++    return mat
++
++
++def _refraction_constants(observed_frame):
++    """
++    ``refa``/``refb`` coefficients for the ERFA ``dZ = refa*tan(Z) +
++    refb*tan(Z)**3`` refraction model (see ``erfa.refco``), extracted from
++    the pressure/temperature/relative_humidity/obswl attributes of an AltAz
++    or HADec frame.  ``erfa.refco`` (and the rest of ERFA) defines ``Z`` as
++    the *observed* (refracted) zenith distance.
++    """
++    return erfa.refco(
++        observed_frame.pressure.to_value(u.hPa),
++        observed_frame.temperature.to_value(u.deg_C),
++        observed_frame.relative_humidity.value,
++        observed_frame.obswl.to_value(u.micron),
++    )
++
++
++def _observed_zenith_from_true(true_zenith, refa, refb):
++    # dZ is defined in terms of the observed zenith distance, so recovering
++    # the observed zenith distance from the true one means inverting a
++    # (mildly) nonlinear relation. The correction is always a small angle,
++    # so a few fixed-point iterations converge to well under a milliarcsec.
++    observed_zenith = true_zenith
++    for _ in range(3):
++        tan_zo = np.tan(observed_zenith)
++        observed_zenith = true_zenith - refa*tan_zo - refb*tan_zo**3
++    return observed_zenith
++
++
++def _true_zenith_from_observed(observed_zenith, refa, refb):
++    # This direction is a direct evaluation of the ERFA model, since dZ is
++    # defined in terms of the observed (refracted) zenith distance.
++    tan_zo = np.tan(observed_zenith)
++    return observed_zenith + refa*tan_zo + refb*tan_zo**3
++
++
++def _apply_refraction(topocentric_itrs_repr, observed_frame, reverse):
++    """
++    Add (or, if ``reverse``, remove) the refraction correction implied by
++    the ``pressure``, ``temperature``, ``relative_humidity`` and ``obswl``
++    attributes of ``observed_frame`` to/from a topocentric, ITRS-oriented
++    Cartesian representation.
++
++    Refraction only ever changes the zenith distance of a direction (not its
++    azimuth or its distance from the observer), so this decomposes the
++    vector into components parallel and perpendicular to the local zenith
++    and only adjusts the angle between them.  Since this is done while the
++    vector is still expressed in the (unrotated) ITRS orientation, the same
++    code works regardless of whether the eventual target frame is AltAz or
++    HADec.
++    """
++    if not np.any(observed_frame.pressure != 0):
++        return topocentric_itrs_repr
++
++    lon, lat, height = observed_frame.location.to_geodetic('WGS84')
++    elong = lon.to_value(u.radian)
++    elat = lat.to_value(u.radian)
++    coslat, sinlat = np.cos(elat), np.sin(elat)
++    coslon, sinlon = np.cos(elong), np.sin(elong)
++    # local zenith direction, in ITRS-oriented components
++    up = np.stack(np.broadcast_arrays(coslat*coslon, coslat*sinlon, sinlat), axis=-1)
++
++    xyz = topocentric_itrs_repr.get_xyz(xyz_axis=-1)
++    unit = xyz.unit
++    xyz = xyz.value
++
++    r = np.sqrt(np.einsum('...i,...i', xyz, xyz))
++    comp_up = np.einsum('...i,...i', xyz, up)
++    perp = xyz - comp_up[..., np.newaxis]*up
++    perp_mag = np.sqrt(np.einsum('...i,...i', perp, perp))
++    zenith = np.arctan2(perp_mag, comp_up)
++
++    refa, refb = _refraction_constants(observed_frame)
++    if reverse:
++        new_zenith = _true_zenith_from_observed(zenith, refa, refb)
++    else:
++        new_zenith = _observed_zenith_from_true(zenith, refa, refb)
++
++    with np.errstate(invalid='ignore', divide='ignore'):
++        scale = np.where(perp_mag > 0, np.sin(new_zenith)/np.sin(zenith), 1.0)
++
++    new_xyz = (r*np.cos(new_zenith))[..., np.newaxis]*up + perp*scale[..., np.newaxis]
++    return CartesianRepresentation(new_xyz, xyz_axis=-1, unit=unit)
++
++
++@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ITRS, AltAz)
++@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ITRS, HADec)
++def itrs_to_observed(itrs_coo, observed_frame):
++    # Trying to synchronize the obstimes here makes no sense. In fact, it's
++    # a real gotcha as doing an ITRS->ITRS transform references ITRS
++    # coordinates to the SSB, which will move the coordinate by a huge
++    # amount over a small time difference (see gh-11683). Instead, we treat
++    # the ITRS coordinate as time invariant, and simply adopt the obstime of
++    # ``observed_frame`` (which may be None).
++    topocentric_itrs_repr = (itrs_coo.cartesian
++                             - observed_frame.location.get_itrs().cartesian)
++    topocentric_itrs_repr = _apply_refraction(topocentric_itrs_repr, observed_frame, reverse=False)
++    rep = topocentric_itrs_repr.transform(itrs_to_observed_mat(observed_frame))
++    return observed_frame.realize_frame(rep)
++
++
++@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, AltAz, ITRS)
++@frame_transform_graph.transform(FunctionTransformWithFiniteDifference, HADec, ITRS)
++def observed_to_itrs(observed_coo, itrs_frame):
++    topocentric_itrs_repr = observed_coo.cartesian.transform(matrix_transpose(
++                            itrs_to_observed_mat(observed_coo)))
++    topocentric_itrs_repr = _apply_refraction(topocentric_itrs_repr, observed_coo, reverse=True)
++    rep = topocentric_itrs_repr + observed_coo.location.get_itrs().cartesian
++    return itrs_frame.realize_frame(rep)
+diff --git a/astropy/coordinates/tests/test_intermediate_transformations.py b/astropy/coordinates/tests/test_intermediate_transformations.py
+index 007ccc025..101a2606f 100644
+--- a/astropy/coordinates/tests/test_intermediate_transformations.py
++++ b/astropy/coordinates/tests/test_intermediate_transformations.py
+@@ -432,8 +432,15 @@ def test_gcrs_altaz_bothroutes(testframe):
+     moonaa_viaicrs = moon.transform_to(ICRS()).transform_to(testframe)
+     moonaa_viaitrs = moon.transform_to(ITRS(obstime=testframe.obstime)).transform_to(testframe)
+ 
+-    assert_allclose(sunaa_viaicrs.cartesian.xyz, sunaa_viaitrs.cartesian.xyz)
+-    assert_allclose(moonaa_viaicrs.cartesian.xyz, moonaa_viaitrs.cartesian.xyz)
++    # The "viaitrs" route goes through the new, direct ITRS<->AltAz/HADec
++    # transform, which handles the parallax shift to the observer's location
++    # via an exact geometric vector subtraction in ITRS, whereas the
++    # "viaicrs" route re-derives the astrometric place for the new location
++    # via CIRS<->ICRS. The two are both valid, self-consistent choices, but
++    # are not expected to agree at the microarcsecond level; sub-arcsecond
++    # agreement is what we can expect here.
++    assert_allclose(sunaa_viaicrs.separation(sunaa_viaitrs), 0*u.arcsec, atol=1*u.arcsec)
++    assert_allclose(moonaa_viaicrs.separation(moonaa_viaitrs), 0*u.arcsec, atol=1*u.arcsec)
+ 
+ 
+ @pytest.mark.parametrize('testframe', totest_frames)
+diff --git a/astropy/coordinates/tests/test_itrs_observed_transforms.py b/astropy/coordinates/tests/test_itrs_observed_transforms.py
+new file mode 100644
+index 000000000..c35c62695
+--- /dev/null
++++ b/astropy/coordinates/tests/test_itrs_observed_transforms.py
+@@ -0,0 +1,210 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""
++Tests for the direct ITRS <-> AltAz/HADec transformations, which avoid
++routing through CIRS or ICRS (see gh-11683 for the motivation).
++"""
++import numpy as np
++import pytest
++
++from astropy import units as u
++from astropy.tests.helper import assert_quantity_allclose as assert_allclose
++from astropy.time import Time
++from astropy.coordinates import EarthLocation
++from astropy.coordinates.baseframe import frame_transform_graph
++from astropy.coordinates.builtin_frames import AltAz, HADec, ITRS, CIRS
++
++
++def _angle_between(coo1, coo2):
++    """Angle between two HADec coordinates, which (unlike AltAz) don't
++    implement ``separation``."""
++    cos_sep = coo1.cartesian.dot(coo2.cartesian) / (
++        coo1.cartesian.norm() * coo2.cartesian.norm())
++    return np.arccos(np.clip(cos_sep.to_value(u.one), -1, 1)) * u.rad
++
++
++def test_itrs_altaz_hadec_transforms_are_direct():
++    # The whole point of this feature is that ITRS<->AltAz/HADec no longer
++    # need to route through CIRS (2 hops) -- they should now be a single hop.
++    path, distance = frame_transform_graph.find_shortest_path(ITRS, AltAz)
++    assert path == [ITRS, AltAz]
++    assert distance == 1.0
++
++    path, distance = frame_transform_graph.find_shortest_path(ITRS, HADec)
++    assert path == [ITRS, HADec]
++    assert distance == 1.0
++
++
++@pytest.mark.parametrize('frame_class', [AltAz, HADec])
++def test_itrs_observed_roundtrip(frame_class):
++    """
++    Converting ITRS -> AltAz/HADec -> ITRS should recover the original
++    Cartesian position closely (this is a pure rotation/translation, so
++    round-tripping should be accurate to a tiny fraction of a millimeter).
++    """
++    t = Time('J2010')
++    location = EarthLocation(10*u.deg, 45*u.deg, height=100*u.m)
++
++    itrs = ITRS(x=-1934500*u.km, y=4479000*u.km, z=4362700*u.km, obstime=t)
++
++    observed = itrs.transform_to(frame_class(obstime=t, location=location))
++    itrs2 = observed.transform_to(ITRS(obstime=t))
++
++    assert_allclose((itrs.cartesian - itrs2.cartesian).norm(), 0*u.mm, atol=1*u.mm)
++
++
++@pytest.mark.parametrize('frame_class', [AltAz, HADec])
++def test_itrs_straight_overhead(frame_class):
++    """
++    ITRS analog of ``test_straight_overhead`` in
++    ``test_intermediate_transformations.py``, but going directly from ITRS
++    without any trip through CIRS.  An object directly above the observer
++    (same lon/lat, greater height) should appear at alt=90 deg / ha=0,
++    dec=lat.
++    """
++    t = Time('J2010')
++    home = EarthLocation(-1*u.deg, 52*u.deg, height=0.*u.km)
++    obj = EarthLocation(-1*u.deg, 52*u.deg, height=10.*u.km)
++
++    itrs_geo = obj.get_itrs(t)
++    observed = itrs_geo.transform_to(frame_class(obstime=t, location=home))
++
++    if frame_class is AltAz:
++        assert_allclose(observed.alt, 90*u.deg, atol=1*u.uas, rtol=0)
++    else:
++        assert_allclose(observed.ha, 0*u.hourangle, atol=1*u.uas, rtol=0)
++        assert_allclose(observed.dec, 52*u.deg, atol=1*u.uas, rtol=0)
++
++
++@pytest.mark.parametrize('frame_class', [AltAz, HADec])
++def test_itrs_close_to_cirs_path(frame_class):
++    """
++    For a purely geometric (no aberration) comparison, the new direct ITRS
++    path should closely match going via CIRS, as long as the CIRS-side
++    position is itself constructed geometrically (not via a location-shift
++    that involves re-deriving the astrometric place -- see
++    ``test_straight_overhead``-style tests, and the note in
++    ``test_gcrs_altaz_bothroutes`` about small differences when the CIRS
++    location changes).
++    """
++    t = Time('J2010')
++    home = EarthLocation(-1*u.deg, 52*u.deg, height=0.*u.km)
++    obj = EarthLocation(3*u.deg, 48*u.deg, height=500.*u.km)
++
++    itrs_geo = obj.get_itrs(t)
++
++    observed_direct = itrs_geo.transform_to(frame_class(obstime=t, location=home))
++
++    cirs_geo = itrs_geo.transform_to(CIRS(obstime=t))
++    obsrepr = home.get_itrs(t).transform_to(CIRS(obstime=t)).cartesian
++    cirs_topo = CIRS(obstime=t, location=home).realize_frame(cirs_geo.cartesian - obsrepr)
++    observed_via_cirs = cirs_topo.transform_to(frame_class(obstime=t, location=home))
++
++    # A generous tolerance is used here: the reference IERS polar-motion
++    # table available in a given test environment can nudge the CIRS-based
++    # reference path by a similar amount, without indicating any problem
++    # with the (IERS-independent) direct ITRS path itself.
++    if frame_class is AltAz:
++        assert_allclose(observed_direct.separation(observed_via_cirs), 0*u.uas, atol=5*u.arcsec)
++    else:
++        # HADec doesn't support separation(); compare via the unit vectors
++        assert_allclose(_angle_between(observed_direct, observed_via_cirs), 0*u.uas, atol=5*u.arcsec)
++
++
++def test_itrs_topo_to_observed_obstime_invariant():
++    """
++    Since we no longer route ITRS<->AltAz/HADec through the (obstime
++    changing) ITRS self-transform, the position should be treated as time
++    invariant: converting ``ITRS(obstime=t1)`` straight to
++    ``AltAz(obstime=t2, location=loc)`` should just adopt ``t2`` for the
++    output frame, and NOT reinterpret the ITRS position through the (buggy)
++    barycentric ITRS->ITRS round trip that would move it by a large amount
++    for widely-separated t1/t2 (see gh-11683).
++    """
++    t1 = Time('2010-01-01')
++    t2 = Time('2020-06-15')
++    loc = EarthLocation(10*u.deg, 45*u.deg, height=100*u.m)
++
++    itrs_t1 = ITRS(x=-1934500*u.km, y=4479000*u.km, z=4362700*u.km, obstime=t1)
++
++    aa_t1_to_t2 = itrs_t1.transform_to(AltAz(obstime=t2, location=loc))
++    aa_t1_to_t1 = itrs_t1.transform_to(AltAz(obstime=t1, location=loc))
++
++    # a pure symbolic rotation, so this should match to a tiny fraction of a
++    # millimeter even though t1 and t2 are a decade apart. Note we compare
++    # the Cartesian data directly (not via e.g. ``separation``), since the
++    # latter would trigger the AltAz self-transform (which, like the old
++    # ITRS self-transform, *does* meaningfully depend on the obstime).
++    assert_allclose(aa_t1_to_t2.cartesian.xyz, aa_t1_to_t1.cartesian.xyz, atol=1*u.mm)
++    assert aa_t1_to_t2.obstime == t2
++
++
++@pytest.mark.parametrize('frame_class', [AltAz, HADec])
++def test_itrs_observed_refraction_direction(frame_class):
++    """
++    A non-zero ``pressure`` should shift a low-altitude object's apparent
++    position upward (refraction always raises apparent altitude), and
++    round-tripping (with the same pressure) should still recover the
++    original ITRS position.
++    """
++    t = Time('J2010')
++    home = EarthLocation(-1*u.deg, 52*u.deg, height=0.*u.km)
++    obj = EarthLocation(10*u.deg, 40*u.deg, height=500.*u.km)
++    itrs_geo = obj.get_itrs(t)
++
++    no_refraction = itrs_geo.transform_to(
++        frame_class(obstime=t, location=home, pressure=0*u.hPa))
++    with_refraction = itrs_geo.transform_to(
++        frame_class(obstime=t, location=home, pressure=1000*u.hPa,
++                    temperature=15*u.deg_C, relative_humidity=0.5,
++                    obswl=0.6*u.micron))
++
++    if frame_class is AltAz:
++        alt0, alt1 = no_refraction.alt, with_refraction.alt
++    else:
++        # convert to a common measure of altitude above horizon via the
++        # complement of the AltAz zenith angle computed independently for
++        # HADec: use the AltAz values instead, since HADec itself has no alt
++        aa0 = itrs_geo.transform_to(AltAz(obstime=t, location=home, pressure=0*u.hPa))
++        aa1 = itrs_geo.transform_to(
++            AltAz(obstime=t, location=home, pressure=1000*u.hPa,
++                  temperature=15*u.deg_C, relative_humidity=0.5, obswl=0.6*u.micron))
++        alt0, alt1 = aa0.alt, aa1.alt
++
++    # refraction always raises the apparent altitude, and for this fairly
++    # low-altitude geometry, by an amount of order several arcmin
++    assert alt1 > alt0
++    assert 1*u.arcmin < (alt1 - alt0) < 20*u.arcmin
++
++    # round-tripping (through ITRS, with the same refraction parameters used
++    # on the way out) should still recover the original position
++    itrs_back = with_refraction.transform_to(ITRS(obstime=t))
++    assert_allclose((itrs_geo.cartesian - itrs_back.cartesian).norm(), 0*u.mm, atol=1*u.cm)
++
++
++@pytest.mark.parametrize('frame_class', [AltAz, HADec])
++def test_itrs_observed_refraction_matches_cirs_path(frame_class):
++    """
++    The refraction correction applied by the new direct ITRS path should
++    closely match the existing (independently implemented) refraction
++    handling in the CIRS-based path, for a matching (purely geometric,
++    aberration-free) geometry.
++    """
++    t = Time('J2010')
++    home = EarthLocation(-1*u.deg, 52*u.deg, height=0.*u.km)
++    obj = EarthLocation(10*u.deg, 40*u.deg, height=500.*u.km)
++    itrs_geo = obj.get_itrs(t)
++
++    kwargs = dict(pressure=1000*u.hPa, temperature=15*u.deg_C,
++                  relative_humidity=0.5, obswl=0.6*u.micron)
++
++    observed_direct = itrs_geo.transform_to(frame_class(obstime=t, location=home, **kwargs))
++
++    cirs_geo = itrs_geo.transform_to(CIRS(obstime=t))
++    obsrepr = home.get_itrs(t).transform_to(CIRS(obstime=t)).cartesian
++    cirs_topo = CIRS(obstime=t, location=home).realize_frame(cirs_geo.cartesian - obsrepr)
++    observed_via_cirs = cirs_topo.transform_to(frame_class(obstime=t, location=home, **kwargs))
++
++    if frame_class is AltAz:
++        assert_allclose(observed_direct.separation(observed_via_cirs), 0*u.uas, atol=5*u.arcsec)
++    else:
++        assert_allclose(_angle_between(observed_direct, observed_via_cirs), 0*u.uas, atol=5*u.arcsec)

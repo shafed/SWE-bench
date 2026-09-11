@@ -1,0 +1,172 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 9735ce10c8..d0dda3b6ed 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -435,12 +435,107 @@ class Query(BaseExpression):
+         annotation.set_source_expressions(new_exprs)
+         return annotation, col_cnt
+ 
++    def _gen_referenced_annotation_aliases(self, exprs, id_to_alias, seen=None):
++        """
++        Recursively walk exprs (which may be a WhereNode, an ordering
++        expression, or an annotation's source expressions) and yield the
++        alias of every annotation that is referenced.
++
++        An annotation can be referenced either directly, because resolving
++        a reference to an existing annotation (e.g. via a filter or another
++        annotation) reuses the very same expression object, or through a
++        Ref() (e.g. when an aggregate() aggregates over an existing
++        annotation), or through an unresolved F() (e.g. in order_by()).
++        """
++        if seen is None:
++            seen = set()
++        for expr in exprs:
++            if expr is None or id(expr) in seen:
++                continue
++            seen.add(id(expr))
++            if isinstance(expr, Ref):
++                yield expr.refs
++            elif isinstance(expr, F):
++                if expr.name in self.annotations:
++                    yield expr.name
++            else:
++                alias = id_to_alias.get(id(expr))
++                if alias is not None:
++                    yield alias
++            if hasattr(expr, "get_source_expressions"):
++                yield from self._gen_referenced_annotation_aliases(
++                    expr.get_source_expressions(), id_to_alias, seen
++                )
++
++    def _prune_unreferenced_annotations(self, added_aggregate_names):
++        """
++        Remove annotations that aren't referenced anywhere else in the
++        query (by a filter, another annotation, ordering, or an explicit
++        GROUP BY) and that aren't among added_aggregate_names.
++        Such annotations don't affect the query's results, but keeping
++        them around would force an unnecessary GROUP BY/subquery in
++        get_aggregation(), e.g. for
++        Model.objects.annotate(Count('related')).count().
++        """
++        candidates = [
++            alias for alias in self.annotations if alias not in added_aggregate_names
++        ]
++        if not candidates:
++            return
++        id_to_alias = {id(a): alias for alias, a in self.annotations.items()}
++        sources = []
++        if self.where:
++            sources.append(self.where)
++        if isinstance(self.group_by, tuple):
++            sources.extend(self.group_by)
++        for item in self.order_by:
++            if isinstance(item, str):
++                name = item[1:] if item.startswith("-") else item
++                if name in self.annotations:
++                    sources.append(F(name))
++            elif item is not None:
++                sources.append(item)
++        for annotation in self.annotations.values():
++            if hasattr(annotation, "get_source_expressions"):
++                sources.extend(annotation.get_source_expressions())
++        referenced_aliases = set(
++            self._gen_referenced_annotation_aliases(sources, id_to_alias)
++        )
++        unreferenced_aliases = [
++            alias for alias in candidates if alias not in referenced_aliases
++        ]
++        if not unreferenced_aliases:
++            return
++        for alias in unreferenced_aliases:
++            annotation = self.annotations.pop(alias)
++            # Undo the alias reference counting performed while resolving
++            # the annotation so that any joins that only existed for its
++            # sake are excluded from the query, e.g. the join to "chapters"
++            # in Book.objects.annotate(Count('chapters')).count(). This
++            # mirrors the ref-counting undone by trim_joins() for redundant
++            # direct joins.
++            for col in self._gen_cols([annotation], include_external=True):
++                self._unref_join_chain(col.alias)
++            if self.annotation_select_mask is not None:
++                self.annotation_select_mask.discard(alias)
++        self._annotation_select_cache = None
++
++    def _unref_join_chain(self, alias):
++        """
++        Decrease the reference count of alias and of every join it
++        descends from, walking up to the base table.
++        """
++        while alias is not None and alias in self.alias_map:
++            self.unref_alias(alias)
++            alias = getattr(self.alias_map[alias], "parent_alias", None)
++
+     def get_aggregation(self, using, added_aggregate_names):
+         """
+         Return the dictionary with the values of the existing aggregations.
+         """
+         if not self.annotation_select:
+             return {}
++        self._prune_unreferenced_annotations(added_aggregate_names)
+         existing_annotations = [
+             annotation
+             for alias, annotation in self.annotations.items()
+diff --git a/tests/aggregation/tests.py b/tests/aggregation/tests.py
+index 39c8a45707..44d77339bf 100644
+--- a/tests/aggregation/tests.py
++++ b/tests/aggregation/tests.py
+@@ -549,6 +549,55 @@ class AggregateTestCase(TestCase):
+         )
+         self.assertEqual(aggs["distinct_ratings"], 4)
+ 
++    def test_count_unreferenced_annotation_no_group_by(self):
++        """
++        An annotation that isn't referenced anywhere else in the query
++        (no filter, no other annotation, no ordering) doesn't force a
++        GROUP BY/subquery for count(), matching plain count().
++        """
++        qs = Book.objects.annotate(Count("authors"))
++        with self.assertNumQueries(1) as ctx:
++            count = qs.count()
++        sql = ctx.captured_queries[0]["sql"]
++        self.assertNotIn("GROUP BY", sql)
++        self.assertEqual(count, Book.objects.count())
++
++    def test_count_annotation_referenced_by_filter_kept(self):
++        """
++        An annotation that's referenced by a filter must still be used to
++        compute count(), even though it isn't otherwise selected.
++        """
++        qs = Book.objects.annotate(n=Count("authors")).filter(n__gte=2)
++        with self.assertNumQueries(1) as ctx:
++            count = qs.count()
++        sql = ctx.captured_queries[0]["sql"]
++        self.assertIn("GROUP BY", sql)
++        self.assertEqual(count, 3)
++        self.assertEqual(
++            count, len([b for b in Book.objects.all() if b.authors.count() >= 2])
++        )
++
++    def test_count_annotation_referenced_by_annotation_kept(self):
++        """
++        An annotation that's referenced by another annotation which is
++        itself aggregated over must still be included in count()/
++        aggregate() computations.
++        """
++        qs = Book.objects.annotate(n=Count("authors"))
++        result = qs.aggregate(total=Sum("n"))
++        self.assertEqual(
++            result["total"], sum(b.authors.count() for b in Book.objects.all())
++        )
++
++    def test_count_annotation_referenced_by_order_by_kept(self):
++        """
++        An annotation that's referenced by order_by() still produces a
++        correct count(), even though ordering itself is irrelevant to the
++        result of count().
++        """
++        qs = Book.objects.annotate(n=Count("authors")).order_by("n")
++        self.assertEqual(qs.count(), Book.objects.count())
++
+     def test_distinct_on_aggregate(self):
+         for aggregate, expected_result in (
+             (Avg, 4.125),

@@ -1,0 +1,32 @@
+d4645f12487511b25ac04d5f24883d1dc48faf94
+## main
+d4645f1248 SWE-bench
+321ecb40f4 Fixed #34135 -- Added async-compatible interface to related managers.
+41e8931c2c Fixed typo in BaseModelAdmin.has_delete_permission()'s docstring.
+e0fb2a25b9 Used super().execute/executemany() in SQLiteCursorWrapper.
+c4eaa67e2b Fixed #34063 -- Fixed reading request body with async request factory and client.
+8e6ea1d153 Fixed #10070 -- Added support for pyformat style parameters on SQLite.
+7b94847e38 Fixed #34139 -- Fixed acreate(), aget_or_create(), and aupdate_or_create() methods for related managers.
+76e37513e2 Refs #33374 -- Adjusted full match condition handling.
+4b702c832c Refs #33374 -- Added tests for multi-table fast-deletion with filters that match everything.
+7990d254b0 Refs #33308 -- Improved adapting DecimalField values to decimal.
+5f09ab8c30 Refs #17144 -- Removed support for grouping by primary key.
+041551d716 Fixed #31331 -- Switched MySQL to group by selected primary keys.
+967f8750ab Refs #27849 -- Fixed filtered aggregates crash on filters that match everything.
+77cf70ea96 Refs #27849 -- Added test for filtered aggregates with empty conditions.
+123b1d3fcf Fixed #34137 -- Made Model.refresh_from_db() clear cached generic relations.
+5eab4d1924 Fixed #34088 -- Fixed Sitemap.get_latest_lastmod() crash with empty items.
+444b6da7cc Refs #33939 -- Improved transaction.on_commit() docs.
+e20c9eb60a Fixed #27654 -- Propagated alters_data attribute to callables overridden in subclasses.
+5a7f3213ae Refs #34095 -- Changed height of form controls to use rem units in admin.
+7b0e9ea53c Fixed #34138 -- Avoided table rebuild when adding inline m2m fields on SQLite.
+0f4964535c Removed obsolete references to pysqlite.
+18dd184ef0 Noted that JSON1 extension is enabled by default on SQLite 3.38+.
+e580b891cb Refs #33646 -- Moved tests of QuerySet async interface into async tests.
+3dc9f3ac69 Fixed #34080 -- Fixed __exact lookup when nested arrays contain only NULL values.
+34d63d5a41 Refs #34080 -- Added tests for __exact lookup when non-nested arrays contain only NULL values.
+71e9694856 Fixed #30801 -- Improved guidance for making good use of signals.
+57c2e5da71 Refs #33984 -- Added test for creating copies of model instances with inherited m2m fields.
+d5bcdf858d Fixed #34112 -- Added async-compatible interface to Model methods.
+6103059592 Fixed #34054 -- Created a new fixtures topic.
+c765b62e32 Added stub release notes for 4.1.4.
