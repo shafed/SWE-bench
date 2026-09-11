@@ -1,0 +1,107 @@
+{
+  "version": "v4",
+  "frozen_at": "2026-09-11",
+  "status": "frozen_before_main_outcomes",
+  "amends": "v3 task selection only",
+  "candidate_discovery": "SWE-bench Verified plus manually audited candidates from full SWE-bench",
+  "selection_principles": [
+    "task-visible or quickly discoverable workstreams",
+    "evaluator relevance of substantive workstreams",
+    "exclude known-outcome v1 main tasks",
+    "exclude mechanical multi-file sweeps as primary friendly evidence",
+    "avoid same-topic duplicates in the main friendly arm"
+  ],
+  "orchestration_friendly": [
+    {
+      "instance_id": "sympy__sympy-19201",
+      "source": "SWE-bench non-Verified",
+      "tier": "A",
+      "subtype": "parallel-implementation",
+      "reason": "The task explicitly spans str, pretty, and LaTeX MatrixSlice printing. Implementations live in separate printer modules and the evaluator runs the three corresponding printer test files."
+    },
+    {
+      "instance_id": "django__django-12508",
+      "source": "SWE-bench non-Verified",
+      "tier": "A",
+      "subtype": "parallel-implementation-after-shared-contract",
+      "reason": "dbshell parameter support requires a shared runshell(parameters) contract and separate MySQL, PostgreSQL, SQLite, and Oracle client implementations; FAIL_TO_PASS includes backend-specific tests."
+    },
+    {
+      "instance_id": "astropy__astropy-13398",
+      "source": "SWE-bench Verified",
+      "tier": "B",
+      "subtype": "sequential-mixed",
+      "reason": "Two substantive lines remain after audit: location/topocentric plumbing and direct ITRS observed-frame transforms with refraction. They are partially dependent but evaluator-relevant and non-mechanical."
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-7590",
+      "source": "SWE-bench Verified",
+      "tier": "B",
+      "subtype": "sequential-mixed",
+      "reason": "C++ user-defined literal support requires lexical suffix disambiguation plus AST/signature/ID handling. Integration is coupled, but the two kinds of reasoning are substantive and evaluator-relevant."
+    },
+    {
+      "instance_id": "django__django-11400",
+      "source": "SWE-bench Verified",
+      "tier": "B-",
+      "subtype": "coupled-mixed",
+      "reason": "The issue contains two observable related-filter ordering defects and the evaluator covers both paths. Audit shows a shared ordering mechanism, so this is retained as the weakest friendly slot rather than classified as strict parallel implementation."
+    }
+  ],
+  "single_friendly_controls": [
+    "django__django-15957",
+    "sphinx-doc__sphinx-11510",
+    "sympy__sympy-17630",
+    "django__django-15268",
+    "django__django-15128"
+  ],
+  "orchestration_risky": [
+    "sympy__sympy-16597",
+    "django__django-16263"
+  ],
+  "descriptive_pairs": [
+    ["django__django-12508", "django__django-15957"],
+    ["sphinx-doc__sphinx-7590", "sphinx-doc__sphinx-11510"],
+    ["sympy__sympy-19201", "sympy__sympy-17630"],
+    ["astropy__astropy-13398", "django__django-15268"],
+    ["django__django-11400", "django__django-15128"]
+  ],
+  "pairing_note": "These are descriptive control pairs, not a rerun of the v3 exact-matching optimizer. The primary paired comparison remains SINGLE vs MULTI on the same instance. The five v3 single-friendly controls and two risky tasks were retained to avoid unnecessary post-selection churn.",
+  "reserves": [
+    {
+      "instance_id": "sympy__sympy-14248",
+      "reason": "Strong printer fan-out but excluded from main because it duplicates the printer-workstream structure of sympy__sympy-19201."
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3069",
+      "reason": "Task-visible multiple behaviors, but pass-2 audit collapses them into one cohesive _finalize_figure implementation."
+    },
+    {
+      "instance_id": "django__django-16256",
+      "reason": "Good evaluator coverage across related-manager families, but the implementation is largely a mechanical sync_to_async sweep."
+    }
+  ],
+  "explicit_exclusions": [
+    "sympy__sympy-13878",
+    "sympy__sympy-13852",
+    "django__django-11138",
+    "django__django-14631",
+    "sympy__sympy-18199",
+    "matplotlib__matplotlib-25775"
+  ],
+  "exclusion_note": "The first five are excluded because grader coverage or task visibility does not require all apparent workstreams. matplotlib__matplotlib-25775 is structurally strong but excluded because it was already used in an earlier main series with known outcomes.",
+  "tasks": [
+    "sympy__sympy-19201",
+    "django__django-12508",
+    "astropy__astropy-13398",
+    "sphinx-doc__sphinx-7590",
+    "django__django-11400",
+    "django__django-15957",
+    "sphinx-doc__sphinx-11510",
+    "sympy__sympy-17630",
+    "django__django-15268",
+    "django__django-15128",
+    "sympy__sympy-16597",
+    "django__django-16263"
+  ]
+}
