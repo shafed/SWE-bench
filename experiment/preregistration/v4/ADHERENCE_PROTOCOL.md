@@ -116,11 +116,8 @@ not satisfy A7. If infrastructure makes verification impossible, record
 The frozen overall label is derived as follows:
 
 - `full`: A0, A1, A2, A5, A6 and A7 are `pass`, and A3/A4 are `pass` or `na`;
-- `clear_violation`: any of A0, A1, A2, A3, A4, A5 or A6 is `fail`;
-- `unclear`: no required check is `fail`, but at least one required check is
-  `unclear`;
-- A7 alone being `unclear` because verification was technically impossible does
-  not convert an otherwise full run to `clear_violation`; it yields `unclear`.
+- `clear_violation`: any of A0-A7 is `fail`;
+- `unclear`: no check is `fail`, but at least one required check is `unclear`.
 
 No adherence label changes the primary intention-to-treat comparison. The
 primary comparison includes every measured run. Adherence may be described as a
