@@ -60,8 +60,32 @@ This does **not** affect the primary paired comparison: every instance is still 
 
 The main sample is no longer exclusively SWE-bench Verified: `sympy__sympy-19201` and `django__django-12508` are original SWE-bench instances outside Verified. They were manually subjected to the same construct/evaluator audit, but they do not carry the SWE-bench Verified engineer-verification label. This must be reported as a limitation.
 
+## MULTI treatment refinement
+
+Before the v4 main series, the orchestration instruction was refined so that the treatment follows the task's workstream structure instead of enforcing an arbitrary minimum number of subagents.
+
+The authoritative prompt is `experiment/execution/multi-treatment.txt`.
+
+The policy is:
+
+- before editing production code or deriving implementation details, inspect only enough to identify materially distinct implementation workstreams and their dependencies;
+- delegate every materially distinct implementation workstream that can be meaningfully separated;
+- independent workstreams are delegated to separate subagents in parallel;
+- distinct but dependent workstreams are delegated sequentially as prerequisites become available;
+- dependency alone is not a reason to collapse several substantive workstreams into one delegation;
+- if a task genuinely has only one substantive implementation workstream, one implementation delegation is sufficient;
+- review-only or test-only delegation does not satisfy the implementation-workstream requirement;
+- delegation prompts contain objective, relevant scope, constraints, and acceptance criteria, but not a proposed implementation;
+- the parent remains responsible for review, integration, conflict resolution, and final verification.
+
+This deliberately does **not** impose `>=2 subagents` on every task. The aim is to test mandatory workstream-oriented orchestration while preserving structural differences between orchestration-friendly, single-friendly, and orchestration-risky tasks. Tier-A friendly tasks should naturally permit parallel fan-out; coupled/sequential friendly tasks may instead use multiple sequential delegations when their workstreams are substantively distinct.
+
+The runner can mechanically verify that at least one delegation completed. Whether all materially distinct workstreams were delegated, and whether independent workstreams were parallelized, is a trajectory-level treatment-adherence question and must be checked from the recorded execution trace rather than inferred from subagent count alone.
+
 ## Source of truth
 
 Frozen task set: `experiment/preregistration/v4/selection_v4.json`.
+
+Authoritative MULTI treatment: `experiment/execution/multi-treatment.txt`.
 
 The v3 files remain unchanged as historical preregistration records.
