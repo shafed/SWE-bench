@@ -72,8 +72,8 @@
     },
     {
       "path": "experiment/preregistration/v4/selection_v4.json",
-      "git_blob_sha1": "21ea926d465495ebe06c8790f99cecf1dca1c905",
-      "role": "frozen v4 selection metadata"
+      "git_blob_sha1": "b8688f75353b51704736278c0e5798e1079af6cd",
+      "role": "frozen v4 selection metadata including prior-v3 exposure disclosure"
     },
     {
       "path": "experiment/preregistration/v4/tasks-main-v4.txt",
