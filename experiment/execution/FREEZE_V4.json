@@ -41,6 +41,11 @@
       "role": "preregistered quantitative analysis"
     },
     {
+      "path": "experiment/execution/validate_adherence.py",
+      "git_blob_sha1": "e4324dc9c20c4ad3dac404d57ab9bd2c60f587fc",
+      "role": "frozen adherence coding validator"
+    },
+    {
       "path": "experiment/execution/network/allowlist.txt",
       "git_blob_sha1": "8a2165a0c1e009d436a16bc2c1aad25cd7612fde",
       "role": "main-run network allowlist"
@@ -62,7 +67,7 @@
     },
     {
       "path": "experiment/preregistration/v4/ADHERENCE_PROTOCOL.md",
-      "git_blob_sha1": "592102c8f8d1cddf5c3dc6810190ca29f6388272",
+      "git_blob_sha1": "442ea89b0f76d38fd342265719b304f69f7c4e01",
       "role": "frozen trajectory-level MULTI manipulation check"
     },
     {
