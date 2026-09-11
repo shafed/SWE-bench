@@ -1,7 +1,7 @@
 {
   "version": "v4",
   "frozen_at": "2026-09-11",
-  "status": "frozen_before_main_outcomes",
+  "status": "frozen_before_v4_main_outcomes_with_prior_v3_exposure",
   "amends": "v3 task selection only",
   "candidate_discovery": "SWE-bench Verified plus manually audited candidates from full SWE-bench",
   "selection_principles": [
@@ -11,6 +11,16 @@
     "exclude mechanical multi-file sweeps as primary friendly evidence",
     "avoid same-topic duplicates in the main friendly arm"
   ],
+  "prior_v3_run_instances": [
+    "astropy__astropy-13398",
+    "sphinx-doc__sphinx-11510",
+    "sympy__sympy-17630",
+    "django__django-15268",
+    "django__django-15128",
+    "sympy__sympy-16597",
+    "django__django-16263"
+  ],
+  "prior_exposure_note": "Historical v3 SINGLE/MULTI trajectories from 2026-09-08 exist for these seven retained v4 instances. They used an earlier treatment and are excluded from the v4 outcome analysis, but the v4 sample is therefore not outcome-naive with respect to all prior experimental process information. The v4 treatment, execution order, and final workstream-oriented manipulation checks were frozen before v4 main runs under the final treatment. This prior exposure must be reported as a limitation and no claim of fully outcome-blind sample construction should be made.",
   "orchestration_friendly": [
     {
       "instance_id": "sympy__sympy-19201",
@@ -66,7 +76,7 @@
     ["astropy__astropy-13398", "django__django-15268"],
     ["django__django-11400", "django__django-15128"]
   ],
-  "pairing_note": "These are descriptive control pairs, not a rerun of the v3 exact-matching optimizer. The primary paired comparison remains SINGLE vs MULTI on the same instance. The five v3 single-friendly controls and two risky tasks were retained to avoid unnecessary post-selection churn.",
+  "pairing_note": "These are descriptive control pairs, not a rerun of the v3 exact-matching optimizer. The primary paired comparison remains SINGLE vs MULTI on the same instance. The five v3 single-friendly controls and two risky tasks were retained to avoid unnecessary post-selection churn; seven retained instances also have historical v3 trajectories, as declared above.",
   "reserves": [
     {
       "instance_id": "sympy__sympy-14248",
