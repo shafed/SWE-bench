@@ -328,3 +328,23 @@ Runs made before the isolation amendment are not part of the main series and
 must not be merged into it. Any main-series run must carry
 `metadata.json.network_isolation.enforced: true` and probe results showing the
 blocked hosts unreachable; a run without that evidence is not a measured run.
+
+## Treatment amendment — 2026-09-11
+
+After inspecting the initial MULTI trajectories, `multi-treatment.txt` was
+replaced with a minimal mandatory-orchestration treatment. The previous text
+prescribed early decomposition, separate parallel subagents for independent
+workstreams, an implementation delegation otherwise, and a detailed format
+for delegation prompts. The replacement retains mandatory substantive
+delegation but leaves the decomposition, subagent count and roles, scheduling,
+and integration to the lead agent. A post-hoc review, confirmation, or other
+formality cannot be the only substantive delegated contribution.
+
+The prompt change is recorded by `treatment_sha256` in every run. Runs carrying
+different treatment digests are not interchangeable and must be reported as
+different treatment versions. The live gate's
+`successful_subagent_invocations >= 1` check records an actual
+`SubagentStart`, not merely a tool request, and is necessary but not sufficient
+for compliance: the trajectory must establish that at least one subagent
+performed task-relevant problem solving before the solution was complete and
+that its work could materially affect the solution.

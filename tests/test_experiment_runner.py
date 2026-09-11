@@ -55,6 +55,84 @@ def test_incomplete_trace_does_not_claim_completed_delegation(runner, tmp_path):
         "unverified_subagent_completion|no_final_result")
 
 
+def test_started_gate_state_is_authoritative_even_if_subagent_later_fails(
+    runner, tmp_path
+):
+    path = tmp_path / "trace.jsonl"
+    events = trace_events("multi", completed=0)
+    events[-1]["subagent_stats"]["failed"] = 1
+    path.write_text("\n".join(map(json.dumps, events)))
+
+    assert runner.delegation_status(
+        "multi",
+        runner.read_trace(path),
+        {"successful_subagent_invocations": 1},
+    ) == "pass"
+
+
+def test_failed_tool_request_does_not_unlock_live_gate(runner, tmp_path):
+    path = tmp_path / "trace.jsonl"
+    events = trace_events("multi", completed=0)
+    events[-1]["subagent_stats"].update(spawned=0, failed=1)
+    path.write_text("\n".join(map(json.dumps, events)))
+
+    assert runner.delegation_status(
+        "multi",
+        runner.read_trace(path),
+        {"version": 1, "successful_subagent_invocations": 0},
+    ) == "violation_no_started_subagent|stats_mismatch"
+
+
+def test_trace_preserves_subagent_prompt_start_completion_and_result(runner, tmp_path):
+    path = tmp_path / "trace.jsonl"
+    events = [
+        {
+            "type": "system",
+            "subtype": "task_started",
+            "task_type": "local_agent",
+            "task_id": "child-1",
+            "tool_use_id": "tool-1",
+            "subagent_type": "general-purpose",
+            "description": "Diagnose failure",
+            "prompt": "Find the root cause.",
+        },
+        {
+            "type": "system",
+            "subtype": "task_notification",
+            "task_id": "child-1",
+            "status": "completed",
+            "summary": "The parser drops assumptions.",
+            "usage": {"total_tokens": 42},
+        },
+    ]
+    path.write_text("\n".join(map(json.dumps, events)))
+
+    execution = runner.read_trace(path)["subagent_executions"][0]
+    assert execution["prompt"] == "Find the root cause."
+    assert execution["start_trace_order"] == 1
+    assert execution["completion_trace_order"] == 2
+    assert execution["status"] == "completed"
+    assert execution["result"] == "The parser drops assumptions."
+
+
+def test_nominal_multi_result_requires_live_gate_authorization(runner):
+    result = {"is_error": False}
+    assert runner.gate_integrity_failure("single", result, None) is None
+    assert runner.gate_integrity_failure("multi", {"is_error": True}, None) is None
+    assert runner.gate_integrity_failure("multi", result, None) == (
+        "missing_or_invalid_gate_state"
+    )
+    assert runner.gate_integrity_failure(
+        "multi",
+        result,
+        {
+            "version": 1,
+            "successful_subagent_invocations": 1,
+            "successful_finalizations": 1,
+        },
+    ) is None
+
+
 @pytest.fixture
 def usage_trace(tmp_path):
     # Redacted excerpt from runner-fix-reauth-20260906 MULTI: repeated
@@ -203,6 +281,7 @@ def test_controller_preserves_new_files_and_commits(
                                     "--condition", condition])
     commands = []
     copied_profile = []
+    mounted_gate_dirs = []
 
     def fake_run(cmd, **kwargs):
         commands.append(cmd)
@@ -227,6 +306,8 @@ def test_controller_preserves_new_files_and_commits(
         if cmd[:2] == ["docker", "run"]:
             mount = next(x for x in cmd if x.endswith(":/home/nonroot/.claude-swebench"))
             copied_profile.append(Path(mount.split(":", 1)[0]))
+            gate_mounts = [x for x in cmd if x.endswith(":/orchestration-gate")]
+            mounted_gate_dirs.extend(Path(x.rsplit(":", 1)[0]) for x in gate_mounts)
         assert cmd[0] == "docker"
         return SimpleNamespace(returncode=0, stdout="")
 
@@ -243,7 +324,7 @@ def test_controller_preserves_new_files_and_commits(
             return SimpleNamespace(returncode=0, stdout=(
                 "--model --effort --output-format --verbose --permission-mode "
                 "--append-system-prompt --disallowedTools --safe-mode "
-                "--forward-subagent-text"))
+                "--forward-subagent-text --include-hook-events"))
         if "safe.directory" in script:
             return SimpleNamespace(returncode=0, stdout="")
         assert script.startswith("cd /testbed && ")
@@ -281,6 +362,12 @@ def test_controller_preserves_new_files_and_commits(
                 events[1]["is_error"] = True
             if timed_out:
                 events = events[:1]
+            if condition == "multi" and not timed_out and not auth_error:
+                (mounted_gate_dirs[0] / "state.json").write_text(json.dumps({
+                    "version": 1,
+                    "successful_subagent_invocations": 1,
+                    "successful_finalizations": 1,
+                }))
             stdout.write("\n".join(map(json.dumps, events)) + "\n")
             stdout.flush()
             self.waits = 0
@@ -335,7 +422,7 @@ def test_controller_preserves_new_files_and_commits(
         assert metrics["result_is_error"] is True
     else:
         assert metrics["protocol_status"] == (
-            ("unverified_subagent_completion" if condition == "multi" else "pass")
+            ("violation_no_started_subagent" if condition == "multi" else "pass")
             + "|no_final_result" if timed_out else "pass")
     assert "new.py" in (out / "untracked-files.txt").read_text()
     patch = out / "patch.diff"

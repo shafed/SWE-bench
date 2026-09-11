@@ -55,7 +55,7 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 | Item | Value |
 | --- | --- |
 | Task prompt | `prompt-template.txt` + the instance problem statement, identical in both conditions; digests recorded per run |
-| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, requiring early delegation before implementation details are derived, independent solution-finding by subagents, parallel fan-out of independent workstreams, and orchestrator-owned integration and final verification |
+| Treatment | MULTI only: `multi-treatment.txt` via `--append-system-prompt`, requiring at least one substantive delegated contribution before the solution is complete while leaving decomposition, subagent count and roles, scheduling, and integration to the lead agent |
 | Placebo | none; SINGLE receives no compensating appended prompt |
 | Context management | the CLI's own; not configured, not overridden, and not directly observable |
 | Subagent context | native Claude Code semantics: separate context window, but free to explore the repository with its own tools. No artificially fixed context budget is imposed |
@@ -65,9 +65,9 @@ State: Claude Code `2.1.261`, model `claude-sonnet-5`, frozen 2026-09-06 at tag
 
 | Item | SINGLE | MULTI |
 | --- | --- | --- |
-| Delegation | technically disabled (`Task` disallowed) | at least one implementation subtask required |
-| Orchestration | none | independent workstreams assigned before the orchestrator derives their solutions; subagents derive implementations independently; orchestrator integrates and verifies |
-| Compliance | any `Task`/`Agent` call is a violation | requires `subagent_stats.completed >= 1` |
+| Delegation | technically disabled (`Task` disallowed) | at least one substantive problem-solving contribution required before the solution is complete |
+| Orchestration | none | the lead autonomously chooses what to delegate, subagent count and roles, parallel or sequential execution, and integration |
+| Compliance | any `Task`/`Agent` call is a violation | the live gate requires at least one actual `SubagentStart`; substantive, pre-completion contribution and exclusion of review-only formality are established from the trajectory |
 | Turn budget | none | none |
 | Token budget | none | none |
 | Background-agent wait | not applicable | no CLI-specific ceiling (`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`); bounded by the runner wall-clock limit |
@@ -80,13 +80,13 @@ treatment and is measured as an outcome, not controlled away.
 
 | Item | Value |
 | --- | --- |
-| Trace | full `stream-json` trace per run (`trace.jsonl`), orchestrator and subagent events attributed by `parent_tool_use_id` |
+| Trace | full `stream-json` trace per run (`trace.jsonl`), including hook lifecycle events; orchestrator and subagent events attributed by `parent_tool_use_id` |
 | Resource accounting | last cumulative `result.modelUsage`, summed over all reported models, in `metrics.json.token_accounting`; per-model breakdown retained |
 | Completeness | flagged `partial_snapshot` on timeout, error result, parse errors, or usage-bearing events after the final result; trailing CLI `system` housekeeping does not flag it |
-| Process measures | wall-clock, tool calls by name and by actor, delegation count and prompt size, unique assistant messages |
+| Process measures | wall-clock, tool calls by name and by actor, delegation count and prompt size, subagent start/completion/result summaries, unique assistant messages |
 | Known-unreliable | `result.num_turns` under MULTI (reports 1–2 turns for runs with 20–36 tool calls); recorded but never compared |
 | Not observable | the CLI's internal context compaction, its applied effort setting, its internal prompts. Stated as a limit, not claimed as controlled |
-| Preserved | prompt, treatment, patch, `git-status.txt`, `untracked-files.txt`, setup log, stderr, network probe, metadata with digests |
+| Preserved | prompt, treatment, patch, `git-status.txt`, `untracked-files.txt`, setup log, stderr, network probe, metadata with digests, and per-run `orchestration-gate/state.json` plus ordered `events.jsonl` in MULTI |
 
 ## V — Verification
 
@@ -97,7 +97,7 @@ treatment and is measured as an outcome, not controlled away.
 | Secondary outcome | share of FAIL_TO_PASS and PASS_TO_PASS tests passing |
 | Statistics | exact McNemar on paired resolution; exact paired randomisation test on cost differences (`analyze_runs.py`, committed before the series) |
 | Agent-side verification | whatever the agent chooses to run; not prescribed, not part of the outcome |
-| Stopping | agent stops itself, or the 2700 s wall-clock ends the run; a timeout is an experimental outcome |
+| Stopping | SINGLE stops normally. In MULTI, a managed `Stop` hook rejects finalization until one `SubagentStart`; afterward stopping is normal. The 2700 s wall-clock remains an experimental timeout outcome |
 
 ## G — Governance
 
@@ -125,9 +125,10 @@ treatment and is measured as an outcome, not controlled away.
 3. 12 instances × 1 run per condition does not estimate run-to-run stochastic
    variance. The design is a small paired experiment on one model, not an
    estimate of general harness variance.
-4. The treatment assigns MULTI an orchestrator role and requires at least one
-   implementation delegation. It directs early parallel fan-out when
-   independent workstreams are available and prohibits supplying a solved
-   implementation in delegation prompts. The measured effect therefore
-   includes this explicit scheduling policy rather than subagent availability
-   alone. A MULTI run without a completed delegation is a protocol violation.
+4. The treatment assigns MULTI a lead-agent role and requires at least one
+   substantive delegated contribution before the solution is complete. It
+   leaves the decomposition, number and roles of subagents, scheduling, and
+   integration to the model, but excludes a post-hoc review or other formality
+   as the only delegated contribution. An actual subagent start is necessary
+   but not sufficient for compliance; substantive contribution requires
+   trajectory annotation.

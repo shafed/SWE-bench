@@ -113,6 +113,7 @@ REQUIRED_FLAGS = [
     "--permission-mode",
     "--append-system-prompt",
     "--disallowedTools",
+    "--include-hook-events",
     "--safe-mode",
 ]
 OPTIONAL_FLAGS = [
@@ -124,6 +125,8 @@ OPTIONAL_FLAGS = [
 ]
 
 DELEGATION_TOOLS = {"Task", "Agent"}
+ORCHESTRATION_GATE = EXEC_DIR / "orchestration_gate.py"
+ORCHESTRATION_GATE_SETTINGS = EXEC_DIR / "orchestration-gate-settings.json"
 TOKEN_FIELDS = {
     "input_tokens": "inputTokens",
     "output_tokens": "outputTokens",
@@ -412,6 +415,7 @@ def read_trace(path: Path) -> dict:
         "tools_by_actor": collections.defaultdict(collections.Counter),
         "models": collections.Counter(),
         "delegations": [],
+        "subagent_executions": [],
         "message_usage_by_actor": collections.defaultdict(collections.Counter),
         "messages_without_id": 0,
         "assistant_events": 0,
@@ -424,7 +428,10 @@ def read_trace(path: Path) -> dict:
         return out
 
     message_usage = {}
-    for raw in path.read_text(errors="replace").splitlines():
+    executions = {}
+    for trace_order, raw in enumerate(
+        path.read_text(errors="replace").splitlines(), start=1
+    ):
         line = ANSI_RE.sub("", raw).strip()
         if not line:
             continue
@@ -441,6 +448,33 @@ def read_trace(path: Path) -> dict:
             # Provider-side refusals the CLI retried through, e.g. 401 after an
             # expired OAuth token. Evidence for the infrastructure check below.
             out["api_retry_statuses"][str(obj.get("error_status"))] += 1
+
+        if obj.get("type") == "system" and obj.get("subtype") == "task_started":
+            if obj.get("task_type") == "local_agent":
+                task_id = obj.get("task_id")
+                execution = {
+                    "subagent_id": task_id,
+                    "tool_use_id": obj.get("tool_use_id"),
+                    "subagent_type": obj.get("subagent_type"),
+                    "description": obj.get("description"),
+                    "prompt": obj.get("prompt"),
+                    "start_trace_order": trace_order,
+                    "start_timestamp": obj.get("timestamp"),
+                    "status": "started",
+                }
+                executions[task_id] = execution
+                out["subagent_executions"].append(execution)
+
+        if obj.get("type") == "system" and obj.get("subtype") == "task_notification":
+            task_id = obj.get("task_id")
+            if task_id in executions:
+                executions[task_id].update(
+                    status=obj.get("status"),
+                    result=obj.get("summary"),
+                    usage=obj.get("usage"),
+                    completion_trace_order=trace_order,
+                    completion_timestamp=obj.get("timestamp"),
+                )
 
         if obj.get("type") == "result":
             out["result"] = obj
@@ -578,8 +612,8 @@ def inference_failure(trace: dict, models_seen: dict) -> str | None:
     return None
 
 
-def delegation_status(condition: str, trace: dict) -> str:
-    """A tool request alone does not establish a completed delegation."""
+def delegation_status(condition: str, trace: dict, gate_state: dict | None = None) -> str:
+    """A tool request alone does not establish an actual subagent start."""
     calls = sum(trace["tools"].get(name, 0) for name in DELEGATION_TOOLS)
     result = trace["result"]
     stats = (result or {}).get("subagent_stats") or {}
@@ -587,6 +621,9 @@ def delegation_status(condition: str, trace: dict) -> str:
     completed = stats.get("completed")
     if condition == "single":
         status = "violation_subagent_spawned" if calls or spawned or completed else "pass"
+    elif gate_state is not None:
+        started = gate_state.get("successful_subagent_invocations", 0)
+        status = "pass" if started >= 1 else "violation_no_started_subagent"
     elif completed is not None:
         status = "pass" if completed >= 1 else "violation_no_completed_subagent"
     elif spawned == 0 and calls == 0:
@@ -598,6 +635,19 @@ def delegation_status(condition: str, trace: dict) -> str:
     if result is None:
         status += "|no_final_result"
     return status
+
+
+def gate_integrity_failure(condition: str, result: dict | None, state: dict | None):
+    """Reject a nominal MULTI result if the live gate did not authorize it."""
+    if condition != "multi" or not result or result.get("is_error") is not False:
+        return None
+    if not isinstance(state, dict) or state.get("version") != 1:
+        return "missing_or_invalid_gate_state"
+    if state.get("successful_subagent_invocations", 0) < 1:
+        return "final_result_without_subagent_start"
+    if state.get("successful_finalizations", 0) < 1:
+        return "final_result_without_gate_authorization"
+    return None
 
 
 # ----------------------------------------------------------------------------
@@ -643,6 +693,8 @@ def build_claude_command(condition: str, present: set[str]) -> str:
         parts += ["--disallowedTools", "WebFetch", "WebSearch"]
         if "--forward-subagent-text" in present:
             parts += ["--forward-subagent-text"]
+        if "--include-hook-events" in present:
+            parts += ["--include-hook-events"]
 
     return " ".join(parts)
 
@@ -717,12 +769,23 @@ def main() -> int:
         "problem_statement_sha256": sha256_file(problem_source),
         "treatment_file": treatment_source.name if treatment_source else None,
         "treatment_sha256": sha256_file(treatment_source) if treatment_source else None,
+        "orchestration_gate": condition == "multi",
+        "orchestration_gate_sha256": (
+            sha256_file(ORCHESTRATION_GATE) if condition == "multi" else None
+        ),
+        "orchestration_gate_settings_sha256": (
+            sha256_file(ORCHESTRATION_GATE_SETTINGS)
+            if condition == "multi" else None
+        ),
         "setup_started_at": utc_now(),
     }
     write_json(out / "metadata.json", metadata)
 
     trace_path = out / "trace.jsonl"
     stderr_path = out / "stderr.log"
+    gate_dir = out / "orchestration-gate" if condition == "multi" else None
+    if gate_dir is not None:
+        gate_dir.mkdir()
 
     safe_iid = "".join(c if c.isalnum() else "-" for c in iid)
     container = f"nir-{safe_iid}-{condition}-{os.getpid()}"
@@ -786,6 +849,16 @@ def main() -> int:
                 "-e",
                 "CLAUDE_CONFIG_DIR=/home/nonroot/.claude-swebench",
             ]
+            if gate_dir is not None:
+                docker_run += [
+                    "-v",
+                    f"{ORCHESTRATION_GATE.resolve()}:/opt/nir/orchestration_gate.py:ro",
+                    "-v",
+                    f"{ORCHESTRATION_GATE_SETTINGS.resolve()}:"
+                    "/etc/claude-code/managed-settings.json:ro",
+                    "-v",
+                    f"{gate_dir.resolve()}:/orchestration-gate",
+                ]
             if DOCKER_NETWORK:
                 docker_run += ["--network", DOCKER_NETWORK]
             docker_run += [image, "sleep", "infinity"]
@@ -935,6 +1008,10 @@ def main() -> int:
                 # Let the runner's wall-clock timeout, not Claude Code's print-mode
                 # background-task ceiling, govern how long subagents may run.
                 claude_env["CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS"] = "0"
+                # A noncompliant model may try to stop repeatedly. Keep Claude
+                # Code's safety cap above anything reachable within our wall
+                # clock so it cannot turn repeated rejections into completion.
+                claude_env["CLAUDE_CODE_STOP_HOOK_BLOCK_CAP"] = "1000000"
 
             claude_command = build_claude_command(condition, present)
             metadata["claude_command"] = claude_command
@@ -1086,7 +1163,18 @@ def main() -> int:
 
     subagent_stats = result.get("subagent_stats") if result else None
     task_calls = sum(tr["tools"].get(name, 0) for name in DELEGATION_TOOLS)
-    protocol_status = delegation_status(condition, tr)
+    gate_state = None
+    if gate_dir is not None:
+        try:
+            gate_state = json.loads((gate_dir / "state.json").read_text())
+        except FileNotFoundError:
+            gate_state = {"status": "missing"}
+        except (OSError, json.JSONDecodeError):
+            gate_state = {"status": "unreadable"}
+    protocol_status = delegation_status(condition, tr, gate_state)
+    gate_failure = gate_integrity_failure(condition, result, gate_state)
+    if gate_failure:
+        protocol_status += f"|configuration_{gate_failure}"
 
     # A model mismatch means MULTI differs from SINGLE by architecture AND model.
     models_seen = dict(tr["models"])
@@ -1135,6 +1223,15 @@ def main() -> int:
         "subagent_stats": subagent_stats,
         "task_calls": task_calls,
         "delegations": tr["delegations"],
+        "subagent_executions": tr["subagent_executions"],
+        "orchestration_gate": {
+            "enabled": condition == "multi",
+            "state": gate_state,
+            "integrity_failure": gate_failure,
+            "events_file": (
+                "orchestration-gate/events.jsonl" if gate_dir is not None else None
+            ),
+        },
         "delegation_prompt_chars_total": sum(
             d["prompt_chars"] for d in tr["delegations"]
         ),
@@ -1165,6 +1262,9 @@ def main() -> int:
         return 20
     if models_seen and not model_ok:
         print(f"CONFIG VIOLATION: unexpected models {models_seen}", file=sys.stderr)
+        return 50
+    if gate_failure:
+        print(f"CONFIG VIOLATION: {gate_failure}", file=sys.stderr)
         return 50
     if not patch_ok:
         return 40
