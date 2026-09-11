@@ -15,8 +15,9 @@ workstreams, and parent-owned integration and verification. Every other harness
 dimension is held as constant as the Claude Code interface permits.
 
 Authoritative sources for the v4 main series:
-`experiment/execution/runner.py` (digest recorded per run), `PROTOCOL.md`,
-`multi-treatment.txt`, `../preregistration/v4/selection_v4.json`, and
+`experiment/execution/runner.py`, `PROTOCOL.md`, `multi-treatment.txt`,
+`FREEZE_V4.json`, `../preregistration/v4/selection_v4.json`,
+`../preregistration/v4/ADHERENCE_PROTOCOL.md`, and
 `../preregistration/v4/AMENDMENT.md`. Earlier v1/v3 preregistration and amendment
 files are historical records. Where descriptive documentation and the runner
 disagree about what actually executed, the run artifacts and runner are the
@@ -81,11 +82,19 @@ that delegated implementation choices remain genuinely delegated.
 | Review/test-only delegation | n/a | does not satisfy treatment |
 | Parent responsibility | solves task directly | reviews returned work, integrates changes, resolves conflicts, performs final verification |
 | Mechanical compliance | any `Task`/`Agent` call is a violation | `subagent_stats.completed >= 1` is the minimum automatic check |
-| Full adherence | n/a | checked from trajectory: whether separable workstreams were delegated and independent ones parallelized |
+| Full adherence | n/a | frozen A0-A7 trajectory coding in `../preregistration/v4/ADHERENCE_PROTOCOL.md` |
 | Turn budget | none | none |
 | Token budget | none | none |
 | Background-agent wait | not applicable | no CLI-specific ceiling (`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`); bounded by runner wall-clock limit |
 | Wall-clock | 2700 s | 2700 s |
+
+The A0-A7 manipulation check covers: completed delegation; delegation before
+production-code modification; substantive implementation ownership; workstream
+coverage; parallel fan-out when independence exists; subagent solution
+independence; parent review/integration; and parent final verification.
+`validate_adherence.py` enforces the frozen coding vocabulary, overall-label
+rule, exact v4 instance set and A0 consistency with run metrics. Adherence never
+changes inclusion in the primary intention-to-treat comparison.
 
 Tokens are deliberately not equalised: extra compute in MULTI is part of the
 treatment's cost-performance effect and is measured as an outcome.
@@ -98,6 +107,7 @@ treatment's cost-performance effect and is measured as an outcome.
 | Resource accounting | last cumulative `result.modelUsage`, summed over all reported models, in `metrics.json.token_accounting`; per-model breakdown retained |
 | Completeness | flagged partial on timeout, error result, parse errors, or usage-bearing activity after the final result; trailing non-usage CLI housekeeping does not invalidate a cumulative snapshot |
 | Process measures | wall-clock, tool calls by name and actor, delegation count/prompt size, unique assistant messages, subagent spawned/completed counts |
+| Treatment-adherence evidence | task/repository plus trace, metrics, metadata, patch and git-status artifacts; gold patch/evaluator outcome excluded during adherence coding |
 | Known-unreliable | `result.num_turns` under MULTI; recorded but not used as the comparative process measure |
 | Not observable | internal context compaction, exact internal prompts, server-side applied effort, and other undisclosed Claude Code internals |
 | Preserved | task prompt, treatment, patch, git status, untracked files, setup log, stderr, network probe, metadata with digests, full execution trace |
@@ -124,6 +134,9 @@ treatment's cost-performance effect and is measured as an outcome.
 | Gold patch | may be inspected only during pre-experiment task-selection/construct audit; never supplied to the solving model |
 | Order | v4 task and within-instance condition order frozen in `run-order-v4.tsv`; six SINGLE-first and six MULTI-first; `run_series.py` defaults to the v4 files |
 | Order generation | Python `random.Random(20260911)`: shuffle the 12-task list, then shuffle six `multi-first` plus six `single-first` labels and assign them in order |
+| Freeze manifest | `FREEZE_V4.json` pins Git blob hashes for execution, treatment, sample/order, analysis, adherence and main network inputs; `run_series.py` verifies it before main inference |
+| Freeze bypass | only `--allow-unfrozen-runner`, reserved for validation and prohibited for reported main runs |
+| Adherence | A0-A7 protocol frozen in `../preregistration/v4/ADHERENCE_PROTOCOL.md`; non-compliance is retained and reported, never retried/excluded |
 | Substitution | only for documented infrastructure failure under the preregistered paired-replacement rules |
 | Not substituted | timeouts, empty/invalid patches, failing tests, poor delegation, treatment non-compliance — experimental outcomes |
 | Amendments | v4 task-selection/treatment amendment recorded in `../preregistration/v4/AMENDMENT.md` before v4 main outcomes |
