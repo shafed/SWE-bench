@@ -1,0 +1,32 @@
+4aadc3203cbed61c72c82740bc0e110d1171554b
+## master
+4aadc3203 SWE-bench
+6fd65310f Merge pull request #16625 from asmeurer/travis-fix
+ef94e5588 Merge pull request #16452 from smichr/band
+c2057cfea Merge pull request #16586 from Upabjojr/array_utils_additions
+0afa9cf54 Fix the tests not running on Travis
+b750e609a Merge pull request #16503 from anpandey/sum_alignment
+bf55a1fe3 Merge pull request #16388 from sympy/1.4
+26632462e Merge branch 'master' into 1.4
+52eea70a0 Bump the version to 1.4 (final)
+a53b98b84 Merge pull request #16462 from smichr/irreg
+90d4888cb Merge pull request #16614 from smichr/conf
+5ae62ff67 banded to sparsetools; import with *
+833ce6618 Merge pull request #16601 from jsbarbosa/master
+a2b5ec7bb pep8
+8d4e9f0b7 improve rows/cols handling when None
+e085d6483 included comments and imported sign
+8decaad74 Update sympy/geometry/tests/test_parabola.py
+0489dc581 deleted unused param "session" from process_split
+136766ae4 Merge pull request #16610 from Qommon/feature-factortools
+b97cbe99e Merge pull request #16605 from Sc0rpi0n101/error-sympy
+da7fcbc9b Update test_polygon.py
+e19dedcf3 review edits
+7049625c2 tiny modification of doc, including mistakes and typos
+714a378c7 Merge pull request #16600 from Sc0rpi0n101/ccode-issue
+96fab933b Merge pull request #16459 from abhinav28071999/partition
+828645ba4 Update test_polygon.py
+3d5dc382d include test and parentesis
+0596f4a6e Performane fix for polygon.py
+07c359ce0 move docstring comment to inlines
+69e5d23c1 removed duplicate entries in ccode

@@ -1,0 +1,2 @@
+ M sympy/matrices/dense.py
+ M sympy/matrices/expressions/tests/test_blockmatrix.py

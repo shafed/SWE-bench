@@ -1,0 +1,32 @@
+841445925feffe8eeb6f8fbcb72745af1a0de103
+## master
+841445925f SWE-bench
+ba80d1e493 Merge pull request #18224 from Upabjojr/fix_tensor_index_structure
+f8e7019fed Merge pull request #18152 from Smit-create/powerfunction
+f3dcc2aa46 Merge pull request #18207 from Guardianofgotham/master
+e3fc1f64ca Tensor module: refactory to allow mixing PartialDerivative and TensAdd
+3712893590 Merge pull request #18220 from V1krant/2975_integrals
+f15276f693 Merge pull request #18213 from Jaime02/patch-2
+15a7f89a97 Update README.rst
+1537dbcb36 Update README.rst
+d91a890c90 Merge pull request #18222 from namannimmo10/Fix-#8615
+24d6eecc7a Tabs to spaces
+3448f91fb5 Definitively fixed tabbing error, I hope
+270d8e5750 Fixed identation error
+781fcc5a1a Added tests for coordinate property
+e31d092784 Simplified return args
+6b70d738cc Add test for intersection of lines
+fdf9d73ded integrals: test for issue #2975
+255bb99062 Merge pull request #18218 from gschintgen/fix-18119-finiteset-complement
+07c9a46b3f Merge pull request #18211 from Smit-create/issue18188
+55d124d140 Fix FiniteSet._complement() for Intervals and S.Reals
+5badcfba98 Updated Latex
+3278daa163 Update relational.py
+222ebb827f Updated test_issue_18188
+8ac5ad200d Merge pull request #18191 from ethankward/pow_recursion
+7f509f88c6 Merge pull request #18098 from oscarbenjamin/pr_flake8_misc
+f0ec9cf21a Fixed another whitespace
+33b04bf552 Fixed trailing whitespace
+f94a692d50 Added a property for Point's coordinates
+612dba06a7 Fix typo in docstring in enumerative
+ade32198b0 Don't shadow global with loop variable

@@ -1,0 +1,175 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 9735ce10c8..af63d26c86 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -435,6 +435,102 @@ class Query(BaseExpression):
+         annotation.set_source_expressions(new_exprs)
+         return annotation, col_cnt
+ 
++    def _strip_unreferenced_annotations(self, added_aggregate_names):
++        """
++        Remove annotations from self.annotations that aren't referenced by
++        a filter, another annotation (including one in
++        added_aggregate_names), or the ordering. Such annotations don't
++        affect the aggregation result, so dropping them avoids unnecessary
++        joins and computations (e.g. for `.annotate(Count(...)).count()`).
++        """
++
++        def walk(expr, visit):
++            # Recursively walk both expression trees (via
++            # get_source_expressions(), e.g. Case/When, Aggregate.filter's
++            # resolved Q, etc.) and Node trees (e.g. WhereNode), calling
++            # visit() on every node encountered (including expr itself).
++            if expr is None:
++                return
++            visit(expr)
++            if hasattr(expr, "children"):
++                for child in expr.children:
++                    walk(child, visit)
++            elif hasattr(expr, "get_source_expressions"):
++                for child in expr.get_source_expressions():
++                    walk(child, visit)
++
++        referenced_aliases = set()
++
++        def note_annotation_ref(expr):
++            if isinstance(expr, Ref):
++                referenced_aliases.add(expr.refs)
++                return
++            for alias, annotation in self.annotations.items():
++                if expr is annotation:
++                    referenced_aliases.add(alias)
++                    return
++
++        walk(self.where, note_annotation_ref)
++        for annotation in self.annotations.values():
++            for source_expr in annotation.get_source_expressions():
++                walk(source_expr, note_annotation_ref)
++        for item in self.order_by:
++            if isinstance(item, str):
++                if item == "?":
++                    continue
++                name = item[1:] if item.startswith("-") else item
++                resolved, _ = refs_expression(
++                    name.split(LOOKUP_SEP), self.annotations
++                )
++                if resolved:
++                    note_annotation_ref(resolved)
++            else:
++                walk(item, note_annotation_ref)
++
++        removed_aliases = [
++            alias
++            for alias in self.annotations
++            if alias not in added_aggregate_names and alias not in referenced_aliases
++        ]
++        if not removed_aliases:
++            return
++        for alias in removed_aliases:
++            del self.annotations[alias]
++            if self.annotation_select_mask is not None:
++                self.annotation_select_mask.discard(alias)
++        self._annotation_select_cache = None
++
++        # Some of the joins in the query may only have been there to serve
++        # the annotations that were just removed (e.g. Count("chapters")
++        # joining to the "chapters" table). Rather than trying to figure out
++        # exactly what the removed annotations contributed to
++        # alias_refcount (they may have set up joins indirectly, e.g.
++        # through a correlated OuterRef), recompute from scratch which
++        # joins are still needed by what's left (the filters and the
++        # remaining annotations) and drop the query's references to any
++        # other joins so they don't linger in the compiled SQL -- where
++        # they could fan-out the result set through a multi-valued
++        # relation.
++        needed_aliases = set()
++
++        def note_join_chain(expr):
++            if not isinstance(expr, Col):
++                return
++            alias = expr.alias
++            while (
++                alias not in needed_aliases
++                and isinstance(self.alias_map.get(alias), Join)
++            ):
++                needed_aliases.add(alias)
++                alias = self.alias_map[alias].parent_alias
++
++        walk(self.where, note_join_chain)
++        for annotation in self.annotations.values():
++            walk(annotation, note_join_chain)
++        for alias, join in self.alias_map.items():
++            if isinstance(join, Join) and alias not in needed_aliases:
++                self.alias_refcount[alias] = 0
++
+     def get_aggregation(self, using, added_aggregate_names):
+         """
+         Return the dictionary with the values of the existing aggregations.
+@@ -446,6 +542,29 @@ class Query(BaseExpression):
+             for alias, annotation in self.annotations.items()
+             if alias not in added_aggregate_names
+         ]
++        # Annotations that aren't referenced by a filter, another
++        # annotation (including one of the aggregates being added), or the
++        # ordering don't influence the aggregation result. Strip them so
++        # that they don't needlessly force the use of a subquery (and the
++        # joins/computations that come with it) below, similar to how
++        # select_related() is ignored for aggregates. This is only safe when
++        # the (possibly implicit, e.g. default_cols) select isn't otherwise
++        # significant for the result, i.e. when there's no risk of it being
++        # used to determine distinctness or which rows a slice contains, and
++        # when there isn't an explicit GROUP BY to honor.
++        if (
++            existing_annotations
++            and not self.distinct
++            and not self.combinator
++            and not self.is_sliced
++            and not isinstance(self.group_by, tuple)
++        ):
++            self._strip_unreferenced_annotations(added_aggregate_names)
++            existing_annotations = [
++                annotation
++                for alias, annotation in self.annotations.items()
++                if alias not in added_aggregate_names
++            ]
+         # Decide if we need to use a subquery.
+         #
+         # Existing annotations would cause incorrect results as get_aggregation()
+diff --git a/tests/aggregation/tests.py b/tests/aggregation/tests.py
+index 39c8a45707..a8b34fe3d0 100644
+--- a/tests/aggregation/tests.py
++++ b/tests/aggregation/tests.py
+@@ -541,6 +541,33 @@ class AggregateTestCase(TestCase):
+         sql = ctx.captured_queries[0]["sql"]
+         self.assertIn("SELECT COUNT(*) ", sql)
+ 
++    def test_count_unreferenced_annotation_stripped(self):
++        """
++        An annotation that isn't referenced by a filter, another
++        annotation, or the ordering doesn't affect the result of count()
++        and is stripped from the query so it doesn't force an unnecessary
++        join or GROUP BY/subquery.
++        """
++        with self.assertNumQueries(1) as ctx:
++            count = Book.objects.annotate(Count("authors")).count()
++        sql = ctx.captured_queries[0]["sql"]
++        self.assertEqual(count, Book.objects.count())
++        self.assertNotIn("GROUP BY", sql)
++        self.assertNotIn("JOIN", sql)
++
++    def test_count_referenced_annotation_kept(self):
++        """
++        An annotation that's referenced by a filter is kept (even though
++        it isn't otherwise used), so that count() remains correct despite
++        the annotation spanning a multi-valued relation.
++        """
++        count = (
++            Book.objects.annotate(num_authors=Count("authors"))
++            .filter(num_authors__gt=1)
++            .count()
++        )
++        self.assertEqual(count, 3)
++
+     def test_count_distinct_expression(self):
+         aggs = Book.objects.aggregate(
+             distinct_ratings=Count(

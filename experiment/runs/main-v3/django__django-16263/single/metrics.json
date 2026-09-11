@@ -1,0 +1,160 @@
+{
+  "instance_id": "django__django-16263",
+  "condition": "single",
+  "position": 5,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 782.3647627090004,
+  "patch_collection_ok": true,
+  "patch_bytes": 5847,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "Waiting for the full test suite to finish (or the scheduled check-in).",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 84,
+  "total_cost_usd_reported": 1.9800815999999997,
+  "usage_reported": {
+    "input_tokens": 168,
+    "cache_creation_input_tokens": 92240,
+    "cache_read_input_tokens": 5296823,
+    "output_tokens": 55027,
+    "output_tokens_details": {
+      "thinking_tokens": 41702
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 92240,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 58,
+        "cache_read_input_tokens": 107045,
+        "cache_creation_input_tokens": 102,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 102
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1249,
+      "output_tokens": 55041,
+      "cache_read_input_tokens": 5296823,
+      "cache_creation_input_tokens": 92240,
+      "total_tokens": 5445353
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1081,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001151,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 168,
+        "outputTokens": 55027,
+        "cacheReadInputTokens": 5296823,
+        "cacheCreationInputTokens": 92240,
+        "webSearchRequests": 0,
+        "costUSD": 1.9789305999999998,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 41702,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 168,
+      "output_tokens": 567,
+      "cache_read_input_tokens": 5296823,
+      "cache_creation_input_tokens": 92240
+    }
+  },
+  "unique_assistant_messages": 84,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 3,
+  "usage_events_after_result": 0,
+  "assistant_events": 153,
+  "models_seen": {
+    "claude-sonnet-5": 153
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 54,
+    "Edit": 9,
+    "Read": 17,
+    "ScheduleWakeup": 2,
+    "ToolSearch": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 54,
+      "Edit": 9,
+      "Read": 17,
+      "ScheduleWakeup": 2,
+      "ToolSearch": 1
+    }
+  },
+  "tool_calls_total": 83,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T06:10:46.958486+00:00"
+}

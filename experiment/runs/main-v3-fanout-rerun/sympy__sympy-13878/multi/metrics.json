@@ -1,0 +1,201 @@
+{
+  "instance_id": "sympy__sympy-13878",
+  "condition": "multi",
+  "position": 1,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 595.804721737,
+  "patch_collection_ok": true,
+  "patch_bytes": 5344,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "All temporary worktrees/branches removed; only the intended change to `sympy/stats/crv_types.py` remains in the working tree.\n\n## Summary\n\nAdded `_cdf` methods to all 11 distributions from the issue in `sympy/stats/crv_types.py` (`Erlang` is fixed automatically since it reuses `GammaDistribution`):\n\n- **Arcsin**: `2*asin(sqrt((x-a)/(b-a)))/pi` (piecewise)\n- **Dagum**: `(1+(x/b)**-a)**-p`\n- **Gamma** (and Erlang): `lowergamma(k, x/theta)/gamma(k)`\n- **GammaInverse**: `uppergamma(a, b/x)/gamma(a)`\n- **Kumaraswamy**: `1-(1-x**a)**b`\n- **Laplace**: piecewise exponential\n- **Frechet**: `exp(-((x-m)/s)**-a)`\n- **Logistic**: `1/(1+exp(-(x-mu)/s))`\n- **Nakagami**: `lowergamma(mu, (mu/omega)*x**2)/gamma(mu)`\n- **StudentT**: hypergeometric closed form\n- **UniformSum**: Irwin-Hall sum formula\n\nAlso fixed a latent bug where `Erlang(name, k, l)` did `1/l` — under Python 3 true division this silently turned an integer rate into a float even when the user passed exact integers, which is exactly why the issue's `cdf(Erlang(\"x\", 1, 1))(1)` example returned a spurious float; changed to `S.One/l`.\n\nVerified: all 12 test cases from the issue now evaluate instantly to exact closed forms (no hangs, no unevaluated `Integral`s, no exceptions, no spurious floats); numerically differentiating each new `_cdf` matches the corresponding `pdf` at sample points; and the full `sympy/stats/tests/test_continuous_rv.py` suite shows no new failures versus baseline.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 40,
+  "total_cost_usd_reported": 1.9689948,
+  "usage_reported": {
+    "input_tokens": 80,
+    "cache_creation_input_tokens": 25597,
+    "cache_read_input_tokens": 2615326,
+    "output_tokens": 10355,
+    "output_tokens_details": {
+      "thinking_tokens": 1762
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 25597,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 684,
+        "cache_read_input_tokens": 79050,
+        "cache_creation_input_tokens": 418,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 418
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2184,
+      "output_tokens": 43173,
+      "cache_read_input_tokens": 5313649,
+      "cache_creation_input_tokens": 151210,
+      "total_tokens": 5510216
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1942,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002022,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 242,
+        "outputTokens": 43157,
+        "cacheReadInputTokens": 5313649,
+        "cacheCreationInputTokens": 151210,
+        "webSearchRequests": 0,
+        "costUSD": 1.9669728,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 9434,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 112,
+      "output_tokens": 490,
+      "cache_read_input_tokens": 3231633,
+      "cache_creation_input_tokens": 62776
+    },
+    "toolu_01SCPXy3GQMLDtS1f83DrgLu": {
+      "input_tokens": 70,
+      "output_tokens": 178,
+      "cache_read_input_tokens": 1164174,
+      "cache_creation_input_tokens": 50829
+    },
+    "toolu_01TqkzL2V1sgtXyepJPdaTth": {
+      "input_tokens": 60,
+      "output_tokens": 235,
+      "cache_read_input_tokens": 917842,
+      "cache_creation_input_tokens": 37605
+    }
+  },
+  "unique_assistant_messages": 121,
+  "messages_without_id": 0,
+  "result_events": 3,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 220,
+  "models_seen": {
+    "claude-sonnet-5": 220
+  },
+  "subagent_stats": {
+    "spawned": 2,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 2
+    },
+    "started_in_background": 2,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 2,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 2
+    }
+  },
+  "task_calls": 2,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_01SCPXy3GQMLDtS1f83DrgLu",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 63,
+      "prompt_chars": 5175
+    },
+    {
+      "tool_use_id": "toolu_01TqkzL2V1sgtXyepJPdaTth",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 57,
+      "prompt_chars": 5407
+    }
+  ],
+  "delegation_prompt_chars_total": 10582,
+  "tool_calls_by_name": {
+    "Agent": 2,
+    "Bash": 73,
+    "Edit": 21,
+    "ListAgents": 1,
+    "Read": 27,
+    "ScheduleWakeup": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 2,
+      "Bash": 30,
+      "Edit": 7,
+      "ListAgents": 1,
+      "Read": 12,
+      "ScheduleWakeup": 2
+    },
+    "toolu_01SCPXy3GQMLDtS1f83DrgLu": {
+      "Bash": 24,
+      "Edit": 7,
+      "Read": 6
+    },
+    "toolu_01TqkzL2V1sgtXyepJPdaTth": {
+      "Bash": 19,
+      "Edit": 7,
+      "Read": 9
+    }
+  },
+  "tool_calls_total": 126,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T11:42:48.905005+00:00"
+}

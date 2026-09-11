@@ -1,0 +1,2 @@
+ M sympy/functions/special/tests/test_zeta_functions.py
+ M sympy/functions/special/zeta_functions.py

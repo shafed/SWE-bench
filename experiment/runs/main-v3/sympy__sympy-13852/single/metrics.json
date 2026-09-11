@@ -1,0 +1,156 @@
+{
+  "instance_id": "sympy__sympy-13852",
+  "condition": "single",
+  "position": 9,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 114.63990663999903,
+  "patch_collection_ok": true,
+  "patch_bytes": 1123,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "I implemented the minimal fix: `polylog(2, Rational(1,2))` now automatically evaluates to `-log(2)**2/2 + pi**2/12` via a new special case in `polylog.eval`, and added a regression test in `sympy/functions/special/tests/test_zeta_functions.py`. Existing tests still pass (verified by running each test function directly, since the test runner's warning-to-error filter fails on unrelated Python 3.9 `collections` deprecation issues in this old sympy codebase — a pre-existing environment issue, not caused by this change).",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 24,
+  "total_cost_usd_reported": 0.27056759999999996,
+  "usage_reported": {
+    "input_tokens": 48,
+    "cache_creation_input_tokens": 20474,
+    "cache_read_input_tokens": 647538,
+    "output_tokens": 5740,
+    "output_tokens_details": {
+      "thinking_tokens": 2305
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 20474,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 189,
+        "cache_read_input_tokens": 34725,
+        "cache_creation_input_tokens": 656,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 656
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1646,
+      "output_tokens": 5754,
+      "cache_read_input_tokens": 647538,
+      "cache_creation_input_tokens": 20474,
+      "total_tokens": 675412
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1598,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001668,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 48,
+        "outputTokens": 5740,
+        "cacheReadInputTokens": 647538,
+        "cacheCreationInputTokens": 20474,
+        "webSearchRequests": 0,
+        "costUSD": 0.26889959999999996,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 2305,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 48,
+      "output_tokens": 203,
+      "cache_read_input_tokens": 647538,
+      "cache_creation_input_tokens": 20474
+    }
+  },
+  "unique_assistant_messages": 24,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 40,
+  "models_seen": {
+    "claude-sonnet-5": 40
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 16,
+    "Edit": 2,
+    "Read": 5
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 16,
+      "Edit": 2,
+      "Read": 5
+    }
+  },
+  "tool_calls_total": 23,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T06:59:43.679159+00:00"
+}

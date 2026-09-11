@@ -1,0 +1,78 @@
+diff --git a/CHANGES b/CHANGES
+index ce1185c76..901c2a3d8 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -72,6 +72,8 @@ Bugs fixed
+   Patch by Bénédikt Tran.
+ * #10930: Highlight all search terms on the search results page.
+   Patch by Dmitry Shachnev.
++* #10620: Fix the ``source-read`` event not being emitted for files
++  read by the ``include`` directive.
+ 
+ Testing
+ -------
+diff --git a/sphinx/directives/other.py b/sphinx/directives/other.py
+index 19f7c0a8d..d215cbcb6 100644
+--- a/sphinx/directives/other.py
++++ b/sphinx/directives/other.py
+@@ -376,7 +376,35 @@ class Include(BaseInclude, SphinxDirective):
+         rel_filename, filename = self.env.relfn2path(self.arguments[0])
+         self.arguments[0] = filename
+         self.env.note_included(filename)
+-        return super().run()
++
++        # To properly emit "source-read" events from included RST text,
++        # we must patch the ``insert_input`` method of the state machine
++        # so that the content of the included file is passed through the
++        # "source-read" event before it is inserted into the document.
++        original_insert_input = self.state_machine.insert_input
++
++        def insert_input(include_lines: list[str], source: str) -> None:
++            # First, we need to combine the lines back into text so that
++            # we can send it with the source-read event.
++            # In docutils, this is done with:
++            # `"\n".join(include_lines)`
++            text = '\n'.join(include_lines)
++
++            # Emit the "source-read" event
++            arg = [text]
++            self.env.app.events.emit('source-read', rel_filename, arg)
++            text = arg[0]
++
++            # Split back into lines and reset the insertion point
++            include_lines = text.splitlines()
++            original_insert_input(include_lines, source)
++
++        self.state_machine.insert_input = insert_input
++        try:
++            return super().run()
++        finally:
++            # Restore the original insert_input method to isolate the change
++            del self.state_machine.insert_input
+ 
+ 
+ def setup(app: Sphinx) -> dict[str, Any]:
+diff --git a/tests/test_directive_other.py b/tests/test_directive_other.py
+index f221db075..201b821d0 100644
+--- a/tests/test_directive_other.py
++++ b/tests/test_directive_other.py
+@@ -148,3 +148,19 @@ def test_toctree_twice(app):
+     assert_node(doctree[0][0],
+                 entries=[(None, 'foo'), (None, 'foo')],
+                 includefiles=['foo', 'foo'])
++
++
++@pytest.mark.sphinx(testroot='basic', srcdir='include_source_read')
++def test_include_source_read_event(app):
++    included = app.srcdir / 'inc.rst'
++    included.write_text('&REPLACE_ME;\n', encoding='utf8')
++
++    def source_read_handler(app, docname, source):
++        source[0] = source[0].replace('&REPLACE_ME;', 'REPLACED')
++
++    app.connect('source-read', source_read_handler)
++
++    text = '.. include:: inc.rst\n'
++    doctree = restructuredtext.parse(app, text, 'index')
++    assert 'REPLACED' in doctree.astext()
++    assert '&REPLACE_ME;' not in doctree.astext()

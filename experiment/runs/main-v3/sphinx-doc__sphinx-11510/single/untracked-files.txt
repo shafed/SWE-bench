@@ -1,0 +1,2 @@
+tests/roots/test-directive-include/conf.py
+tests/roots/test-directive-include/something-to-include.txt

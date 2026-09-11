@@ -1,0 +1,32 @@
+9c51407fd2e57e54589a1319097bd6089c1041ec
+## master
+9c51407fd SWE-bench
+c935e1d10 Merge pull request #13846 from smichr/segment
+b9adfc7de Merge pull request #13845 from vishalg2235/derivative.doit
+910840310 test added for doit()
+9f440f16f edits
+b54a8a779 n.is_symbol instead of n,is_integer
+18f04d839 Merge pull request #13837 from Subhash-Saurabh/mechanics_typo
+d35c32df3 test cases added
+06280d24b derivatives made commutative
+5ba641336 Merge pull request #13840 from normalhuman/13831_r_functions
+d2ff5866e Merge pull request #13834 from normalhuman/13825_solveset_complex_expand
+4df33df01 Merge pull request #12147 from Yathartha22/check_assumption
+b5c492542 Update solvers.py
+61368574d Merge pull request #13807 from normalhuman/13799_plane_point
+9a96bdadf directed segments, self-intersecting poly
+3b63435bb Derivative doit() fixed
+91ca5cb19 Merge pull request #13838 from ArighnaIITG/12239_issue1
+35c9d4aa3 Expand the set of R functions known to rcode
+c4d96d7eb Changed solveset and added test cases
+438e378af Fixed a typo in mechanics documentation
+8be967b5b Merge pull request #13817 from normalhuman/13802_diff_error
+57dc77014 Merge pull request #13832 from normalhuman/13831_jscode_functions
+ede61a71d Do not apply expand_complex to expressions with AppliedUndef
+dcc3df303 Expand the set of JavaScript functions known to jscode
+265d30890 Merge pull request #13798 from Subhash-Saurabh/13055_issue
+e4dddb3d2 Merge pull request #13827 from normalhuman/sympify_docstring
+58fdfa10d Correct the docstring of sympify: ints become instances of sympy.Integer
+67d0549f9 Correct errors in new tests (only hit with --slow testing)
+41299c238 Retain backward compatibility in plane.arbitrary_point
+33ad4068e Merge pull request #13818 from abhigyank/13617_binomial

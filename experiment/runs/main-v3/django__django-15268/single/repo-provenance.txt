@@ -1,0 +1,32 @@
+d87e54e73965c30f7f8196b7ca1bb717c97879d2
+## main
+d87e54e739 SWE-bench
+0ab58c1209 Refs #29026 -- Allowed customizing InteractiveMigrationQuestioner's prompt destination.
+03a6488116 Refs #31026 -- Changed @jinja2_tests imports to be relative.
+4400d8568a Fixed #33391 -- Clarified Aggregate.empty_result_set_value docs.
+a21a63cc28 Refs #27753 -- Removed unused django.utils.text._replace_entity() and _entity_re.
+826701232c Removed obsolete Oracle's test_client_encoding() test.
+eb901681ab Improved @display(empty_value) example in ModelAdmin.empty_value_display docs.
+6174814dbe Fixed #27936 -- Rewrote spanning multi-valued relationships docs.
+1283458baa Added default values to Entry's fields in making queries docs.
+aecfc40c88 Fixed #33300 -- Ensured hidden elements are not displayed on small screens.
+92412aa94c Fixed #23273 -- Avoided creation of django_migrations table when there are no migrations to apply.
+361bb8f786 Refs #26872 -- Fixed wrapping of long choices in ModelAdmin.list_filter.
+d5f2d5d604 Fixed wrapping of long values in technical 500 debug page.
+950d697b95 Refs #31617 -- Removed redundant title text in filter.html.
+feeb0685c6 Updated example of YAML serialization format in docs.
+ad6bb20557 Avoided counting attributes and methods in docs.
+b13d920b7b Added stub release notes for 4.0.1, 3.2.11, and 2.2.26 releases.
+2d07e1aaeb Refs #22983 -- Added tests for squashing migrations with functions from migration files.
+59a66f0512 Refs #33342 -- Deprecated ExclusionConstraint.opclasses.
+ff225fac1d Refs #29517 -- Removed obsolete PositiveIntegerField test skip.
+0e656c02fe Fixed #33342 -- Added support for using OpClass() in exclusion constraints.
+a0d43a7a6e Refs #31617 -- Changed dark mode primary-fg to give higher contrast to secondary.
+5f6a727a6a Refs #33355 -- Constructed SQLite list aggregate types once.
+ec7554f1c2 Refs #33355 -- Removed @none_guard from SQLite functions.
+deec15a9a6 Refs #33355 -- Made trunc functions raise ValueError on invalid lookups on SQLite.
+2d991ff661 Refs #33355 -- Moved SQLite functions to separate module.
+cb82ded4b2 Refs #32339 -- Added rendering tests for forms with CheckboxSelectMultiple and SelectMultiple widgets.
+fa4b2c15f2 Refs #33355 -- Optimized LPad() database function on SQLite.
+ca04659b4b Refs #32355 -- Bumped required psycopg2 version to 2.8.4.
+c4328c2f4e Refs #33355 -- Optimized Trunc() on SQLite by using f-strings.

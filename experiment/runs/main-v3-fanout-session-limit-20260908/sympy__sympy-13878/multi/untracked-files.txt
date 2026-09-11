@@ -1,0 +1,2 @@
+.claude/worktrees/agent-a1cd04901fdce4e80/
+.claude/worktrees/agent-a53665d35b663ea83/

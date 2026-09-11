@@ -1,0 +1,37 @@
+diff --git a/sympy/functions/special/zeta_functions.py b/sympy/functions/special/zeta_functions.py
+index b8e2b6619..409890f3d 100644
+--- a/sympy/functions/special/zeta_functions.py
++++ b/sympy/functions/special/zeta_functions.py
+@@ -203,6 +203,19 @@ def _eval_rewrite_as_polylog(self, z, s, a):
+ ###############################################################################
+ 
+ 
++def _dilogtable():
++    from sympy import sqrt
++    phi = (sqrt(5) - 1)/2
++    return {
++        S.Half: pi**2/12 - log(2)**2/2,
++        2: pi**2/4 - S.ImaginaryUnit*pi*log(2),
++        -phi: -pi**2/15 + log(phi)**2/2,
++        -1/phi: -pi**2/10 - log(1/phi)**2,
++        1 - phi: pi**2/15 - log(phi)**2,
++        phi: pi**2/10 - log(phi)**2,
++    }
++
++
+ class polylog(Function):
+     r"""
+     Polylogarithm function.
+@@ -276,7 +289,11 @@ def eval(cls, s, z):
+         elif z == -1:
+             return -dirichlet_eta(s)
+         elif z == 0:
+-            return 0
++            return S.Zero
++        elif s == 2:
++            dilogtable = _dilogtable()
++            if z in dilogtable:
++                return dilogtable[z]
+ 
+     def fdiff(self, argindex=1):
+         s, z = self.args

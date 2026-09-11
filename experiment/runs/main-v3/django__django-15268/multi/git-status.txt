@@ -1,0 +1,2 @@
+ M django/db/migrations/operations/models.py
+ M tests/migrations/test_autodetector.py

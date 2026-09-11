@@ -1,0 +1,87 @@
+{
+  "instance_id": "sphinx-doc__sphinx-11510",
+  "condition": "single",
+  "position": 7,
+  "image": "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11510:latest",
+  "model": "claude-sonnet-5",
+  "effort_requested": "high",
+  "subagent_effort_policy": "CLAUDE_CODE_EFFORT_LEVEL inherited from parent process",
+  "claude_code_requested_version": "2.1.261",
+  "timeout_seconds": 2700,
+  "max_turns": null,
+  "max_budget_usd": null,
+  "runner_sha256": "181269045bd924169e95001638f3c748047c9cc5ef89d563e430253f3c88e8c3",
+  "controller_git_head": "a98a2493d6db16681260d54e6f2ac46ccfd6c49b",
+  "prompt_template_sha256": "a48adb3e67ed45e0eded8fbdfec44419ab196193d195bc7b3542f996586adfe2",
+  "problem_statement_sha256": "e7ae2e2a1619fdc7fa58451dae12c5dd8b268002fdb30b4b3f457a6a9ef26762",
+  "treatment_file": null,
+  "treatment_sha256": null,
+  "setup_started_at": "2026-09-08T06:34:44.767273+00:00",
+  "network_isolation": {
+    "proxy_container": "nir-proxy",
+    "proxy_image_id": "sha256:6a097f68bae708cedbabd6188d68c7e2e7a38cedd05a176e1cc0ba29e3bbe029",
+    "internal_network": "nir-internal",
+    "squid_config": "squid.conf",
+    "proxy_config_digest": "7dffcb5729603e09b3c7bb1e125db8ec5bf367151e4a1f744b805706b1cc9a33",
+    "squid_config_sha256": "e28593b4a22978d36509b7a5081716950930ad3ec51fc3edc3bc6528c2363f3a",
+    "allowlist_sha256": "28afbd8460ca345547a2739d7318019eaa99fb1a06e32fd13b7d327032ac637e",
+    "allowlist": [
+      ".anthropic.com",
+      ".claude.ai",
+      "platform.claude.com"
+    ],
+    "enforced": true,
+    "probes": {
+      "https://github.com": {
+        "exit_code": 56,
+        "http_code": "000",
+        "reachable": false
+      },
+      "https://raw.githubusercontent.com": {
+        "exit_code": 56,
+        "http_code": "000",
+        "reachable": false
+      },
+      "https://pypi.org": {
+        "exit_code": 56,
+        "http_code": "000",
+        "reachable": false
+      },
+      "https://api.anthropic.com": {
+        "exit_code": 0,
+        "http_code": "404",
+        "reachable": true
+      }
+    }
+  },
+  "image_id": "sha256:01bf15e77e5d0f6988c8107bf81a5091900228ca0d160bf677d9b07dd17e1a0f",
+  "image_repo_digests": [
+    "swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11510@sha256:01bf15e77e5d0f6988c8107bf81a5091900228ca0d160bf677d9b07dd17e1a0f"
+  ],
+  "base_commit": "d5aa7d4f8b3f204303d2836eb84d82ee4f3ee589",
+  "claude_code_actual_version": "2.1.261 (Claude Code)",
+  "flags_present": [
+    "--append-system-prompt",
+    "--disallowedTools",
+    "--effort",
+    "--forward-subagent-text",
+    "--max-budget-usd",
+    "--mcp-config",
+    "--model",
+    "--output-format",
+    "--permission-mode",
+    "--safe-mode",
+    "--setting-sources",
+    "--strict-mcp-config",
+    "--verbose"
+  ],
+  "flags_absent_optional": [],
+  "claude_command": "claude -p \"$(cat /task/prompt.txt)\" --model claude-sonnet-5 --effort high --output-format stream-json --verbose --permission-mode bypassPermissions --safe-mode --setting-sources '' --strict-mcp-config --mcp-config '{\"mcpServers\":{}}' --disallowedTools Task WebFetch WebSearch",
+  "inference_started_at": "2026-09-08T06:36:02.468127+00:00",
+  "head_after_run": "d5aa7d4f8b3f204303d2836eb84d82ee4f3ee589",
+  "agent_committed": false,
+  "credential_refresh_status": "unchanged",
+  "finished_at": "2026-09-08T06:40:57.278473+00:00",
+  "inference_exit_code": 0,
+  "timed_out": false
+}

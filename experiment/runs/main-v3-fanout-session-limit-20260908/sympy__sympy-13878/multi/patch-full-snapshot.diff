@@ -1,0 +1,14 @@
+diff --git a/.claude/worktrees/agent-a1cd04901fdce4e80 b/.claude/worktrees/agent-a1cd04901fdce4e80
+new file mode 160000
+index 000000000..ce735e0d3
+--- /dev/null
++++ b/.claude/worktrees/agent-a1cd04901fdce4e80
+@@ -0,0 +1 @@
++Subproject commit ce735e0d3b1a8dffbceb1950d18c29ec1fdbb923
+diff --git a/.claude/worktrees/agent-a53665d35b663ea83 b/.claude/worktrees/agent-a53665d35b663ea83
+new file mode 160000
+index 000000000..ce735e0d3
+--- /dev/null
++++ b/.claude/worktrees/agent-a53665d35b663ea83
+@@ -0,0 +1 @@
++Subproject commit ce735e0d3b1a8dffbceb1950d18c29ec1fdbb923

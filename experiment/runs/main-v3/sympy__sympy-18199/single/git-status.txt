@@ -1,0 +1,2 @@
+ M sympy/ntheory/residue_ntheory.py
+ M sympy/ntheory/tests/test_residue.py

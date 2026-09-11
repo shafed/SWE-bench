@@ -1,0 +1,26 @@
+diff --git a/sympy/functions/special/tests/test_zeta_functions.py b/sympy/functions/special/tests/test_zeta_functions.py
+index 3911dadd1..4396ddbaa 100644
+--- a/sympy/functions/special/tests/test_zeta_functions.py
++++ b/sympy/functions/special/tests/test_zeta_functions.py
+@@ -127,6 +127,7 @@ def test_polylog_expansion():
+     assert polylog(s, 0) == 0
+     assert polylog(s, 1) == zeta(s)
+     assert polylog(s, -1) == -dirichlet_eta(s)
++    assert polylog(2, S.Half) == pi**2/12 - log(2)**2/2
+ 
+     assert myexpand(polylog(1, z), -log(1 + exp_polar(-I*pi)*z))
+     assert myexpand(polylog(0, z), z/(1 - z))
+diff --git a/sympy/functions/special/zeta_functions.py b/sympy/functions/special/zeta_functions.py
+index b8e2b6619..8b999bec1 100644
+--- a/sympy/functions/special/zeta_functions.py
++++ b/sympy/functions/special/zeta_functions.py
+@@ -277,6 +277,9 @@ def eval(cls, s, z):
+             return -dirichlet_eta(s)
+         elif z == 0:
+             return 0
++        elif s == 2:
++            if z == S.Half:
++                return pi**2/12 - log(2)**2/2
+ 
+     def fdiff(self, argindex=1):
+         s, z = self.args

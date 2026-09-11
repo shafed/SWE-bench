@@ -1,0 +1,156 @@
+{
+  "instance_id": "django__django-15128",
+  "condition": "single",
+  "position": 10,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 311.5845779600004,
+  "patch_collection_ok": true,
+  "patch_bytes": 5868,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "## Summary\n\nThe bug was in `Query.change_aliases()` (`django/db/models/sql/query.py`). `Query.combine()` builds a `change_map` for relabeling the rhs query's aliases, and when the rhs's join aliases were sequential (e.g. `T4`, `T5`) and collided with existing lhs aliases, the resulting `change_map` could have overlapping keys and values (e.g. `{'T4': 'T5', 'T5': 'T6'}`). `change_aliases` asserted this couldn't happen and crashed — and even without the assertion, the old in-place rename loop would silently corrupt the alias data on such overlaps (later renames would clobber earlier ones since it mutated `self.alias_map`/`self.alias_refcount` while iterating).\n\nFix: snapshot `alias_map`, `alias_refcount`, and `table_map` before mutating, then apply all renames from the snapshot. This makes the renaming order-independent and correctly handles chained/overlapping alias renames, so the assertion is no longer needed.\n\nAdded a regression test (`test_combining_two_queries_with_overlapping_join_aliases`) and minimal models (`Foo`, `Bar`, `Baz`, `Qux`) matching the issue's reproduction case in `tests/queries/`. Verified the test fails with the AssertionError on the old code and passes with the fix; ran the `queries`, `queryset_pickle`, `expressions`, `many_to_many`, `m2m_through`, `aggregation`, `annotations`, `or_lookups`, and related ORM suites with no regressions.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 45,
+  "total_cost_usd_reported": 0.9115871999999999,
+  "usage_reported": {
+    "input_tokens": 90,
+    "cache_creation_input_tokens": 55178,
+    "cache_read_input_tokens": 2187606,
+    "output_tokens": 25131,
+    "output_tokens_details": {
+      "thinking_tokens": 12889
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 55178,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 533,
+        "cache_read_input_tokens": 69936,
+        "cache_creation_input_tokens": 149,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 149
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1869,
+      "output_tokens": 25148,
+      "cache_read_input_tokens": 2187606,
+      "cache_creation_input_tokens": 55178,
+      "total_tokens": 2269801
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1779,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001864,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 90,
+        "outputTokens": 25131,
+        "cacheReadInputTokens": 2187606,
+        "cacheCreationInputTokens": 55178,
+        "webSearchRequests": 0,
+        "costUSD": 0.9097231999999998,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 12889,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 90,
+      "output_tokens": 329,
+      "cache_read_input_tokens": 2187606,
+      "cache_creation_input_tokens": 55178
+    }
+  },
+  "unique_assistant_messages": 45,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 81,
+  "models_seen": {
+    "claude-sonnet-5": 81
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 25,
+    "Edit": 8,
+    "Read": 11
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 25,
+      "Edit": 8,
+      "Read": 11
+    }
+  },
+  "tool_calls_total": 44,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T07:10:04.536985+00:00"
+}

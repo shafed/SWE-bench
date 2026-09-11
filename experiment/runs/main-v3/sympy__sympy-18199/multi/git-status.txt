@@ -1,0 +1,1 @@
+ M sympy/ntheory/residue_ntheory.py

@@ -1,0 +1,32 @@
+ce735e0d3b1a8dffbceb1950d18c29ec1fdbb923
+## master
+ce735e0d3 SWE-bench
+7b127bdf7 Merge pull request #13200 from bjodah/codegen-approxmations
+1ff04fc65 Merge pull request #13761 from Subhash-Saurabh/13474_issue
+1090d5e36 Merge pull request #13855 from Subhash-Saurabh/13139_issue
+78333dd40 Merge pull request #13928 from normalhuman/12996_derivative_hints
+9dd091c62 Merge pull request #13930 from normalhuman/integrate_abs_sign
+edb0b584d Add a test for issue #7165
+029a9790d Merge pull request #13923 from Yathartha22/exponential2
+0f42e1775 Merge pull request #13926 from nschloe/sympify-array-size-1-bug-13924
+add1da912 improved failing tests
+a7ba2688c Remove the assertion that Abs can't be integrated
+574677ef7 Merge pull request #13932 from luzpaz/misc-typos-followup
+4fe30c2e7 improved logic and tests for `integer_log` and `solveset`
+e267e57a6 Misc typos followup
+93d667200 Merge pull request #13900 from luzpaz/misc-typos
+c0a0d4e41 Merge pull request #13921 from vishalg2235/zoo_power
+bf933462e Merge pull request #13915 from normalhuman/13904_nan_from_infinities
+509444693 |z|->oo changed to z->zoo
+a4188d5a1 Rewrite Abs and sign as Piecewise for integration
+9a32dc663 Move the test to test_function where it belongs
+aeb265117 Test the issue much more efficiently
+8471499ef The .pop method no longer serves a purpose here, replaced by .get
+bda91b8cb Correct handling of keyword arguments in Derivative.doit
+fe02eb75d skip test_issue_13924 if numpy is not installed
+44001838e correct sympify for numpy arrays of size 1
+5ec6885f9 Reason
+5ff00e935 Remove redundant continuation backslash
+31fdd65bc Merge pull request #13851 from ethankward/master
+a00913d16 improved failing doctest
+87e0000b0 Merge pull request #13918 from normalhuman/expand_erfc

@@ -1,0 +1,156 @@
+{
+  "instance_id": "sympy__sympy-18199",
+  "condition": "single",
+  "position": 3,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 73.40626009100015,
+  "patch_collection_ok": true,
+  "patch_bytes": 1273,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "Fixed. `nthroot_mod` now short-circuits when `a % p == 0`, returning `0` (the only root in that case since ℤ/pℤ is an integral domain), and added a regression test in `sympy/ntheory/tests/test_residue.py`. All existing tests still pass.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 16,
+  "total_cost_usd_reported": 0.160033,
+  "usage_reported": {
+    "input_tokens": 32,
+    "cache_creation_input_tokens": 12082,
+    "cache_read_input_tokens": 362760,
+    "output_tokens": 3795,
+    "output_tokens_details": {
+      "thinking_tokens": 983
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 12082,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 98,
+        "cache_read_input_tokens": 26687,
+        "cache_creation_input_tokens": 302,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 302
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1086,
+      "output_tokens": 3812,
+      "cache_read_input_tokens": 362760,
+      "cache_creation_input_tokens": 12082,
+      "total_tokens": 379740
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1054,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001139,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 32,
+        "outputTokens": 3795,
+        "cacheReadInputTokens": 362760,
+        "cacheCreationInputTokens": 12082,
+        "webSearchRequests": 0,
+        "costUSD": 0.158894,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 983,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 32,
+      "output_tokens": 149,
+      "cache_read_input_tokens": 362760,
+      "cache_creation_input_tokens": 12082
+    }
+  },
+  "unique_assistant_messages": 16,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 25,
+  "models_seen": {
+    "claude-sonnet-5": 25
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 10,
+    "Edit": 3,
+    "Read": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 10,
+      "Edit": 3,
+      "Read": 2
+    }
+  },
+  "tool_calls_total": 15,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T05:24:53.907251+00:00"
+}

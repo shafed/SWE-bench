@@ -1,0 +1,7 @@
+ca62efb54b313f4742d0eb732c100e4762a692ca243ce2a3e4c113f4cb224f09
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+bash: line 1: claude: command not found
+curl: (22) The requested URL returned error: 403
+bash: line 1: claude: command not found

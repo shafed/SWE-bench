@@ -1,0 +1,32 @@
+d5aa7d4f8b3f204303d2836eb84d82ee4f3ee589
+## master
+d5aa7d4f8 SWE-bench
+6cb783c00 Enable SIM105 (use contextlib.suppress)
+3a5e1f11a Enable SIM114 (combine if branches using logical or operator)
+f844055dd Fix SIM115 (use context handler for opening files)
+08dbaa793 Fix SIM117 (use single 'with' statement)
+360086247 Fix SIM118 (use ``key in dict`` not ``key in dict.keys()``)
+9bcf1d8bb Fix TCH001 (move application import into a type-checking block)
+36012b7d9 Fix TCH002 (move third-party import into a type-checking block)
+1fae1470a Fix SLOT002 (subclasses of collections.namedtuple() should define ``__slots__``)
+e73300b82 Fix SLOT000 (subclasses of str should define ``__slots__``)
+6f3c5b8a2 Deprecate ``ObjectMember.__getitem__()``
+9bf0f491f Update Ruff configuration for 0.0.284
+6cd8723f5 Fix B034 (use keyword arguments for calls to ``re.split()``)
+60f37b8b9 Enable EXE002 (file executable but no shebang present)
+d80eab689 Fix EM10{1,2} (exception must not use a string)
+ae0d97bb2 Use ``parsedate_tz`` in the linkcheck builder
+b533ef166 Fix DTZ00{0-4} (Do not use naive datetime objects)
+79d196358 Use ``time.strftime()`` to calculate today's date
+d4169a32e Use ``parsedate_tz`` in the linkcheck builder
+f1b2682d5 Format modified times without ``datetime``
+5a1e5f5e9 Compute local time with less fuss
+f8e953634 Refactor ``duration`` to store time in seconds
+e010e2472 Fix B904 (raise exceptions with ``raise ... from ...``)
+db6d5aee2 Enable B028 (no explicit `stacklevel` keyword argument found)
+5511c45f2 Enable B026 (keyword argument must come after starred arguments)
+bbfd3cd24 Fix B023 (function definition does not bind loop variable)
+1dcc11260 Fix B006 (Do not use mutable data structures for argument defaults)
+4791b544d Fix COM819 (Trailing comma prohibited)
+92e60b3f1 Fix PGH003 (type: ignore comment must have parameters)
+e2ff04eaf Fix RES102 (Remove unnecessary parentheses)

@@ -1,0 +1,68 @@
+diff --git a/sympy/matrices/dense.py b/sympy/matrices/dense.py
+index 1844475199..9df8807647 100755
+--- a/sympy/matrices/dense.py
++++ b/sympy/matrices/dense.py
+@@ -193,17 +193,23 @@ def _eval_matrix_mul(self, other):
+                 row, col = i // new_mat_cols, i % new_mat_cols
+                 row_indices = range(self_cols*row, self_cols*(row+1))
+                 col_indices = range(col, other_len, other_cols)
+-                vec = (mat[a]*other_mat[b] for a,b in zip(row_indices, col_indices))
+-                try:
+-                    new_mat[i] = Add(*vec)
+-                except (TypeError, SympifyError):
++                vec = [mat[a]*other_mat[b] for a,b in zip(row_indices, col_indices)]
++                if any(getattr(term, 'is_MatrixExpr', False) for term in vec):
+                     # Block matrices don't work with `sum` or `Add` (ISSUE #11599)
+-                    # They don't work with `sum` because `sum` tries to add `0`
+-                    # initially, and for a matrix, that is a mix of a scalar and
+-                    # a matrix, which raises a TypeError. Fall back to a
+-                    # block-matrix-safe way to multiply if the `sum` fails.
+-                    vec = (mat[a]*other_mat[b] for a,b in zip(row_indices, col_indices))
+-                    new_mat[i] = reduce(lambda a,b: a + b, vec)
++                    # and ISSUE #17624). They don't work with `sum` because
++                    # `sum` tries to add `0` initially, and for a matrix, that
++                    # is a mix of a scalar and a matrix, which raises a
++                    # TypeError. They don't work with `Add` either because
++                    # `Add` can silently combine several `MatrixExpr` zero
++                    # terms into the scalar `S.Zero` instead of a properly
++                    # shaped `ZeroMatrix`. Fall back to a block-matrix-safe
++                    # way to multiply in that case.
++                    new_mat[i] = reduce(lambda a, b: a + b, vec)
++                else:
++                    try:
++                        new_mat[i] = Add(*vec)
++                    except (TypeError, SympifyError):
++                        new_mat[i] = reduce(lambda a, b: a + b, vec)
+         return classof(self, other)._new(new_mat_rows, new_mat_cols, new_mat, copy=False)
+ 
+     def _eval_matrix_mul_elementwise(self, other):
+diff --git a/sympy/matrices/expressions/tests/test_blockmatrix.py b/sympy/matrices/expressions/tests/test_blockmatrix.py
+index 1e1033affc..f9ae9f030d 100755
+--- a/sympy/matrices/expressions/tests/test_blockmatrix.py
++++ b/sympy/matrices/expressions/tests/test_blockmatrix.py
+@@ -3,7 +3,7 @@
+     BlockMatrix, bc_dist, bc_matadd, bc_transpose, bc_inverse,
+     blockcut, reblock_2x2, deblock)
+ from sympy.matrices.expressions import (MatrixSymbol, Identity,
+-        Inverse, trace, Transpose, det)
++        Inverse, trace, Transpose, det, ZeroMatrix)
+ from sympy.matrices import (
+     Matrix, ImmutableMatrix, ImmutableSparseMatrix)
+ from sympy.core import Tuple, symbols, Expr
+@@ -148,6 +148,16 @@ def test_squareBlockMatrix():
+     assert not Z.is_Identity
+ 
+ 
++def test_zero_blocks_multiplication():
++    # https://github.com/sympy/sympy/issues/17624
++    a = MatrixSymbol('a', 2, 2)
++    z = ZeroMatrix(2, 2)
++    b = BlockMatrix([[a, z], [z, z]])
++    result = BlockMatrix([[a**2, z], [z, z]])
++    assert block_collapse(b * b) == result
++    assert block_collapse(b * b * b) == BlockMatrix([[a**3, z], [z, z]])
++
++
+ def test_BlockDiagMatrix():
+     A = MatrixSymbol('A', n, n)
+     B = MatrixSymbol('B', m, m)

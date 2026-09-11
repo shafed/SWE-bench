@@ -1,0 +1,2 @@
+started_at	finished_at	position	instance_id	condition	runner_exit_code	protocol_status	patch_bytes	timed_out
+2026-09-08T08:23:53.981540+00:00	2026-09-08T08:34:03.221629+00:00	1	sympy__sympy-13878	multi	30	pass	566	False

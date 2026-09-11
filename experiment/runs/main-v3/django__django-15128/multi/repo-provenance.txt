@@ -1,0 +1,32 @@
+7c6a72d5275c561d17ff7db6a5267c87fe06b640
+## main
+7c6a72d527 SWE-bench
+cb383753c0 Fixed #33346 -- Fixed SimpleTestCase.assertFormsetError() crash on a formset named "form".
+8a4e506760 Fixed #19721 -- Allowed admin filters to customize the list separator.
+2b76f45749 Refs #19721 -- Corrected list formatting in admin filters docs.
+7d02fa9433 Refs #32290 -- Optimized construct_relative_path() by delay computing has_quotes.
+547656c850 Refs #25265 -- Allowed customizing Query's datastructure classes.
+dfdf1c6864 Improved release notes wording for template-based form rendering.
+063cf98d3a Fixed #31765 -- Enforced enhanced ALTER TABLE behavior for SQLite connections.
+adef3d975e Added stub release notes for 4.0.1.
+d7bd9eb6cd Finalized release notes for Django 4.0.
+513441240f Updated asgiref dependency for 4.0 release series.
+da7062be45 Removed unused map_options JS variable.
+8747052411 Added CVE-2021-44420 to security archive.
+d4dcd5b9dd Fixed #30530, CVE-2021-44420 -- Fixed potential bypass of an upstream access control based on URL paths.
+628b6a6869 Updated translations from Transifex.
+1eaf38fa87 Fixed #33335 -- Made model validation ignore functional unique constraints.
+d3a64bea51 Refs #33333 -- Fixed PickleabilityTestCase.test_annotation_with_callable_default() crash on Oracle.
+d3f4c2b95d Fixed #33078 -- Added support for language regions in i18n_patterns().
+4f7bbc6138 Refs #33078 -- Added extra assertions to MiscTests.test_get_language_from_path_real().
+2c7846d992 Fixed #33333 -- Fixed setUpTestData() crash with models.BinaryField on PostgreSQL.
+9c1fe446b6 Fixed #33339 -- Made QuerySet.bulk_create() use TO_NCLOB() for TextFields on Oracle.
+97e9a84d27 Removed unused country argument from GeoIP2._check_query().
+7d5058d870 Removed redundant GeoIP2._check_query() calls.
+adcb3a7a27 Removed unused GeoIP2._cache attribute.
+31bef51d8e Moved unnecessary inner import in GeoIP2.geos().
+5def7f3f74 Updated various links to HTTPS and new locations.
+d75c387f46 Fixed #33334 -- Alphabetized form and model fields in reference docs.
+e5a92d400a Fixed #33282 -- Fixed a crash when OR'ing subquery and aggregation lookups.
+e3bde71676 Refs #32690 -- Altered lookups Query rhs alterations during initialization.
+4ce59f602e Fixed #30398 -- Added CONN_HEALTH_CHECKS database setting.

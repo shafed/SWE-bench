@@ -1,0 +1,47 @@
+54f02f7fd8dcd72bc848b79081a30dd0c052e08a970ffd9c2d1d93965220c72a
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+curl: (56) Received HTTP code 403 from proxy after CONNECT
+bash: line 1: claude: command not found
+Setting up Claude Code...
+
+Checking installation status...
+Installing Claude Code native build 2.1.261...
+Setting up launcher and shell integration...
+⚠ Setup notes:
+  ● Native installation exists but ~/.local/bin is not in your PATH. Run:
+
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> your shell config file && source your shell config file
+
+✔ Claude Code successfully installed!
+
+  Version: 2.1.261
+
+  Location: ~/.local/bin/claude
+
+
+  Next: Run claude --help to get started
+
+⚠ Setup notes:
+  ● Native installation exists but ~/.local/bin is not in your PATH. Run:
+
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> your shell config file && source your shell config file
+
+
+✅ Installation complete!
+
+warning: adding embedded git repository: .claude/worktrees/agent-a1cd04901fdce4e80
+hint: You've added another git repository inside your current repository.
+hint: Clones of the outer repository will not contain the contents of
+hint: the embedded repository and will not know how to obtain it.
+hint: If you meant to add a submodule, use:
+hint: 
+hint: 	git submodule add <url> .claude/worktrees/agent-a1cd04901fdce4e80
+hint: 
+hint: If you added this path by mistake, you can remove it from the
+hint: index with:
+hint: 
+hint: 	git rm --cached .claude/worktrees/agent-a1cd04901fdce4e80
+hint: 
+hint: See "git help submodule" for more information.
+warning: adding embedded git repository: .claude/worktrees/agent-a53665d35b663ea83

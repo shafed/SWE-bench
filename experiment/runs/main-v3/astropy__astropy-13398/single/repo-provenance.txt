@@ -1,0 +1,32 @@
+4b487276bec69105d8cfcc88e8c5a533abb7124b
+## main
+4b487276b SWE-bench
+6500928dc Merge pull request #13502 from taldcroft/better-iers-docs
+0fd16203e Address review comments
+a727c6d84 Improve IERS docs and add a top-level entry [ci skip]
+8a52f9a9f Merge pull request #12598 from nden/mjd-avg
+f3f212617 Fix bad rebase
+97fe69993 Merge pull request #13491 from mhvk/angles-numpy-dev-error-change
+6f35afc42 Adjust expected error for illegal Angle input.
+3fc010a49 Merge pull request #13470 from larrybradley/block-docs
+ebeaea3a1 Clarify block_reduce func keyword parameter [ci skip]
+8ef58665f Merge pull request #13466 from mkbrewer/observed-frame-doc-correction
+6246b9c72 Correction to documentation of self transforms.
+d3b64b9b8 Merge pull request #13259 from WilliamJamieson/feature/nan_filter
+84243ae05 Add non-finite filter
+fe3486171 Merge pull request #13453 from mattpitkin/fix_html_table_writer_formatting
+163783bff Fix so that the preexiting _set_col_formats method can be used
+d5002202e Add changelog for #13453
+87d8b2f5f Add test for HTML Table formatting
+b66d545d2 Make HTML Table writer respect supplied output formatting  - Resolves #13451
+19cc80471 Merge pull request #13444 from eerovaher/unit-format-docs
+a333edd08 Apply minor tweaks to unit formatting docs
+7e27ed84d Document `Quantity.to_string()`
+caece1d15 Document creating a scalar `Quantity` from string
+627d31aaf Remove SKIP directives from docs/units/format.rst
+63549ce36 Merge pull request #13438 from rolweber/update-jquery
+55568e713 Merge pull request #13298 from pllim/no-moar-azure
+2f673a02d improve README for changelog entries
+e367db816 add changelog entry
+dd0819a57 update jQuery to 3.6.0  astropy/astropy#13424
+c49bb9e39 define a constant for the jQuery version in tests

@@ -1,0 +1,137 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 9735ce10c8..70bbcdc6f2 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -545,11 +545,114 @@ class Query(BaseExpression):
+ 
+         return dict(zip(outer_query.annotation_select, result))
+ 
++    def strip_unreferenced_annotations(self):
++        """
++        Remove annotations that have no effect on the query's results,
++        i.e. that aren't referenced by the WHERE clause, another
++        annotation, the ordering, or (potential) DISTINCT/GROUP BY
++        fields. This avoids needless grouping or subquery use when
++        performing e.g. QuerySet.count().
++        """
++
++        def get_refs(expression):
++            if expression is None:
++                return
++            if isinstance(expression, Ref):
++                yield expression.refs
++            get_source_expressions = getattr(
++                expression, "get_source_expressions", None
++            )
++            if get_source_expressions is not None:
++                for child in get_source_expressions():
++                    yield from get_refs(child)
++
++        def get_cols(expression):
++            if expression is None:
++                return
++            if isinstance(expression, Col):
++                yield expression.alias
++                return
++            if isinstance(expression, Query):
++                # Subqueries don't contribute their internal joins, only
++                # the outer aliases they reference (e.g. through OuterRef).
++                for col in expression.get_external_cols():
++                    yield col.alias
++                return
++            get_source_expressions = getattr(
++                expression, "get_source_expressions", None
++            )
++            if get_source_expressions is not None:
++                for child in get_source_expressions():
++                    yield from get_cols(child)
++
++        referenced_aliases = set(get_refs(self.where))
++        for order_by in self.order_by:
++            if isinstance(order_by, str):
++                referenced_aliases.add(order_by.lstrip("-"))
++            else:
++                referenced_aliases.update(get_refs(order_by))
++        referenced_aliases.update(self.distinct_fields)
++        if isinstance(self.group_by, tuple):
++            for group_by in self.group_by:
++                if isinstance(group_by, str):
++                    referenced_aliases.add(group_by)
++                else:
++                    referenced_aliases.update(get_refs(group_by))
++
++        # Annotations may themselves reference other annotations, so keep
++        # expanding the set of referenced aliases until it stabilizes.
++        stack = list(referenced_aliases)
++        while stack:
++            annotation = self.annotations.get(stack.pop())
++            if annotation is None:
++                continue
++            for ref in get_refs(annotation):
++                if ref not in referenced_aliases:
++                    referenced_aliases.add(ref)
++                    stack.append(ref)
++
++        removed_annotations = False
++        for alias in list(self.annotations):
++            if alias not in referenced_aliases:
++                del self.annotations[alias]
++                if self.annotation_select_mask is not None:
++                    self.annotation_select_mask.discard(alias)
++                removed_annotations = True
++        self._annotation_select_cache = None
++        if not removed_annotations or not self.alias_map:
++            return
++
++        # Some of the joins that were only needed by the removed
++        # annotations may no longer be necessary. Recompute, from
++        # scratch, which table aliases are still referenced (keeping any
++        # ancestor joins required to reach them) and drop the rest.
++        needed_aliases = {self.base_table}
++        for expression in chain(
++            [self.where], self.annotations.values(), self.select, self.order_by
++        ):
++            needed_aliases.update(get_cols(expression))
++        if isinstance(self.group_by, tuple):
++            for group_by in self.group_by:
++                needed_aliases.update(get_cols(group_by))
++        changed = True
++        while changed:
++            changed = False
++            for alias in list(needed_aliases):
++                join = self.alias_map.get(alias)
++                parent_alias = join and join.parent_alias
++                if parent_alias and parent_alias not in needed_aliases:
++                    needed_aliases.add(parent_alias)
++                    changed = True
++        for alias in self.alias_map:
++            if alias not in needed_aliases:
++                self.alias_refcount[alias] = 0
++
+     def get_count(self, using):
+         """
+         Perform a COUNT() query using the current filter constraints.
+         """
+         obj = self.clone()
++        obj.strip_unreferenced_annotations()
+         obj.add_annotation(Count("*"), alias="__count", is_summary=True)
+         return obj.get_aggregation(using, ["__count"])["__count"]
+ 
+diff --git a/tests/aggregation/tests.py b/tests/aggregation/tests.py
+index 39c8a45707..40148ca6e9 100644
+--- a/tests/aggregation/tests.py
++++ b/tests/aggregation/tests.py
+@@ -541,6 +541,13 @@ class AggregateTestCase(TestCase):
+         sql = ctx.captured_queries[0]["sql"]
+         self.assertIn("SELECT COUNT(*) ", sql)
+ 
++    def test_count_star_unused_annotation(self):
++        with self.assertNumQueries(1) as ctx:
++            Book.objects.annotate(Count("authors")).count()
++        sql = ctx.captured_queries[0]["sql"]
++        self.assertNotIn("authors", sql)
++        self.assertIn("SELECT COUNT(*) ", sql)
++
+     def test_count_distinct_expression(self):
+         aggs = Book.objects.aggregate(
+             distinct_ratings=Count(

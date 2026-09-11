@@ -1,0 +1,119 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index aaf35ee37c..3d706c82b0 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -846,7 +846,14 @@ class Query(BaseExpression):
+         relabelling any references to them in select columns and the where
+         clause.
+         """
+-        assert set(change_map).isdisjoint(change_map.values())
++        # If keys and values of change_map, which is a dict whose keys are
++        # old aliases and values are new aliases, intersect, an alias might
++        # be changed twice if processed in place, e.g. {'T4': 'T5', 'T5':
++        # 'T6'} could rename 'T4' to 'T6' instead of 'T5'. Snapshot the
++        # existing data before mutating it to avoid that.
++        old_alias_map = dict(self.alias_map)
++        old_alias_refcount = dict(self.alias_refcount)
++        old_table_map = {table_name: list(aliases) for table_name, aliases in self.table_map.items()}
+ 
+         # 1. Update references in "select" (normal columns plus aliases),
+         # "group by" and "where".
+@@ -860,19 +867,17 @@ class Query(BaseExpression):
+ 
+         # 2. Rename the alias in the internal table/alias datastructures.
+         for old_alias, new_alias in change_map.items():
+-            if old_alias not in self.alias_map:
++            if old_alias not in old_alias_map:
+                 continue
+-            alias_data = self.alias_map[old_alias].relabeled_clone(change_map)
++            alias_data = old_alias_map[old_alias].relabeled_clone(change_map)
+             self.alias_map[new_alias] = alias_data
+-            self.alias_refcount[new_alias] = self.alias_refcount[old_alias]
+-            del self.alias_refcount[old_alias]
+-            del self.alias_map[old_alias]
+-
+-            table_aliases = self.table_map[alias_data.table_name]
+-            for pos, alias in enumerate(table_aliases):
+-                if alias == old_alias:
+-                    table_aliases[pos] = new_alias
+-                    break
++            self.alias_refcount[new_alias] = old_alias_refcount[old_alias]
++        for old_alias in change_map:
++            if old_alias in old_alias_map and old_alias not in change_map.values():
++                del self.alias_map[old_alias]
++                del self.alias_refcount[old_alias]
++        for table_name, aliases in old_table_map.items():
++            self.table_map[table_name] = [change_map.get(alias, alias) for alias in aliases]
+         self.external_aliases = {
+             # Table is aliased or it's being changed and thus is aliased.
+             change_map.get(alias, alias): (aliased or alias in change_map)
+diff --git a/tests/queries/models.py b/tests/queries/models.py
+index c3322c224e..25c14ae279 100644
+--- a/tests/queries/models.py
++++ b/tests/queries/models.py
+@@ -748,3 +748,21 @@ class JSONFieldNullable(models.Model):
+ 
+     class Meta:
+         required_db_features = {'supports_json_field'}
++
++
++class Foo(models.Model):
++    qux = models.ForeignKey('Qux', models.CASCADE, related_name='foos')
++
++
++class Bar(models.Model):
++    foo = models.ForeignKey(Foo, models.CASCADE, related_name='bars')
++    another_foo = models.ForeignKey(Foo, models.CASCADE, related_name='other_bars')
++    baz = models.ForeignKey('Baz', models.CASCADE, related_name='bars')
++
++
++class Baz(models.Model):
++    pass
++
++
++class Qux(models.Model):
++    bazes = models.ManyToManyField(Baz, related_name='quxes')
+diff --git a/tests/queries/tests.py b/tests/queries/tests.py
+index ca982b9c6a..f5d10ec8ac 100644
+--- a/tests/queries/tests.py
++++ b/tests/queries/tests.py
+@@ -15,17 +15,17 @@ from django.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+ from django.test.utils import CaptureQueriesContext
+ 
+ from .models import (
+-    FK1, Annotation, Article, Author, BaseA, Book, CategoryItem,
++    FK1, Annotation, Article, Author, Bar, BaseA, Baz, Book, CategoryItem,
+     CategoryRelationship, Celebrity, Channel, Chapter, Child, ChildObjectA,
+     Classroom, CommonMixedCaseForeignKeys, Company, Cover, CustomPk,
+     CustomPkTag, DateTimePK, Detail, DumbCategory, Eaten, Employment,
+-    ExtraInfo, Fan, Food, Identifier, Individual, Item, Job,
++    ExtraInfo, Fan, Foo, Food, Identifier, Individual, Item, Job,
+     JobResponsibilities, Join, LeafA, LeafB, LoopX, LoopZ, ManagedModel,
+     Member, MixedCaseDbColumnCategoryItem, MixedCaseFieldCategoryItem, ModelA,
+     ModelB, ModelC, ModelD, MyObject, NamedCategory, Node, Note, NullableName,
+     Number, ObjectA, ObjectB, ObjectC, OneToOneCategory, Order, OrderItem,
+     Page, Paragraph, Person, Plaything, PointerA, Program, ProxyCategory,
+-    ProxyObjectA, ProxyObjectB, Ranking, Related, RelatedIndividual,
++    ProxyObjectA, ProxyObjectB, Qux, Ranking, Related, RelatedIndividual,
+     RelatedObject, Report, ReportComment, ReservedName, Responsibility, School,
+     SharedConnection, SimpleCategory, SingleObject, SpecialCategory, Staff,
+     StaffUser, Student, Tag, Task, Teacher, Ticket21203Child,
+@@ -1340,6 +1340,18 @@ class Queries4Tests(TestCase):
+         qs2 = otherteachers.filter(schools=s1).filter(schools=s3)
+         self.assertQuerysetEqual(qs1 | qs2, [])
+ 
++    def test_combining_two_queries_with_overlapping_join_aliases(self):
++        # Combining two queries shouldn't raise an AssertionError even if
++        # relabeling the second query's aliases produces overlapping old and
++        # new aliases (#33389).
++        qux = Qux.objects.create()
++        qs1 = qux.foos.all()
++        qs2 = Foo.objects.filter(
++            Q(bars__baz__in=qux.bazes.all()) | Q(other_bars__baz__in=qux.bazes.all())
++        )
++        self.assertSequenceEqual(qs2 | qs1, [])
++        self.assertSequenceEqual(qs1 | qs2, [])
++
+     def test_ticket7095(self):
+         # Updates that are filtered on the model being updated are somewhat
+         # tricky in MySQL.

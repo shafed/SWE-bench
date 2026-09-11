@@ -1,0 +1,32 @@
+486f013b7e63f62b236c43887721513ed6f878ce
+## master
+486f013b7e SWE-bench
+58e78209c8 Merge pull request #17623 from cbm755/dollars_stirling
+30b12bacf3 Merge pull request #17589 from sylee957/fix_gram_schmidt
+75cb5409e9 Merge pull request #17266 from stevenleeS0ht/add_maple_code_printer
+304ebde37e Merge pull request #17617 from czgdp1807/rail_fence
+7f112ef631 Fix print_maple_code settings kwargs, and review the docstrings
+664f3969df Add doc for maple code
+6b93f40be5 Add autodoc directive in rst
+6dd8447c5e Merge pull request #14396 from 3nr1c/issue_2709
+a3354324c4 docs: maybe math mode more appropriate here?
+1f4ae05f38 docs: stirling: try dollar signs instead of ticks
+afb5c5f1ec docs: add commas and full-stop
+b0bb47b963 rebased work
+def1c20c22 Merge pull request #17345 from ishanaj/beam_diagram_2
+61240415c1 Merge pull request #17614 from Upabjojr/rubi_code_generation
+a03911b2fd Fix several test case for improved parentize
+54c3f6d4d5 Add parentize ability in several function of maple printer
+bca636452b doctest fix
+a657725cb4 doctest fix
+484963c868 Add sphinx-math-dollar to the docs installation instructions
+e3ef476576 remove list of rules applied
+f154b667e9 Install sphinx-math-dollar as a separate Sphinx extension
+431aa052c0 Fix a bug of id matrix printer of maple printer
+e5b1622ad9 Improve maple printer for id matrix and add extra test case for id matrix
+580c727dc5 missing doctest dependency
+69e45229ed doctest dependency
+a7ff1ed3d7 Rubi Loader object
+cca3f76c9f removed error which occured in draw() function when end condition of the load was not applied, corrected documentation and added comments
+a21c61ddf2 Add ability to print undetermined size identity Matrix
+615a205878 Merge branch 'master' into add_maple_code_printer

@@ -1,0 +1,156 @@
+{
+  "instance_id": "sympy__sympy-13852",
+  "condition": "multi",
+  "position": 9,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 158.3278829330011,
+  "patch_collection_ok": true,
+  "patch_bytes": 1170,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "Confirmed: the `lerchphi` doctest failures are pre-existing and unrelated to my change. All `polylog` doctests still pass.\n\n## Summary\n\nFixed `sympy/functions/special/zeta_functions.py` to add closed-form evaluation for the dilogarithm (`polylog(2, z)`) at several classical special points, including `z = 1/2`:\n\n```python\npolylog(2, Rational(1,2))\n# -log(2)**2/2 + pi**2/12\n```\n\nThis matches the issue's expected result. The fix adds a `_dilogtable()` helper with verified (numerically checked against mpmath) values at `z = 1/2, 2, φ, -φ, 1-φ, -1/φ` (φ = golden-ratio-related constant), consulted in `polylog.eval` when `s == 2`. Also normalized `polylog(s, 0)` to return `S.Zero` instead of the Python `int` `0`.\n\nI verified no regressions: the pre-existing test/doctest failures in this environment (from a Python 3.9 `collections.Iterable` deprecation issue) occur identically with and without my patch. The `polylog`-specific doctests all pass.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 25,
+  "total_cost_usd_reported": 0.3797566000000001,
+  "usage_reported": {
+    "input_tokens": 50,
+    "cache_creation_input_tokens": 25729,
+    "cache_read_input_tokens": 862963,
+    "output_tokens": 10248,
+    "output_tokens_details": {
+      "thinking_tokens": 5402
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 25729,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 392,
+        "cache_read_input_tokens": 43577,
+        "cache_creation_input_tokens": 325,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 325
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1648,
+      "output_tokens": 10262,
+      "cache_read_input_tokens": 862963,
+      "cache_creation_input_tokens": 25729,
+      "total_tokens": 900602
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1598,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001668,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 50,
+        "outputTokens": 10248,
+        "cacheReadInputTokens": 862963,
+        "cacheCreationInputTokens": 25729,
+        "webSearchRequests": 0,
+        "costUSD": 0.3780886000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 5402,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 50,
+      "output_tokens": 107,
+      "cache_read_input_tokens": 862963,
+      "cache_creation_input_tokens": 25729
+    }
+  },
+  "unique_assistant_messages": 25,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 47,
+  "models_seen": {
+    "claude-sonnet-5": 47
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 19,
+    "Edit": 3,
+    "Read": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 19,
+      "Edit": 3,
+      "Read": 2
+    }
+  },
+  "tool_calls_total": 24,
+  "protocol_status": "violation_no_completed_subagent",
+  "finished_at": "2026-09-08T07:03:17.708918+00:00"
+}

@@ -1,0 +1,156 @@
+{
+  "instance_id": "sphinx-doc__sphinx-11510",
+  "condition": "single",
+  "position": 7,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 291.96519495100074,
+  "patch_collection_ok": true,
+  "patch_bytes": 3487,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "The fix is complete. Summary of changes:\n\n- `sphinx/directives/other.py`: `Include.run()` now temporarily patches `docutils.io.FileInput.read` while delegating to the base `Include` directive, emitting the `source-read` event with the included file's content so extensions listening on that event can modify included files just like top-level documents.\n- Added a regression test (`tests/test_directive_other.py::test_include_source_read_event`) plus a small testroot (`tests/roots/test-directive-include/`) with an included file to include in tests.\n- Updated `CHANGES` with a bugfix entry (#10538).\n\nVerified manually that the issue's reproduction case now replaces `&REPLACE_ME;` in both the main document and the included file, and ran the existing directive/build/environment test suites (602 tests) with no regressions.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 38,
+  "total_cost_usd_reported": 0.5663882,
+  "usage_reported": {
+    "input_tokens": 76,
+    "cache_creation_input_tokens": 35031,
+    "cache_read_input_tokens": 1398831,
+    "output_tokens": 14357,
+    "output_tokens_details": {
+      "thinking_tokens": 8723
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 35031,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 274,
+        "cache_read_input_tokens": 49756,
+        "cache_creation_input_tokens": 182,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 182
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 2782,
+      "output_tokens": 14371,
+      "cache_read_input_tokens": 1398831,
+      "cache_creation_input_tokens": 35031,
+      "total_tokens": 1451015
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2706,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.0027760000000000003,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 76,
+        "outputTokens": 14357,
+        "cacheReadInputTokens": 1398831,
+        "cacheCreationInputTokens": 35031,
+        "webSearchRequests": 0,
+        "costUSD": 0.5636122,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 8723,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 76,
+      "output_tokens": 301,
+      "cache_read_input_tokens": 1398831,
+      "cache_creation_input_tokens": 35031
+    }
+  },
+  "unique_assistant_messages": 38,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 64,
+  "models_seen": {
+    "claude-sonnet-5": 64
+  },
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "task_calls": 0,
+  "delegations": [],
+  "delegation_prompt_chars_total": 0,
+  "tool_calls_by_name": {
+    "Bash": 29,
+    "Edit": 4,
+    "Read": 4
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Bash": 29,
+      "Edit": 4,
+      "Read": 4
+    }
+  },
+  "tool_calls_total": 37,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-08T06:40:57.277995+00:00"
+}
