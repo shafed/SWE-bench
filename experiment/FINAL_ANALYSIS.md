@@ -12,7 +12,7 @@ The final comparison is not the later 12-instance v4 orchestration-suitability s
 
 ## Conditions actually compared
 
-One SINGLE baseline and three MULTI treatment variants are available on the same v1 task set.
+Two completed paired SINGLE/MULTI series and one MULTI-only treatment are available on the same v1 task set. The MULTI-only treatment is compared descriptively with the earlier SINGLE baseline; it is not a third same-session pair.
 
 ### 1. Original MULTI treatment
 
@@ -79,10 +79,10 @@ The frozen v4 selection, workstream treatment, adherence protocol and harness ca
 
 The final study therefore supports a narrower claim than the planned v4 design:
 
-- it compares **prompted subagent-orchestration policies** against a no-delegation SINGLE baseline on the same small SWE-bench Verified sample;
-- it can describe how stronger orchestration instructions changed quality and resource use on those 12 tasks;
+- it compares a no-delegation baseline with three **different prompted subagent-orchestration treatments** on the same small SWE-bench Verified task set;
+- it can describe how quality and resource use differed across those treatments, but the three MULTI variants are not a clean dose-response scale and differ in more than prompt wording;
 - it does **not** provide the planned v4 stratified test of orchestration-friendly vs single-friendly vs orchestration-risky tasks;
-- with 12 tasks and one run per condition, findings are descriptive and should not be generalized as a universal effect of multi-agent systems.
+- with 12 tasks and one run per task/condition, findings are descriptive and should not be generalized as a universal effect of multi-agent systems.
 
 ## Source tables
 
