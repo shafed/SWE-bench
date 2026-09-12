@@ -1,0 +1,4 @@
+[2026-09-12T04:18:30+00:00] start: 12 planned multi runs
+[2026-09-12T04:18:31+00:00] run  1 django__django-13449 multi
+[2026-09-12T04:23:08+00:00]      exit 50 violation_no_started_subagent|configuration_missing_or_invalid_gate_state session_limit=False
+[2026-09-12T04:23:08+00:00] stop at 1 django__django-13449 multi: runner exit 50: configuration violation -- discard this run, fix the configuration, then rerun the same instance
