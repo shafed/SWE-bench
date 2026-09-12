@@ -1,0 +1,264 @@
+{
+  "instance_id": "pylint-dev__pylint-4551",
+  "condition": "multi",
+  "position": 4,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 791.9612538000001,
+  "patch_collection_ok": true,
+  "patch_bytes": 10703,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "All changes compile and the full pyreverse test suite (27 tests, including the exact-match `.dot` fixture comparisons) passes, plus a manual CLI run confirms the issue's exact reproduction now renders `a : str` instead of nothing useful.\n\n## Summary\n\nFixed pyreverse to use PEP 484 type hints when inferring attribute types, via two sequential subagent workstreams:\n\n1. **Core inference** (`pylint/pyreverse/utils.py`, `pylint/pyreverse/inspector.py`): added `get_annotation()` to locate a relevant annotation for an `AssignAttr`/`AssignName` node — either from an `AnnAssign` (`self.a: str = None`) or from a same-named annotated constructor parameter (`def __init__(self, a: str = None): self.a = a`). `Linker.handle_assignattr_type` now prefers this annotation-derived type over a bare `NoneType` inferred from a placeholder default.\n\n2. **Rendering hardening** (`pylint/pyreverse/inspector.py`, `pylint/pyreverse/diagrams.py`): extended `_infer_annotation_type` to handle subscripted generics (`Optional[str]`, `List[int]` → shown via their source text instead of collapsing to the bare `Optional`/`List` alias) and forward-reference string annotations (`c: \"C\"` → resolves to class `C`, not `str`); `ClassDiagram.class_names()` now accepts plain display strings alongside astroid nodes.\n\nBoth agents added unit tests (inline `astroid.parse`, no shared fixtures touched) and verified no regressions in the existing `tests/unittest_pyreverse_*.py` suite. I independently re-verified the full diff, reran the full test suite (27/27 pyreverse tests pass; the one unrelated failure, `recursion_error_3152`, is a pre-existing environment-sensitive recursion-limit test untouched by this change), and confirmed via the real `pyreverse` CLI that the issue's exact example now renders `a : str`.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 37,
+  "total_cost_usd_reported": 1.7470791000000003,
+  "usage_reported": {
+    "input_tokens": 66,
+    "cache_creation_input_tokens": 65457,
+    "cache_read_input_tokens": 1947863,
+    "output_tokens": 25912,
+    "output_tokens_details": {
+      "thinking_tokens": 15006
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 65457,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 688,
+        "cache_read_input_tokens": 83113,
+        "cache_creation_input_tokens": 864,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 864
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1363,
+      "output_tokens": 52478,
+      "cache_read_input_tokens": 3643878,
+      "cache_creation_input_tokens": 157560,
+      "total_tokens": 3855279
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1213,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001288,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 150,
+        "outputTokens": 52463,
+        "cacheReadInputTokens": 3643878,
+        "cacheCreationInputTokens": 157560,
+        "webSearchRequests": 0,
+        "costUSD": 1.7457911000000002,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 27346,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 66,
+      "output_tokens": 207,
+      "cache_read_input_tokens": 1947863,
+      "cache_creation_input_tokens": 65457
+    },
+    "toolu_01VcaEDWv32uGM6VF4JTUK18": {
+      "input_tokens": 36,
+      "output_tokens": 102,
+      "cache_read_input_tokens": 681427,
+      "cache_creation_input_tokens": 49889
+    },
+    "toolu_0114uuHxVCY24NJvhSZaE5df": {
+      "input_tokens": 48,
+      "output_tokens": 168,
+      "cache_read_input_tokens": 1014588,
+      "cache_creation_input_tokens": 42214
+    }
+  },
+  "unique_assistant_messages": 75,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 151,
+  "models_seen": {
+    "claude-sonnet-5": 151
+  },
+  "subagent_stats": {
+    "spawned": 2,
+    "requested": {
+      "background": 0,
+      "foreground": 2,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 2,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 2
+    }
+  },
+  "task_calls": 2,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_01VcaEDWv32uGM6VF4JTUK18",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 58,
+      "prompt_chars": 7542
+    },
+    {
+      "tool_use_id": "toolu_0114uuHxVCY24NJvhSZaE5df",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 55,
+      "prompt_chars": 7124
+    }
+  ],
+  "subagent_executions": [
+    {
+      "subagent_id": "af30d3dcd37166b7d",
+      "tool_use_id": "toolu_01VcaEDWv32uGM6VF4JTUK18",
+      "subagent_type": "general-purpose",
+      "description": "Implement PEP 484 annotation inference for pyreverse attrs",
+      "prompt": "Repository: /testbed (pylint source checkout, on branch main, clean working tree).\n\nBUG: pyreverse (pylint's UML diagram generator, under pylint/pyreverse/) does not use PEP 484 type hints when determining the type of an instance attribute. Given:\n\n```python\nclass C:\n    def __init__(self, a: str = None):\n        self.a = a\n```\n\npyreverse currently infers `self.a`'s type as NoneType (because it just calls `.infer()` on the assignment, and the only concrete value ever assigned is the default `None`), so the generated diagram shows the attribute with no useful type, instead of `a : str`. The same problem exists for a directly-annotated attribute assignment like `self.a: str = None` (AnnAssign) — I verified this too: `.infer()` on both patterns currently yields `NoneType`/`Uninferable`, never `str`.\n\nI verified with a quick script:\n```python\nimport astroid\nmod = astroid.parse('''\nclass C:\n    def __init__(self, a: str = None):\n        self.a = a\n        self.b: str = None\n''')\nc = mod['C']\nfor name, assignattrs in c.instance_attrs.items():\n    for aa in assignattrs:\n        print(name, list(aa.infer()))\n```\nprints `a [Const.NoneType, Uninferable]` and `b [Const.NoneType]` — confirming neither the annotated-parameter pattern nor the direct AnnAssign pattern currently surfaces the annotation.\n\nRELEVANT CODE (read these first):\n- `pylint/pyreverse/inspector.py` — class `Linker` (a `utils.LocalsVisitor` subclass). `visit_classdef` populates `node.instance_attrs_type` (a `defaultdict(list)`) by calling the static method `handle_assignattr_type(assignattr_node, class_node)` for every `AssignAttr` node in `class_node.instance_attrs.values()`. That method currently just does `set(node.infer())` and stores the result. `visit_assignname` similarly populates `frame.locals_type[node.name]` for plain local/class variable assignments (`AssignName` nodes) using `set(node.infer())`.\n- `pylint/pyreverse/diagrams.py` — `ClassDiagram.get_attrs(node)` reads `node.instance_attrs_type` and `node.locals_type`, and for each attribute calls `self.class_names(associated_nodes)` (in the same file) to turn the inferred astroid values into displayable type name strings. `class_names()` currently only extracts names from values that are `astroid.Instance` (unwrapped via `._proxied`) or `astroid.ClassDef` — note that `astroid.Const` (e.g. a string literal) IS a subclass of `astroid.Instance`, which is why a plain `self.attr = 'some string'` already correctly shows up as `attr : str` in existing diagrams (see `tests/data/classes_No_Name.dot`, which already has `attr : str` for `Ancestor.attr` in `tests/data/clientmodule_test.py`). This existing behavior must NOT regress.\n- `pylint/pyreverse/utils.py` — general utility functions for pyreverse; a good place for any new small helper (e.g. something like `get_annotation(node)` that, given an `AssignAttr` or `AssignName` node, returns the relevant annotation AST node if one exists, or `None`).\n- Astroid facts you'll need: for `self.a = a` the tree is `Assign(targets=[AssignAttr(attrname='a', expr=Name('self'))], value=Name('a'))` — the `AssignAttr` node's `.parent` is the `Assign` node, and `.parent.value` is the RHS. For an annotated `__init__` parameter, `init_method.args` is an `astroid.Arguments` node; `arguments.args` is the list of `AssignName` parameter nodes and `arguments.annotations` is the *parallel* list of annotation nodes (or `None` per position) — e.g. `arguments.find_argname('a')` returns `(index, AssignName)`, and `arguments.annotations[index]` is the annotation node for that name (a `Name` node like `str`, or `None`). For a directly-annotated attribute, `self.a: str = None`, the tree is `AnnAssign(target=AssignAttr(...), annotation=Name('str'), value=Const(None))` — so `assignattr_node.parent` is the `AnnAssign` and `.parent.annotation` gives the annotation directly. To turn an annotation AST node (e.g. `Name('str')`) into something `class_names()` already knows how to render, you can infer it (e.g. `next(ann.infer())` typically yields the builtin `ClassDef` for `str` itself, not an `Instance` — `class_names()` already handles bare `ClassDef` nodes, so no changes to `class_names()` should be needed for this simple case). Handle `astroid.InferenceError`/uninferable results gracefully (fall back to whatever the existing behavior was, or simply skip adding the annotation-derived type — do not raise).\n\nYOUR TASK:\nModify `pylint/pyreverse/inspector.py` (and add a small helper to `pylint/pyreverse/utils.py` if that's a clean place for it) so that:\n1. An instance attribute assigned from an annotated constructor parameter (`def __init__(self, a: str = None): self.a = a`) is recorded with type `str` (in addition to, or replacing, the `NoneType`/`Uninferable` result — your call on which is cleanest, but the final rendered diagram should show `str`, not `NoneType`, and should not show `NoneType` and `str` both if that looks redundant — use your judgement, but prefer *not* showing NoneType noise when a real annotation is available).\n2. A directly-annotated attribute assignment (`self.a: str = None`, an `AnnAssign`) is likewise recorded with type `str`.\n3. Only handle the parameter/attribute-annotation resolution needed for these two patterns for now — annotations that are simple names resolving to a class (str, int, custom classes, etc.). It's fine if more complex annotations (e.g. `Optional[str]`, `List[int]`, forward-reference strings) aren't perfectly rendered yet; a downstream change will build on top of whatever data shape you produce to handle those. Just don't crash on them — fall back gracefully (e.g. skip, or keep old NoneType-inference behavior) for anything you don't handle.\n4. Do not regress any existing behavior. In particular, `self.attr = 'a string literal'` must still resolve to `str` via the existing inference path, and unannotated attributes must behave exactly as before.\n\nTESTING:\n- Run the existing pyreverse test suite to check for regressions: `python -m pytest tests/unittest_pyreverse_inspector.py tests/unittest_pyreverse_writer.py tests/unittest_pyreverse_diadefs.py -v` from /testbed. These must all still pass, including `test_dot_files` which does an exact-string comparison against the committed `tests/data/classes_No_Name.dot` / `tests/data/packages_No_Name.dot`.\n- IMPORTANT: do NOT modify `tests/data/clientmodule_test.py`, `tests/data/suppliermodule_test.py`, `tests/data/classes_No_Name.dot`, or `tests/data/packages_No_Name.dot` — these are shared fixtures and another engineer is concurrently working on a downstream change that also touches this area; changing these shared files will cause conflicts. Add your own new tests as new test functions in `tests/unittest_pyreverse_inspector.py` (or a new test module if you prefer) using `astroid.parse(...)` / `astroid.extract_node(...)` on inline source strings (following the existing style of `test_concat_interfaces`/`test_interfaces` in that file), NOT by adding new files under `tests/data/`.\n- Write at least two new tests: one for the `def __init__(self, a: str = None): self.a = a` pattern, one for the `self.a: str = None` (AnnAssign) pattern. Each should build a `Linker`, visit it, and assert that `instance_attrs_type` (or the rendered `ClassDiagram.get_attrs` output — whichever is more direct to assert on) reflects `str`.\n\nReport back: what you changed and why, the exact diff/files touched, and the full output of the pytest command above (pass/fail counts). Keep it under 400 words plus the pytest summary line.",
+      "start_trace_order": 153,
+      "start_timestamp": null,
+      "status": "completed",
+      "result": "## Summary\n\n**Files touched:**\n- `/testbed/pylint/pyreverse/utils.py` — added `import astroid` and a new helper `get_annotation(node)` that, given an `AssignAttr`/`AssignName`, returns the relevant annotation AST node: for `AnnAssign` targets it returns `node.parent.annotation` directly; for `AssignAttr` whose RHS is a bare `Name` (e.g. `self.a = a`), it looks up that name in the enclosing function's `Arguments` via `find_argname`/`annotations` to find the parameter's annotation. Falls back to `None` (via `AttributeError`/non-function-scope checks) for anything else — no crashes on complex annotations, tuples, etc.\n- `/testbed/pylint/pyreverse/inspector.py` — added `_infer_annotation_type(node)`, which calls `utils.get_annotation` and, if present, infers it (`next(annotation.infer())`), returning `None` on `InferenceError`/`StopIteration`/`Uninferable` so callers gracefully fall back. Modified `Linker.handle_assignattr_type` (static method) to: infer the assigned value as before, then if an annotation type is resolvable, strip out any inferred `Const(None)` values (the NoneType noise from default-`None` params) and add the annotation's resolved type instead. If nothing (no inference, no annotation) resolves, it returns without touching `instance_attrs_type` (previously a defaultdict access could silently create an empty entry — now skipped, immaterial behavior change).\n- `/testbed/tests/unittest_pyreverse_inspector.py` — added `test_attr_type_from_annotated_argument_assignment` (covers `def __init__(self, a: str = None): self.a = a`) and `test_attr_type_from_annotated_assignment` (covers `self.a: str = None`), both asserting `\"str\"` appears in `klass.instance_attrs_type[\"a\"]` names and no lingering `None`-valued `Const`.\n\nNo changes to `tests/data/clientmodule_test.py`, `suppliermodule_test.py`, or the `.dot` fixtures, as instructed.\n\n**Verification:** manually confirmed `ClassDiagram.get_attrs()` now renders `['a : str', 'b : str']` for the reproduction case from the bug report (previously `NoneType`/nothing useful). Existing `Const` string-literal inference path (`attr : str` in `clientmodule_test.py`) is untouched since `_infer_annotation_type` only adds/overrides when an actual annotation is found.\n\n**Test run:**\n```\ntests/unittest_pyreverse_inspector.py tests/unittest_pyreverse_writer.py tests/unittest_pyreverse_diadefs.py\n======================== 25 passed, 1 warning in 0.09s =========================\n```\n(23 pre-existing tests + 2 new ones, all passing; includes `test_dot_files` exact-match against the shared `.dot` fixtures.)",
+      "usage": {
+        "total_tokens": 50718,
+        "tool_uses": 20,
+        "duration_ms": 143210
+      },
+      "completion_trace_order": 243,
+      "completion_timestamp": null
+    },
+    {
+      "subagent_id": "a5a9abe5550b6809d",
+      "tool_use_id": "toolu_0114uuHxVCY24NJvhSZaE5df",
+      "subagent_type": "general-purpose",
+      "description": "Harden pyreverse rendering for complex type annotations",
+      "prompt": "Repository: /testbed (pylint source checkout on branch main). A prior change (already committed to the working tree, not yet git-committed) added PEP 484 annotation support to pyreverse (pylint's UML diagram generator). Your job is to build on top of it and fix the cases it doesn't yet handle well.\n\nBACKGROUND — what's already there:\n- `pylint/pyreverse/utils.py` has a new function `get_annotation(node)`: given an `astroid.AssignAttr` or `astroid.AssignName` node, it returns the relevant PEP 484 annotation AST node if one exists — either from an `AnnAssign` (`self.a: str = None`) or from a same-named annotated parameter of the enclosing function (`def __init__(self, a: str = None): self.a = a`). Returns `None` if nothing is found.\n- `pylint/pyreverse/inspector.py` has `_infer_annotation_type(node)`, which calls `get_annotation` and, if it found an annotation node, does `next(annotation.infer())` to turn it into a concrete astroid node (expected to usually be a `ClassDef`), returning `None` on failure/`Uninferable`. This is used in `Linker.handle_assignattr_type` to prefer the annotation-derived type over a `None`-valued inferred `Const` when populating `parent.instance_attrs_type[node.attrname]`.\n- `pylint/pyreverse/diagrams.py`'s `ClassDiagram.class_names(nodes)` turns a list of astroid values into displayable type-name strings — it only knows how to extract a name from `astroid.Instance` (unwrapped via `._proxied`) or `astroid.ClassDef` values. `get_attrs()` calls this to build strings like `\"a : str\"`.\n\nTHE PROBLEM — I verified this by hand with a script that parses a module, runs `Linker.visit`, builds a `ClassDiagram`, and calls `extract_relationships()` then reads `diagram.classe('C').attrs`:\n\n```python\nclass C(object):\n    def __init__(self, a: Optional[str] = None, b: List[int] = None, c: \"C\" = None):\n        self.a = a\n        self.b = b\n        self.c = c\n```\ncurrently renders as `['a : Optional', 'b : List', 'c : str']`. All three are wrong:\n- `a : Optional` — should show the useful inner type, e.g. `Optional[str]` or at least `str` (dropping the generic wrapper entirely and just showing `Optional` is useless/misleading).\n- `b : List` — same problem, should be e.g. `List[int]`.\n- `c : str` — this is actually a *forward-reference* string annotation meaning \"the class C itself\", but `next(annotation.infer())` on the `Const` string node `\"C\"` just infers the string literal itself (giving `str`, the type of the string, not what it refers to). This is actively misleading — worse than showing nothing.\n\nThe root cause: `_infer_annotation_type` always does `next(annotation.infer())` and expects a single concrete `ClassDef`/`Instance`. That works for simple name annotations (`str`, `int`, a custom class), but:\n1. For a subscripted generic (`typing.Subscript`, e.g. `Optional[str]`, `List[int]`, `Dict[str, int]`), inferring the annotation node infers the *unsubscripted* generic alias (`Optional`, `List`), losing the inner type entirely.\n2. For a forward-reference string literal annotation (a `Const` whose value is a string, meant to be parsed as a type expression per PEP 484), naively inferring it just gives you the `str` type, not the referenced class.\n\nYOUR TASK:\nFix `pylint/pyreverse/utils.py` / `pylint/pyreverse/inspector.py` / `pylint/pyreverse/diagrams.py` (whichever combination makes sense) so that:\n1. Subscripted generics render usefully. At minimum, don't silently show just the bare `Optional`/`List`/`Dict` outer name — show something informative, e.g. the annotation's own source text (`annotation.as_string()` gives you `\"Optional[str]\"`, `\"List[int]\"` etc. directly, no inference needed) or intelligently unwrap `Optional[X]`/`Union[X, ...]` to show the inner type(s). Use your judgement on exact display format, but it must not regress to showing a bare unsubscripted generic name.\n2. Forward-reference string annotations (`c: \"C\" = None`) should resolve to the actual referenced class (`C`), not to `str`. Note `astroid` can usually parse/infer a string annotation properly if you hand it the right node/context — investigate `annotation.as_string()` + re-parsing, or check if `AssignAttr`/annotation nodes expose a more direct way to get the \"real\" annotation (e.g. some astroid versions special-case string annotations during inference of `AnnAssign`/`Arguments` — check what's available in the installed astroid version with `python3 -c \"import astroid; print(astroid.__version__)\"` and inspect its source if needed under the site-packages). If a fully correct resolution turns out to be disproportionately complex, it is acceptable to at least avoid the misleading `str` result (e.g. fall back to displaying the raw annotation text `\"C\"` instead) — but try for the correct resolution first since it's the more valuable fix.\n3. `ClassDiagram.class_names()` in `diagrams.py` currently assumes every item in its input list is an astroid `Instance`/`ClassDef` node with a `.name`. If your fix in `inspector.py`/`utils.py` ends up storing plain strings (e.g. `\"Optional[str]\"`) instead of astroid nodes for these complex cases, update `class_names()` to pass such strings through directly instead of trying to treat them as nodes. Be careful: `class_names()` also has a dedup/`self.has_node(node)` check that only applies to actual diagram-tracked class nodes — don't break that for the normal ClassDef case.\n4. Do NOT regress the already-working simple cases: `def __init__(self, a: str = None): self.a = a` → `a : str`, `self.a: str = None` → `a : str`, and plain literal assignment `self.attr = 'a string'` → `attr : str`. Also do not regress unannotated attributes.\n\nVERIFY END-TO-END with a manual script like the one described above (parse a module string with `astroid.parse`, build a `Project`/`Linker`/`ClassDiagram`, call `extract_relationships()`, inspect `.attrs`) for: the original issue's `a: str = None` case, the `Optional[str]`/`List[int]`/forward-ref case above, and the plain-literal-string case.\n\nTESTING:\n- Run `python -m pytest tests/unittest_pyreverse_inspector.py tests/unittest_pyreverse_writer.py tests/unittest_pyreverse_diadefs.py -v` from `/testbed` — all must pass, including `test_dot_files` (exact-string comparison against committed `tests/data/classes_No_Name.dot`/`packages_No_Name.dot`).\n- Do NOT modify `tests/data/clientmodule_test.py`, `tests/data/suppliermodule_test.py`, or the two `.dot` fixture files — these are shared committed fixtures.\n- Add new tests to `tests/unittest_pyreverse_inspector.py` using inline `astroid.parse(...)` source (following the style of existing tests like `test_concat_interfaces`), covering the `Optional[str]`, `List[int]`, and forward-reference cases above. Feel free to also inspect/extend the two new tests already added by the prior change (`test_attr_type_from_annotated_argument_assignment`, `test_attr_type_from_annotated_assignment`) if useful context, but don't break them.\n\nReport back: what you changed, why, and the full pytest summary line, plus the manual end-to-end output for the three verification cases. Keep the report under 450 words plus command output.",
+      "start_trace_order": 274,
+      "start_timestamp": null,
+      "status": "completed",
+      "result": "Fixture files are untouched. Final summary below.\n\n## Summary\n\n**Changed files:**\n- `/testbed/pylint/pyreverse/inspector.py` — rewrote `_infer_annotation_type`\n- `/testbed/pylint/pyreverse/diagrams.py` — updated `ClassDiagram.class_names`\n- `/testbed/pylint/pyreverse/utils.py` — untouched by me (already modified by the prior commit-in-progress)\n- `/testbed/tests/unittest_pyreverse_inspector.py` — added two new tests\n\n**What changed and why:**\n\n1. `_infer_annotation_type` now special-cases the annotation node type before blindly calling `next(annotation.infer())`:\n   - If it's an `astroid.Subscript` (e.g. `Optional[str]`, `List[int]`, `Dict[str, int]`), inferring it only yields the bare unsubscripted generic (`Optional`, `List`), silently dropping the inner type. Instead it returns `annotation.as_string()` — a display string like `\"Optional[str]\"`.\n   - If it's an `astroid.Const` whose `.value` is a `str` (a PEP 484 forward-reference, e.g. `c: \"C\" = None`), naive inference just yields `str` (the literal's own type). Instead the string is re-parsed via `astroid.extract_node(annotation.value)`, the parsed node's `.parent` is set to the original annotation's parent (so name lookups resolve in the right scope), and *that* is inferred. If parsing/inference still fails (`Uninferable`), it falls back to the raw annotation text (`annotation.value`) rather than `None`/`str`.\n   - Plain `Name` annotations (`str`, `int`, custom classes) keep the original inference path — no regression.\n\n2. `ClassDiagram.class_names()` in `diagrams.py` now passes plain `str` values straight through (deduped), before the existing `Instance`/`ClassDef` handling, since `_infer_annotation_type` can now produce strings instead of nodes. The `has_node()` dedup logic for real `ClassDef` nodes is untouched.\n\n**Verification (manual, matching the task's script style):**\n```\na: str = None                         -> ['a : str']\nOptional[str]/List[int]/forward c: \"C\" -> ['a : Optional[str]', 'b : List[int]', 'c']\nself.attr = 'a string'                -> ['attr : str']\nself.a: str = None (AnnAssign)         -> ['a : str']\n```\nNote: `c` shows with no type suffix because `C` is a class already tracked in the diagram — by existing (pre-existing, unmodified) design, `class_names()` omits the type text for self-diagram classes and instead represents it via an association arrow (verified this matches existing behavior for `Specialization.relation -> DoNothing` in `tests/data/classes_No_Name.dot`). Underlying `instance_attrs_type['c']` does correctly resolve to the `ClassDef C` node (confirmed via direct inspection), not `str`.\n\n**Tests:** Added `test_attr_type_from_subscripted_generic_annotation` and `test_attr_type_from_forward_reference_annotation` to `tests/unittest_pyreverse_inspector.py`, following the existing style of `test_attr_type_from_annotated_argument_assignment`.\n\n```\n======================== 27 passed, 1 warning in 0.10s =========================\n```\n(`tests/unittest_pyreverse_inspector.py`, `tests/unittest_pyreverse_writer.py` incl. `test_dot_files`, `tests/unittest_pyreverse_diadefs.py` — all pass.)\n\nFixture files (`clientmodule_test.py`, `suppliermodule_test.py`, `classes_No_Name.dot`, `packages_No_Name.dot`) were not modified.",
+      "usage": {
+        "total_tokens": 56006,
+        "tool_uses": 26,
+        "duration_ms": 194100
+      },
+      "completion_trace_order": 389,
+      "completion_timestamp": null
+    }
+  ],
+  "orchestration_gate": {
+    "enabled": true,
+    "state": {
+      "condition": "multi",
+      "distinct_subagent_ids": [
+        "af30d3dcd37166b7d",
+        "a5a9abe5550b6809d"
+      ],
+      "event_sequence": 3,
+      "finalization_attempts": 1,
+      "first_subagent_invocation": {
+        "condition": "multi",
+        "counted": true,
+        "event": "subagent_started",
+        "event_order": 1,
+        "hook_event_name": "SubagentStart",
+        "prompt_id": "ebc64001-2a33-4997-8505-a1f25ff5827b",
+        "session_id": "c019745f-ea85-4a26-82d2-16e46cf7baa6",
+        "subagent_id": "af30d3dcd37166b7d",
+        "subagent_type": "general-purpose",
+        "timestamp": "2026-09-12T04:55:58.120932+00:00"
+      },
+      "rejected_finalizations": 0,
+      "successful_finalizations": 1,
+      "successful_subagent_invocations": 2,
+      "version": 1
+    },
+    "integrity_failure": null,
+    "events_file": "orchestration-gate/events.jsonl"
+  },
+  "delegation_prompt_chars_total": 14666,
+  "tool_calls_by_name": {
+    "Agent": 2,
+    "Bash": 54,
+    "Edit": 10,
+    "Read": 16
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 2,
+      "Bash": 26,
+      "Read": 8
+    },
+    "toolu_0114uuHxVCY24NJvhSZaE5df": {
+      "Bash": 17,
+      "Edit": 5,
+      "Read": 4
+    },
+    "toolu_01VcaEDWv32uGM6VF4JTUK18": {
+      "Bash": 11,
+      "Edit": 5,
+      "Read": 4
+    }
+  },
+  "tool_calls_total": 82,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-12T05:05:44.571269+00:00"
+}

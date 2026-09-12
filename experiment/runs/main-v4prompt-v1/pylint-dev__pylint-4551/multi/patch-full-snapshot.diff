@@ -1,0 +1,288 @@
+diff --git a/pylint/pyreverse/diagrams.py b/pylint/pyreverse/diagrams.py
+index bf9f67af..6cff0852 100644
+--- a/pylint/pyreverse/diagrams.py
++++ b/pylint/pyreverse/diagrams.py
+@@ -119,6 +119,14 @@ class ClassDiagram(Figure, FilterMixIn):
+         """return class names if needed in diagram"""
+         names = []
+         for node in nodes:
++            if isinstance(node, str):
++                # A display string produced for a type that couldn't be
++                # reduced to a single concrete node (e.g. a subscripted
++                # generic like ``Optional[str]``, or an unresolved
++                # forward reference) -- use it as-is.
++                if node not in names:
++                    names.append(node)
++                continue
+             if isinstance(node, astroid.Instance):
+                 node = node._proxied
+             if (
+diff --git a/pylint/pyreverse/inspector.py b/pylint/pyreverse/inspector.py
+index 8fa12202..ba6788d5 100644
+--- a/pylint/pyreverse/inspector.py
++++ b/pylint/pyreverse/inspector.py
+@@ -28,6 +28,58 @@ def _iface_hdlr(_):
+     return True
+ 
+ 
++def _infer_annotation_type(node):
++    """Try to resolve a PEP 484 type annotation associated with `node`
++    (an astroid.AssignAttr or astroid.AssignName) into a concrete
++    astroid node (typically a ClassDef), or -- for cases that can't be
++    reduced to a single concrete node -- a display string.
++
++    Returns None if there is no annotation, or if it can't be
++    (simply) inferred -- callers should fall back to the standard
++    inference-based behaviour in that case.
++    """
++    annotation = utils.get_annotation(node)
++    if annotation is None:
++        return None
++
++    if isinstance(annotation, astroid.Subscript):
++        # A subscripted generic, e.g. ``Optional[str]``, ``List[int]`` or
++        # ``Dict[str, int]``. Inferring it would only yield the
++        # unsubscripted generic alias (``Optional``, ``List``, ...),
++        # silently dropping the (often more useful) inner type(s). Fall
++        # back to the annotation's own source text instead.
++        return annotation.as_string()
++
++    resolved_annotation = annotation
++    if isinstance(annotation, astroid.Const) and isinstance(annotation.value, str):
++        # A PEP 484 forward-reference string annotation, e.g.
++        # ``c: "C" = None``. Directly inferring the ``Const`` node just
++        # gives back the string literal's own type (``str``), not the
++        # class it refers to. Parse the string as an expression instead,
++        # attaching it to the original annotation's scope so that name
++        # lookups (e.g. for ``C``) resolve correctly, then infer that.
++        try:
++            parsed_annotation = astroid.extract_node(annotation.value)
++        except (astroid.AstroidSyntaxError, ValueError):
++            parsed_annotation = None
++        if parsed_annotation is not None:
++            parsed_annotation.parent = annotation.parent
++            resolved_annotation = parsed_annotation
++
++    try:
++        annotation_type = next(resolved_annotation.infer())
++    except (astroid.InferenceError, StopIteration):
++        annotation_type = astroid.Uninferable
++    if annotation_type is astroid.Uninferable:
++        if resolved_annotation is not annotation:
++            # Could not resolve the forward reference to a real class;
++            # showing the raw annotation text is still less misleading
++            # than the ``str`` type of the string literal itself.
++            return annotation.value
++        return None
++    return annotation_type
++
++
+ def _astroid_wrapper(func, modname):
+     print("parsing %s..." % modname)
+     try:
+@@ -231,10 +283,24 @@ class Linker(IdGeneratorMixIn, utils.LocalsVisitor):
+         """
+         try:
+             values = set(node.infer())
+-            current = set(parent.instance_attrs_type[node.attrname])
+-            parent.instance_attrs_type[node.attrname] = list(current | values)
+         except astroid.InferenceError:
+-            pass
++            values = set()
++        annotation_type = _infer_annotation_type(node)
++        if annotation_type is not None:
++            # Prefer the type coming from a PEP 484 annotation over a plain
++            # ``None`` inferred from a default/placeholder value (e.g.
++            # ``def __init__(self, a: str = None): self.a = a``), but keep
++            # any other concrete type(s) that may have been inferred.
++            values = {
++                value
++                for value in values
++                if not (isinstance(value, astroid.Const) and value.value is None)
++            }
++            values.add(annotation_type)
++        if not values:
++            return
++        current = set(parent.instance_attrs_type[node.attrname])
++        parent.instance_attrs_type[node.attrname] = list(current | values)
+ 
+     def visit_import(self, node):
+         """visit an astroid.Import node
+diff --git a/pylint/pyreverse/utils.py b/pylint/pyreverse/utils.py
+index a24d227e..f94b2d06 100644
+--- a/pylint/pyreverse/utils.py
++++ b/pylint/pyreverse/utils.py
+@@ -20,6 +20,8 @@ import os
+ import re
+ import sys
+ 
++import astroid
++
+ RCFILE = ".pyreverserc"
+ 
+ 
+@@ -93,6 +95,41 @@ def is_exception(node):
+     return node.type == "exception"
+ 
+ 
++def get_annotation(node):
++    """Return the type annotation for `node`, if one is available.
++
++    `node` is expected to be an ``astroid.AssignAttr`` or
++    ``astroid.AssignName`` node. Two patterns are recognised:
++
++    * a directly annotated assignment, e.g. ``self.a: str = None`` or
++      ``a: str = None``, where the annotation is attached to the
++      enclosing ``AnnAssign`` node;
++    * an attribute assigned from an annotated constructor parameter,
++      e.g. ``def __init__(self, a: str = None): self.a = a``, where the
++      annotation is attached to the parameter itself.
++
++    Returns the annotation node (e.g. a ``Name`` node) or ``None`` if no
++    annotation could be found.
++    """
++    ann = None
++    if isinstance(node.parent, astroid.AnnAssign):
++        ann = node.parent.annotation
++    elif isinstance(node, astroid.AssignAttr):
++        init_method = node.scope()
++        if not isinstance(init_method, astroid.FunctionDef):
++            return None
++        arguments = init_method.args
++        try:
++            arg_name = node.parent.value.name
++        except AttributeError:
++            return None
++        index, _ = arguments.find_argname(arg_name)
++        if index is not None:
++            ann = arguments.annotations[index]
++
++    return ann
++
++
+ # Helpers #####################################################################
+ 
+ _CONSTRUCTOR = 1
+diff --git a/tests/unittest_pyreverse_inspector.py b/tests/unittest_pyreverse_inspector.py
+index e1ff6378..f632fd6e 100644
+--- a/tests/unittest_pyreverse_inspector.py
++++ b/tests/unittest_pyreverse_inspector.py
+@@ -119,6 +119,118 @@ def test_interfaces():
+         assert [i.name for i in inspector.interfaces(klass)] == interfaces
+ 
+ 
++def test_attr_type_from_annotated_argument_assignment():
++    """An instance attribute assigned from an annotated constructor
++    parameter should be typed according to the annotation, rather than
++    the type of its (possibly placeholder) default value.
++    """
++    module = astroid.parse(
++        """
++    class C:
++        def __init__(self, a: str = None):
++            self.a = a
++    """
++    )
++    klass = module["C"]
++    linker = inspector.Linker(inspector.Project("test"))
++    linker.visit(klass)
++
++    type_dict = klass.instance_attrs_type
++    assert "a" in type_dict
++    names = [
++        value.name
++        for value in type_dict["a"]
++        if hasattr(value, "name")
++    ]
++    assert "str" in names
++    assert not any(
++        getattr(value, "value", "unset") is None for value in type_dict["a"]
++    )
++
++
++def test_attr_type_from_annotated_assignment():
++    """A directly annotated attribute assignment (AnnAssign) should be
++    typed according to the annotation, rather than the type of the
++    assigned value.
++    """
++    module = astroid.parse(
++        """
++    class C:
++        def __init__(self):
++            self.a: str = None
++    """
++    )
++    klass = module["C"]
++    linker = inspector.Linker(inspector.Project("test"))
++    linker.visit(klass)
++
++    type_dict = klass.instance_attrs_type
++    assert "a" in type_dict
++    names = [
++        value.name
++        for value in type_dict["a"]
++        if hasattr(value, "name")
++    ]
++    assert "str" in names
++    assert not any(
++        getattr(value, "value", "unset") is None for value in type_dict["a"]
++    )
++
++
++def test_attr_type_from_subscripted_generic_annotation():
++    """A subscripted generic annotation (e.g. ``Optional[str]`` or
++    ``List[int]``) can't be reduced to a single concrete class -- naively
++    inferring it would only yield the bare, unsubscripted generic alias
++    (``Optional``/``List``), losing the inner type. Instead the annotation's
++    own source text should be used as the type.
++    """
++    module = astroid.parse(
++        """
++    from typing import List, Optional
++
++    class C:
++        def __init__(self, a: Optional[str] = None, b: List[int] = None):
++            self.a = a
++            self.b = b
++    """
++    )
++    klass = module["C"]
++    linker = inspector.Linker(inspector.Project("test"))
++    linker.visit(klass)
++
++    type_dict = klass.instance_attrs_type
++    assert "Optional[str]" in type_dict["a"]
++    assert "List[int]" in type_dict["b"]
++    # the bare, unsubscripted generic alias should never show up on its own
++    assert "Optional" not in type_dict["a"]
++    assert "List" not in type_dict["b"]
++
++
++def test_attr_type_from_forward_reference_annotation():
++    """A forward-reference string annotation (e.g. ``c: "C" = None``)
++    should resolve to the class it names, not to ``str`` (the type of the
++    string literal itself).
++    """
++    module = astroid.parse(
++        """
++    class C:
++        def __init__(self, c: "C" = None):
++            self.c = c
++    """
++    )
++    klass = module["C"]
++    linker = inspector.Linker(inspector.Project("test"))
++    linker.visit(klass)
++
++    type_dict = klass.instance_attrs_type
++    assert "c" in type_dict
++    resolved = [value for value in type_dict["c"] if isinstance(value, astroid.ClassDef)]
++    assert len(resolved) == 1
++    assert resolved[0].name == "C"
++    # it must not have resolved to the type of the string literal itself
++    assert not any(getattr(value, "name", None) == "str" for value in type_dict["c"])
++
++
+ def test_from_directory(project):
+     expected = os.path.join("tests", "data", "__init__.py")
+     assert project.name == "data"

@@ -1,0 +1,4 @@
+ M django/core/serializers/python.py
+ M django/core/serializers/xml_serializer.py
+ M tests/serializers/models/base.py
+ M tests/serializers/tests.py

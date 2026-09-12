@@ -1,0 +1,52 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 6d78a47f..093d5856 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -49,6 +49,9 @@ Bug fixes
+ - Make FacetGrid.set_titles send kwargs correctly using `handle.udpate(kwargs)`.
+   (:issue:`6839`, :pull:`6843`)
+   By `Oliver Lopez <https://github.com/lopezvoliver>`_.
++- Fix bug where :py:meth:`Dataset.swap_dims` and :py:meth:`DataArray.swap_dims`
++  could modify a variable in the original object, if that variable was
++  already an index variable.
+ 
+ Documentation
+ ~~~~~~~~~~~~~
+diff --git a/xarray/core/dataset.py b/xarray/core/dataset.py
+index c775d05c..135a693e 100644
+--- a/xarray/core/dataset.py
++++ b/xarray/core/dataset.py
+@@ -3773,6 +3773,8 @@ class Dataset(
+             dims = tuple(dims_dict.get(dim, dim) for dim in v.dims)
+             if k in result_dims:
+                 var = v.to_index_variable()
++                if var is v:
++                    var = var.copy()
+                 var.dims = dims
+                 if k in self._indexes:
+                     indexes[k] = self._indexes[k]
+diff --git a/xarray/tests/test_dataset.py b/xarray/tests/test_dataset.py
+index 9ea47163..8cdeede8 100644
+--- a/xarray/tests/test_dataset.py
++++ b/xarray/tests/test_dataset.py
+@@ -2995,6 +2995,20 @@ class TestDataset:
+         assert isinstance(actual.variables["x"], Variable)
+         assert actual.xindexes["y"].equals(expected.xindexes["y"])
+ 
++    def test_swap_dims_invariant(self) -> None:
++        # GH7009: swap_dims() must not modify the original dataset in-place,
++        # even when the swapped variable was already backed by an IndexVariable.
++        ds = Dataset({"y": ("z", [1, 2, 3]), "lev": ("z", [10, 20, 30])})
++        ds2 = (
++            ds.swap_dims(z="lev")
++            .rename_dims(lev="z")
++            .reset_index("lev")
++            .reset_coords()
++        )
++        before = ds2["lev"].dims
++        ds2.swap_dims(z="lev")
++        assert ds2["lev"].dims == before
++
+     def test_expand_dims_error(self) -> None:
+         original = Dataset(
+             {

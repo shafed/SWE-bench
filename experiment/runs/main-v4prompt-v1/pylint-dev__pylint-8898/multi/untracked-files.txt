@@ -1,0 +1,1 @@
+doc/whatsnew/fragments/8863.bugfix

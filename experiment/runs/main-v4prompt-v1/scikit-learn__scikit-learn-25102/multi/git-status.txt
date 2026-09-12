@@ -1,0 +1,3 @@
+ M doc/whats_new/v1.3.rst
+ M sklearn/utils/_set_output.py
+ M sklearn/utils/tests/test_set_output.py

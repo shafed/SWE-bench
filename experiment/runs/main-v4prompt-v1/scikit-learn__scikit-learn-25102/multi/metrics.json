@@ -1,0 +1,230 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-25102",
+  "condition": "multi",
+  "position": 5,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 399.26682611000024,
+  "patch_collection_ok": true,
+  "patch_bytes": 6141,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "## Summary\n\nFixed `sklearn/utils/_set_output.py` so that pandas-output transformers automatically preserve the original column dtype whenever a column's values are unchanged from the input (matched by column name and verified via value equality). This is fully automatic — no new config flag — because it only restores a dtype when the values are provably identical, so it's safe for feature selectors (`SelectKBest`, etc.) while leaving transformers that actually modify values (scalers, imputers) untouched.\n\n**Changes:**\n- `sklearn/utils/_set_output.py`: added `_is_column_unchanged` and `_restore_dtypes` helpers; `_wrap_in_pandas_container` and `_wrap_data_with_container` now thread through `original_input` to restore dtypes on unchanged columns.\n- `sklearn/utils/tests/test_set_output.py`: added a regression test covering dtype restoration for unchanged columns and non-restoration for modified ones.\n- `doc/whats_new/v1.3.rst`: added a changelog entry.\n\n**Verification:** the issue's exact repro now preserves `float16` and `category` dtypes; `StandardScaler` (which changes values) correctly still returns `float64`. I ran the target test-suite fixes myself and delegated a broader regression sweep (feature_selection, compose/ColumnTransformer, preprocessing, impute, common estimator pandas-output checks, decomposition/cluster/manifold) to a background subagent — all passed with no regressions.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 31,
+  "total_cost_usd_reported": 0.8599948000000001,
+  "usage_reported": {
+    "input_tokens": 62,
+    "cache_creation_input_tokens": 50433,
+    "cache_read_input_tokens": 1534900,
+    "output_tokens": 25337,
+    "output_tokens_details": {
+      "thinking_tokens": 16898
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 50433,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 500,
+        "cache_read_input_tokens": 68701,
+        "cache_creation_input_tokens": 252,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 252
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1668,
+      "output_tokens": 27290,
+      "cache_read_input_tokens": 1626354,
+      "cache_creation_input_tokens": 73807,
+      "total_tokens": 1729119
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1594,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001679,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 74,
+        "outputTokens": 27273,
+        "cacheReadInputTokens": 1626354,
+        "cacheCreationInputTokens": 73807,
+        "webSearchRequests": 0,
+        "costUSD": 0.8583158000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 17058,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 62,
+      "output_tokens": 183,
+      "cache_read_input_tokens": 1534900,
+      "cache_creation_input_tokens": 50433
+    },
+    "toolu_013MKR2YBhaHAj6GKhjmid3A": {
+      "input_tokens": 12,
+      "output_tokens": 14,
+      "cache_read_input_tokens": 91454,
+      "cache_creation_input_tokens": 23374
+    }
+  },
+  "unique_assistant_messages": 37,
+  "messages_without_id": 0,
+  "result_events": 1,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 70,
+  "models_seen": {
+    "claude-sonnet-5": 70
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 1
+    },
+    "started_in_background": 1,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_013MKR2YBhaHAj6GKhjmid3A",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 48,
+      "prompt_chars": 2464
+    }
+  ],
+  "subagent_executions": [
+    {
+      "subagent_id": "ae230986ab1f280e0",
+      "tool_use_id": "toolu_013MKR2YBhaHAj6GKhjmid3A",
+      "subagent_type": "general-purpose",
+      "description": "Run broad test suites for dtype-preservation fix",
+      "prompt": "In the scikit-learn repo at /testbed, I just modified /testbed/sklearn/utils/_set_output.py to preserve original pandas dtypes on DataFrame output columns when a transformer's `set_output(transform=\"pandas\")` produces a column that is unchanged in value from the corresponding column of the original input DataFrame (matched by column name). This targets GitHub issue: \"Preserving dtypes for DataFrame output by transformers that do not modify the input values\" (e.g. SelectKBest with pandas output should keep a `category` dtype column as `category` instead of casting to float64).\n\nThe core change: `_wrap_in_pandas_container` now accepts an `original_input` kwarg and calls a new helper `_restore_dtypes(dataframe, original_input, pd)` which, for each output column whose name also exists in `original_input.columns`, checks value-equality via `np.array_equal(..., equal_nan=True)` and if equal, casts the output column back to `original_input[column].dtype` (wrapped in try/except for TypeError/ValueError). `_wrap_data_with_container` now passes `original_input=original_input` through. This is a purely automatic, no-new-config-flag behavior — it should only ever kick in when values are literally unchanged, so it must never corrupt or alter values for transformers that do modify values (e.g. scalers, imputers that fill values, encoders).\n\nThis is not a code-writing task — it's verification. Please run the following and report a concise pass/fail summary (do not spend time trying to fix failures yourself, just report what breaks and the relevant traceback/error lines so I can triage):\n\n1. `python -m pytest sklearn/utils/tests/test_set_output.py -q`\n2. `python -m pytest sklearn/feature_selection/tests/ -q -k \"pandas or output or dtype\"`\n3. `python -m pytest sklearn/compose/tests/test_column_transformer.py -q`\n4. `python -m pytest sklearn/preprocessing/tests/ -q -k \"pandas or output\"`\n5. `python -m pytest sklearn/tests/test_common.py -q -k \"pandas\"`\n6. `python -m pytest sklearn/utils/tests/test_estimator_checks.py -q`\n7. `python -m pytest sklearn/impute/tests/ -q -k \"pandas or output\"`\n8. A broader sanity sweep: `python -m pytest sklearn/decomposition/tests sklearn/cluster/tests sklearn/manifold/tests -q -k \"pandas or set_output\"`\n\nReport total pass/fail counts per command, and for any failures, the test name and the key assertion/error message (a few lines is enough, no need for full tracebacks). Keep the final report under 400 words.",
+      "start_trace_order": 203,
+      "start_timestamp": null,
+      "status": "completed",
+      "result": "All 8 commands pass with no failures or errors.\n\n## Summary\n\n| # | Command | Result |\n|---|---------|--------|\n| 1 | `sklearn/utils/tests/test_set_output.py` | 14 passed |\n| 2 | `sklearn/feature_selection/tests/ -k \"pandas or output or dtype\"` | 4 passed, 235 deselected |\n| 3 | `sklearn/compose/tests/test_column_transformer.py` | 187 passed |\n| 4 | `sklearn/preprocessing/tests/ -k \"pandas or output\"` | 38 passed, 953 deselected |\n| 5 | `sklearn/tests/test_common.py -k \"pandas\"` | 450 passed, 12 skipped, 2 xpassed |\n| 6 | `sklearn/utils/tests/test_estimator_checks.py` | 25 passed, 1 skipped |\n| 7 | `sklearn/impute/tests/ -k \"pandas or output\"` | 20 passed, 278 deselected |\n| 8 | `decomposition/cluster/manifold -k \"pandas or set_output\"` | 1 passed, 1515 deselected |\n\nNo failures or errors in any of the eight runs — every test that ran either passed or was cleanly skipped/xpassed (the xpasses in run 5 are pre-existing `xfail_strict=False`-style markers, not new breakage; no assertion errors or tracebacks appeared in any output). The `_restore_dtypes` change in `/testbed/sklearn/utils/_set_output.py` did not regress dtype/pandas-output behavior across feature_selection, column_transformer, preprocessing, impute, or the common estimator-check pandas-output suite, nor in the estimator-checks unit tests or the decomposition/cluster/manifold sanity sweep.\n\nNo further action taken since this was verification-only, per instructions.",
+      "usage": {
+        "total_tokens": 23771,
+        "tool_uses": 8,
+        "duration_ms": 137265
+      },
+      "completion_trace_order": 292,
+      "completion_timestamp": null
+    }
+  ],
+  "orchestration_gate": {
+    "enabled": true,
+    "state": {
+      "condition": "multi",
+      "distinct_subagent_ids": [
+        "ae230986ab1f280e0"
+      ],
+      "event_sequence": 2,
+      "finalization_attempts": 1,
+      "first_subagent_invocation": {
+        "condition": "multi",
+        "counted": true,
+        "event": "subagent_started",
+        "event_order": 1,
+        "hook_event_name": "SubagentStart",
+        "prompt_id": "32b65c54-69e1-4414-9ced-4aac3257c28a",
+        "session_id": "91c48c9a-50ea-498b-9b1b-eaae97c46167",
+        "subagent_id": "ae230986ab1f280e0",
+        "subagent_type": "general-purpose",
+        "timestamp": "2026-09-12T05:10:53.677298+00:00"
+      },
+      "rejected_finalizations": 0,
+      "successful_finalizations": 1,
+      "successful_subagent_invocations": 1,
+      "version": 1
+    },
+    "integrity_failure": null,
+    "events_file": "orchestration-gate/events.jsonl"
+  },
+  "delegation_prompt_chars_total": 2464,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 28,
+    "Edit": 4,
+    "ListAgents": 1,
+    "Read": 3,
+    "ScheduleWakeup": 1
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 20,
+      "Edit": 4,
+      "ListAgents": 1,
+      "Read": 3,
+      "ScheduleWakeup": 1
+    },
+    "toolu_013MKR2YBhaHAj6GKhjmid3A": {
+      "Bash": 8
+    }
+  },
+  "tool_calls_total": 38,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-12T05:13:21.519915+00:00"
+}

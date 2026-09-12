@@ -1,0 +1,118 @@
+diff --git a/django/core/serializers/python.py b/django/core/serializers/python.py
+index 36048601af..774fb71bd0 100644
+--- a/django/core/serializers/python.py
++++ b/django/core/serializers/python.py
+@@ -79,7 +79,9 @@ class Serializer(base.Serializer):
+                     return self._value_from_field(value, value._meta.pk)
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name).select_related(None).only("pk")
++                    ).iterator()
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/django/core/serializers/xml_serializer.py b/django/core/serializers/xml_serializer.py
+index 1d3269c41a..67e3348861 100644
+--- a/django/core/serializers/xml_serializer.py
++++ b/django/core/serializers/xml_serializer.py
+@@ -155,7 +155,9 @@ class Serializer(base.Serializer):
+                     self.xml.addQuickElement("object", attrs={"pk": str(value.pk)})
+ 
+                 def queryset_iterator(obj, field):
+-                    return getattr(obj, field.name).only("pk").iterator()
++                    return (
++                        getattr(obj, field.name).select_related(None).only("pk")
++                    ).iterator()
+ 
+             m2m_iter = getattr(obj, "_prefetched_objects_cache", {}).get(
+                 field.name,
+diff --git a/tests/serializers/models/base.py b/tests/serializers/models/base.py
+index af9ca2b20a..6544eab5a7 100644
+--- a/tests/serializers/models/base.py
++++ b/tests/serializers/models/base.py
+@@ -67,6 +67,35 @@ class Article(models.Model):
+         return self.headline
+ 
+ 
++class BoxManager(models.Manager):
++    def get_queryset(self):
++        return super().get_queryset().select_related("author")
++
++
++class Box(models.Model):
++    """
++    A model whose default manager applies select_related() in its
++    get_queryset(). Used to verify that the m2m serialization
++    optimization (calling only("pk") on the related manager) doesn't
++    conflict with a select_related() applied by a custom manager.
++    """
++
++    name = models.CharField(max_length=20)
++    author = models.ForeignKey(Author, models.CASCADE)
++    objects = BoxManager()
++
++    def __str__(self):
++        return self.name
++
++
++class Warehouse(models.Model):
++    name = models.CharField(max_length=20)
++    boxes = models.ManyToManyField(Box)
++
++    def __str__(self):
++        return self.name
++
++
+ class AuthorProfile(models.Model):
+     author = models.OneToOneField(Author, models.CASCADE, primary_key=True)
+     date_of_birth = models.DateField()
+diff --git a/tests/serializers/tests.py b/tests/serializers/tests.py
+index 67ae8f43de..d8d2c1b0da 100644
+--- a/tests/serializers/tests.py
++++ b/tests/serializers/tests.py
+@@ -17,6 +17,7 @@ from .models import (
+     Author,
+     AuthorProfile,
+     BaseModel,
++    Box,
+     Category,
+     Child,
+     ComplexModel,
+@@ -26,6 +27,7 @@ from .models import (
+     ProxyProxyBaseModel,
+     Score,
+     Team,
++    Warehouse,
+ )
+ 
+ 
+@@ -435,6 +437,27 @@ class SerializersTestBase:
+         meta_data_sql = ctx[2]["sql"]
+         self.assertIn(connection.ops.quote_name("kind"), meta_data_sql)
+ 
++    def test_serialize_m2m_through_select_related_manager(self):
++        """
++        Serializing an m2m field whose related model's default manager
++        applies select_related() in get_queryset() doesn't crash with
++        "cannot be both deferred and traversed using select_related at
++        the same time".
++        """
++        box = Box.objects.create(name="Box", author=self.joe)
++        warehouse = Warehouse.objects.create(name="Warehouse")
++        warehouse.boxes.add(box)
++
++        serial_str = serializers.serialize(
++            self.serializer_name, Warehouse.objects.all()
++        )
++        deserialized = list(serializers.deserialize(self.serializer_name, serial_str))
++        self.assertEqual(len(deserialized), 1)
++        self.assertEqual(
++            list(deserialized[0].m2m_data["boxes"]),
++            [box.pk],
++        )
++
+ 
+ class SerializerAPITests(SimpleTestCase):
+     def test_stream_class(self):

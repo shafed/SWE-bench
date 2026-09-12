@@ -1,0 +1,32 @@
+d811f7148ca605ccfed1773f272c0fbe94dac2b9
+## main
+d811f7148c SWE-bench
+26224d9606 Merge pull request #26036 from anntzer/ag
+bb335a115c Merge pull request #26038 from story645/backend
+eea28db3d9 Merge pull request #26025 from matthewfeickert/mnt/harden-security-with-dependabot
+3484faf742 subsubsection titles for static and interactive tables
+f6eacd81c1 Cleanup AxesGrid
+3054ff4dbc Merge pull request #26020 from anntzer/agam
+7d6d71a175 Merge pull request #26033 from story645/gfi
+642041109f removed wrapping
+f5f2cd9fb0 Merge pull request #26003 from madeira-dev/grey_to_gray_alias
+515cce40f1 Merge pull request #26027 from oscargus/competing
+bb0e29b462 updated with alias for reverse spelling
+9333b45a09 Merge pull request #26026 from anntzer/da
+b200f0213a Merge pull request #26028 from anntzer/gtwhd
+c1802188ef Simplify wording
+5d480c5a02 Better document the semantics of get_text_width_height_descent.
+18bd2e6754 Simplify delaxes.
+98b4263a90 Correct spelling in 'Good first issue'
+2f1188dba8 Merge pull request #26018 from story645/gfi
+92e285fcd9 MNT: Use commit SHA of cibuildwheel action release
+bfaa6eb677 Merge pull request #25950 from jarrodmillman/nightlies
+4bb22c59e4 good first issue bot rewording based on discussion in #25942
+3fc25bb3c0 Merge pull request #25473 from QuLogic/test-wheel
+25a2553a02 Upload nightlies to new location
+fbf93bd11a Merge pull request #26006 from matthewfeickert/docs/update-nightlies-location
+fff5a54f92 ci: Merge sdist and wheel building workflows
+3798f38d99 Let AxesGrid support Axes subclasses that don't override axis().
+28e9b55389 DOC: Use scientific-python-nightly-wheels for nightly build index
+f6a781f77f Merge pull request #25825 from QuLogic/marker-types
+cb783a9525 Merge pull request #25985 from QuLogic/subset-drop-meta

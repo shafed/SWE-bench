@@ -1,0 +1,93 @@
+{
+  "instance_id": "pytest-dev__pytest-5787",
+  "condition": "multi",
+  "position": 7,
+  "image": "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-5787:latest",
+  "model": "claude-sonnet-5",
+  "effort_requested": "high",
+  "subagent_effort_policy": "CLAUDE_CODE_EFFORT_LEVEL inherited from parent process",
+  "background_wait_ceiling_ms": 0,
+  "claude_code_requested_version": "2.1.261",
+  "timeout_seconds": 2700,
+  "max_turns": null,
+  "max_budget_usd": null,
+  "runner_sha256": "c7e8e17c4e972407874e62f78f2b95c4d6ee89cab78199cb8eb2dc7af8afb354",
+  "controller_git_head": "399f1d6eb86203047197a4f01c7084bddb603584",
+  "prompt_template_sha256": "a48adb3e67ed45e0eded8fbdfec44419ab196193d195bc7b3542f996586adfe2",
+  "problem_statement_sha256": "3837cd101981ed22a8c48e65978c0784010ef055a815f30371345aa1220f520e",
+  "treatment_file": "multi-treatment.txt",
+  "treatment_sha256": "072335f769a685222ae9ed4b00eac380fc680854809bdac999414c952ae5303a",
+  "orchestration_gate": true,
+  "orchestration_gate_sha256": "e847309239318f6635e78d96d5b78288d596aba1be45548996d6b91fe9c1071f",
+  "orchestration_gate_settings_sha256": "c4cf3c376229e0291ff78b16c1e382b3512c96d4be3a1c0ef846fb94da6c2485",
+  "setup_started_at": "2026-09-12T05:18:50.289654+00:00",
+  "network_isolation": {
+    "proxy_container": "nir-proxy",
+    "proxy_image_id": "sha256:6a097f68bae708cedbabd6188d68c7e2e7a38cedd05a176e1cc0ba29e3bbe029",
+    "internal_network": "nir-internal",
+    "squid_config": "squid.conf",
+    "proxy_config_digest": "c96c165c575daa8a0dcbafcd618ff31fd938e137fafa51b4a138f08a53e6fd8d",
+    "squid_config_sha256": "e28593b4a22978d36509b7a5081716950930ad3ec51fc3edc3bc6528c2363f3a",
+    "allowlist_sha256": "fba739989faa7fb9f25c3c62625daea917191375073063b19b20ceeebd09eca4",
+    "allowlist": [
+      ".anthropic.com",
+      ".claude.ai",
+      "claude.com",
+      "platform.claude.com"
+    ],
+    "enforced": true,
+    "probes": {
+      "https://github.com": {
+        "exit_code": 56,
+        "http_code": "000",
+        "reachable": false
+      },
+      "https://raw.githubusercontent.com": {
+        "exit_code": 56,
+        "http_code": "000",
+        "reachable": false
+      },
+      "https://pypi.org": {
+        "exit_code": 56,
+        "http_code": "000",
+        "reachable": false
+      },
+      "https://api.anthropic.com": {
+        "exit_code": 0,
+        "http_code": "404",
+        "reachable": true
+      }
+    }
+  },
+  "image_id": "sha256:48c6ca4406eb36dae43e08dc2137b750239b8ad8f9ccdf2924e8fc2177fca241",
+  "image_repo_digests": [
+    "swebench/sweb.eval.x86_64.pytest-dev_1776_pytest-5787@sha256:48c6ca4406eb36dae43e08dc2137b750239b8ad8f9ccdf2924e8fc2177fca241"
+  ],
+  "base_commit": "b32361f0accbefc2e6200fd85113d404f5ab4907",
+  "claude_code_actual_version": "2.1.261 (Claude Code)",
+  "flags_present": [
+    "--append-system-prompt",
+    "--disallowedTools",
+    "--effort",
+    "--forward-subagent-text",
+    "--include-hook-events",
+    "--max-budget-usd",
+    "--mcp-config",
+    "--model",
+    "--output-format",
+    "--permission-mode",
+    "--safe-mode",
+    "--setting-sources",
+    "--strict-mcp-config",
+    "--verbose"
+  ],
+  "flags_absent_optional": [],
+  "claude_command": "claude -p \"$(cat /task/prompt.txt)\" --model claude-sonnet-5 --effort high --output-format stream-json --verbose --permission-mode bypassPermissions --safe-mode --setting-sources '' --strict-mcp-config --mcp-config '{\"mcpServers\":{}}' --append-system-prompt \"$(cat /task/treatment.txt)\" --disallowedTools WebFetch WebSearch --forward-subagent-text --include-hook-events",
+  "inference_started_at": "2026-09-12T05:19:35.525076+00:00",
+  "head_after_run": "b32361f0accbefc2e6200fd85113d404f5ab4907",
+  "agent_committed": false,
+  "credential_refresh_status": "unchanged",
+  "finished_at": "2026-09-12T05:27:47.236170+00:00",
+  "inference_exit_code": 0,
+  "timed_out": false
+}

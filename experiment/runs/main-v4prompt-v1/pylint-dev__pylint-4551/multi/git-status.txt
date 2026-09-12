@@ -1,0 +1,4 @@
+ M pylint/pyreverse/diagrams.py
+ M pylint/pyreverse/inspector.py
+ M pylint/pyreverse/utils.py
+ M tests/unittest_pyreverse_inspector.py

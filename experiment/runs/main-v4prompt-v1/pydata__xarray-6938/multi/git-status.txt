@@ -1,0 +1,3 @@
+ M doc/whats-new.rst
+ M xarray/core/dataset.py
+ M xarray/tests/test_dataset.py

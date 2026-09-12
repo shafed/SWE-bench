@@ -1,2 +1,15 @@
 started_at	finished_at	position	instance_id	condition	runner_exit_code	protocol_status	patch_bytes	timed_out
 2026-09-12T04:18:31.226808+00:00	2026-09-12T04:23:08.151207+00:00	1	django__django-13449	multi	50	violation_no_started_subagent|configuration_missing_or_invalid_gate_state	4077	False
+2026-09-12T04:36:36.105041+00:00	2026-09-12T04:42:12.973401+00:00	1	django__django-13449	multi	0	pass	3925	False
+2026-09-12T04:42:12.975954+00:00	2026-09-12T04:45:31.867475+00:00	2	pydata__xarray-6992	multi	0	pass	1533	False
+2026-09-12T04:45:31.869014+00:00	2026-09-12T04:51:47.981074+00:00	3	pylint-dev__pylint-8898	multi	0	pass	5225	False
+2026-09-12T04:51:47.983770+00:00	2026-09-12T05:05:44.581743+00:00	4	pylint-dev__pylint-4551	multi	0	pass	10703	False
+2026-09-12T05:05:44.586967+00:00	2026-09-12T05:13:21.529984+00:00	5	scikit-learn__scikit-learn-25102	multi	0	pass	6141	False
+2026-09-12T05:13:21.532732+00:00	2026-09-12T05:18:50.233393+00:00	6	sympy__sympy-15017	multi	0	pass	5273	False
+2026-09-12T05:18:50.235934+00:00	2026-09-12T05:27:47.245885+00:00	7	pytest-dev__pytest-5787	multi	0	pass	11857	False
+2026-09-12T05:27:47.248895+00:00	2026-09-12T05:31:37.083405+00:00	8	django__django-16938	multi	0	pass	4223	False
+2026-09-12T05:31:37.085482+00:00	2026-09-12T05:42:08.251236+00:00	9	sphinx-doc__sphinx-8551	multi	0	pass	3015	False
+2026-09-12T05:42:08.255238+00:00	2026-09-12T05:45:40.611532+00:00	10	sphinx-doc__sphinx-7757	multi	0	pass	2570	False
+2026-09-12T05:45:40.613344+00:00	2026-09-12T05:54:00.420046+00:00	11	pydata__xarray-6938	multi	0	pass	2066	False
+2026-09-12T05:54:00.445191+00:00	2026-09-12T05:56:06.649815+00:00	12	matplotlib__matplotlib-25775	multi	30	violation_no_started_subagent	0	False
+2026-09-12T06:10:00.321229+00:00	2026-09-12T06:15:56.563557+00:00	12	matplotlib__matplotlib-25775	multi	0	pass	4354	False

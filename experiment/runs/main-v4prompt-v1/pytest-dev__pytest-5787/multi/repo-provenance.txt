@@ -1,0 +1,32 @@
+b32361f0accbefc2e6200fd85113d404f5ab4907
+## main
+b32361f0a SWE-bench
+955e54221 Merge pull request #5792 from dynatrace-oss-contrib/bugfix/badcase
+29bb0eda2 Move _uniquepath to pathlib as unique_path.
+a98270eac Document the bugfix.
+1aac64573 black formatting.
+505c3340b Fix pytest with mixed up filename casing.
+0215bcd84 update doc (#5784)
+01b9774e3 update doc
+9859d37cf Merge pull request #5782 from linchiwei123/patch-1
+1c7aeb670 Fix linting
+691c706fc Add test for #5782
+a4adf511f Fix TypeError
+4265ab3a4 Merge pull request #5773 from asottile/release-5.1.1
+b135f5af8 Preparing release version 5.1.1
+daff9066c Merge pull request #5752 from bluetech/typing-py350-fix
+43eab917a Fix coverage
+0e569faca Merge pull request #5769 from The-Compiler/remove-training
+a7c235732 Pypy doesn't have sys.getrefcount(), so go back to gc
+cec2183ae Add workaround for test_raises_cyclic_reference in Python 3.5.{0,1}
+c049fd85a Remove cancelled training
+a7ede64f4 Move `@overload` to compat
+307652202 Merge pull request #5762 from pytest-dev/hugovk-patch-1
+a287aea00 Docs: update tense
+6bf6265c5 Merge pull request #5760 from blueyed/F401
+7c26a6586 minor: make noqa comment more specific
+1e3205e7c ci: Travis: use 3.5.0
+32dac18f3 Merge pull request #5755 from blueyed/fix-assert-location-with-coverage
+e5f4c47cd test_assertion: minor cleanup
+05bfe73cf Fix wrong location of assertion error with coverage.py
+9f3bfe82c Fix TypeError when importing pytest on Python 3.5.0 and 3.5.1

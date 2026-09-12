@@ -1,0 +1,25 @@
+{
+  "condition": "multi",
+  "distinct_subagent_ids": [
+    "af30d3dcd37166b7d",
+    "a5a9abe5550b6809d"
+  ],
+  "event_sequence": 3,
+  "finalization_attempts": 1,
+  "first_subagent_invocation": {
+    "condition": "multi",
+    "counted": true,
+    "event": "subagent_started",
+    "event_order": 1,
+    "hook_event_name": "SubagentStart",
+    "prompt_id": "ebc64001-2a33-4997-8505-a1f25ff5827b",
+    "session_id": "c019745f-ea85-4a26-82d2-16e46cf7baa6",
+    "subagent_id": "af30d3dcd37166b7d",
+    "subagent_type": "general-purpose",
+    "timestamp": "2026-09-12T04:55:58.120932+00:00"
+  },
+  "rejected_finalizations": 0,
+  "successful_finalizations": 1,
+  "successful_subagent_invocations": 2,
+  "version": 1
+}

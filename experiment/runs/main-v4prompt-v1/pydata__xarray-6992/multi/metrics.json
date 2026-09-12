@@ -1,0 +1,229 @@
+{
+  "instance_id": "pydata__xarray-6992",
+  "condition": "multi",
+  "position": 2,
+  "inference_exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 132.94832344099996,
+  "patch_collection_ok": true,
+  "patch_bytes": 1533,
+  "agent_committed": false,
+  "trace_parse_errors": 0,
+  "result_event_present": true,
+  "result_is_error": false,
+  "result_subtype": "success",
+  "result_terminal_reason": "completed",
+  "result_text": "Verified independently: the MVCE now reproduces cleanly and reset_index tests pass. The fix is minimal and correct — `xarray/core/dataset.py:4180` now excludes `drop_variables` from `coord_names`, matching the existing pattern in `reset_coords`. A regression test (`test_reset_index_drop_dims`) was added to `xarray/tests/test_dataset.py`, and the full `test_dataset.py` suite passes with no regressions.",
+  "api_retry_statuses": {},
+  "inference_failure": null,
+  "num_turns": 3,
+  "total_cost_usd_reported": 0.2634407,
+  "usage_reported": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 2549,
+    "cache_read_input_tokens": 92566,
+    "output_tokens": 540,
+    "output_tokens_details": {
+      "thinking_tokens": 100
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2549,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 157,
+        "cache_read_input_tokens": 31872,
+        "cache_creation_input_tokens": 434,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 434
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "token_accounting": {
+    "source": "result.modelUsage",
+    "scope": "all_reported_models_including_subagents_and_cli_auxiliary_calls",
+    "status": "complete",
+    "complete": true,
+    "totals": {
+      "input_tokens": 1460,
+      "output_tokens": 7451,
+      "cache_read_input_tokens": 504051,
+      "cache_creation_input_tokens": 26407,
+      "total_tokens": 539369
+    },
+    "by_model": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1416,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001496,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5": {
+        "inputTokens": 44,
+        "outputTokens": 7435,
+        "cacheReadInputTokens": 504051,
+        "cacheCreationInputTokens": 26407,
+        "webSearchRequests": 0,
+        "costUSD": 0.2619447,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 2633,
+        "canonicalModel": "claude-sonnet-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "message_usage_observed_by_actor": {
+    "orchestrator": {
+      "input_tokens": 22,
+      "output_tokens": 33,
+      "cache_read_input_tokens": 294538,
+      "cache_creation_input_tokens": 13786
+    },
+    "toolu_014nhEJQejJtwey9gaL4f3kG": {
+      "input_tokens": 22,
+      "output_tokens": 61,
+      "cache_read_input_tokens": 209513,
+      "cache_creation_input_tokens": 12621
+    }
+  },
+  "unique_assistant_messages": 22,
+  "messages_without_id": 0,
+  "result_events": 2,
+  "events_after_result": 0,
+  "usage_events_after_result": 0,
+  "assistant_events": 42,
+  "models_seen": {
+    "claude-sonnet-5": 42
+  },
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 1
+    },
+    "started_in_background": 1,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "task_calls": 1,
+  "delegations": [
+    {
+      "tool_use_id": "toolu_014nhEJQejJtwey9gaL4f3kG",
+      "parent": "orchestrator",
+      "subagent_type": null,
+      "description_chars": 31,
+      "prompt_chars": 3295
+    }
+  ],
+  "subagent_executions": [
+    {
+      "subagent_id": "a2eae7a4744b87ea1",
+      "tool_use_id": "toolu_014nhEJQejJtwey9gaL4f3kG",
+      "subagent_type": "general-purpose",
+      "description": "Fix reset_index coord_names bug",
+      "prompt": "Repo: /testbed (xarray). Fix a confirmed bug in `Dataset.reset_index`.\n\nBug: In xarray/core/dataset.py, `Dataset.reset_index` (starts around line 4108) builds `coord_names` like this near line 4180:\n\n```python\ncoord_names = set(new_variables) | self._coord_names\n```\n\nThis fails to remove names that were dropped via `drop_variables` (populated when `drop=True`, see the loop above it that does `drop_variables.append(name)`). As a result, when `reset_index(..., drop=True)` drops a coordinate/level, that name stays in `self._coord_names` on the returned dataset even though it's no longer in `_variables`. This violates the invariant (used throughout the codebase, e.g. `xarray/core/dataset.py`'s `DataVariables.__len__`/`__iter__`/`__contains__` around line 354-376) that `_coord_names` is always a subset of `_variables` keys. When violated, `DataVariables.__len__` can return a negative number, raising `ValueError: __len__() should return >= 0`, which breaks things like the dataset repr.\n\nReproduction (should currently fail on this repo, should work after your fix):\n```python\nimport xarray as xr\nds = xr.Dataset(coords={\"a\": (\"x\", [1, 2, 3]), \"b\": (\"x\", ['a', 'b', 'c'])})\nresult = ds.set_index(z=['a', 'b']).reset_index(\"z\", drop=True)\nrepr(result)  # currently raises ValueError\n```\n\nReference for the correct pattern: `Dataset.reset_coords` in the same file (around line 4102) does this correctly:\n```python\ncoord_names = self._coord_names - set(drop_variables) | set(new_variables)\n```\n\nTask:\n1. Fix the `coord_names` computation in `reset_index` (around line 4180) to also subtract `drop_variables`, following the same pattern as `reset_coords`. Make the minimal correct change — don't refactor surrounding code.\n2. Double check there isn't already a `drop_variables` set built elsewhere in that function scope that conflicts (there is a local `drop_variables: list[Hashable] = []` declared around line 4143, populated in the loop below at `drop_variables.append(name)`) — reuse it, converting to a set as needed.\n3. Verify the fix with the reproduction snippet above (run it via `python -c` inside the repo, using the repo's installed/editable xarray — check with `python -c \"import xarray; print(xarray.__file__)\"` first to make sure you're testing the right copy).\n4. Add a regression test in the appropriate existing test file (likely `xarray/tests/test_dataset.py`, look for existing `reset_index` tests, e.g. search for `def test_reset_index` or similar) covering the MVCE from the issue: setting a multi-index from two coord variables then calling `reset_index(..., drop=True)` on it should not raise, and the resulting dataset's `_coord_names` should be a subset of its `_variables` keys (or equivalently, `repr()` should not raise).\n5. Run the relevant test suite to check for regressions: `python -m pytest xarray/tests/test_dataset.py -k \"reset_index or index\" -q` and also a broader pass of `xarray/tests/test_dataset.py -q` if time permits. Fix any failures caused by your change.\n6. Report back: the diff you made, the test you added, and the test run results.\n\nDo not touch unrelated code. Do not add defensive/backwards-compat shims elsewhere (e.g. don't patch `DataVariables` itself) — the root cause fix in `reset_index` is sufficient and is what's expected here.",
+      "start_trace_order": 33,
+      "start_timestamp": null,
+      "status": "completed",
+      "result": "## Summary\n\n**Root cause fix** — `/testbed/xarray/core/dataset.py`, in `Dataset.reset_index` (~line 4180):\n\n```python\n-        coord_names = set(new_variables) | self._coord_names\n+        coord_names = self._coord_names - set(drop_variables) | set(new_variables)\n```\n\nThis reuses the existing local `drop_variables: list[Hashable]` (populated a few lines above via `drop_variables.append(name)` when `drop=True`) and follows the exact pattern already used by `Dataset.reset_coords` a few lines earlier in the same file. No other code was touched.\n\n**Regression test** — added `test_reset_index_drop_dims` in `/testbed/xarray/tests/test_dataset.py` right after `test_reset_index_keep_attrs`:\n\n```python\ndef test_reset_index_drop_dims(self) -> None:\n    ds = Dataset(coords={\"a\": (\"x\", [1, 2, 3]), \"b\": (\"x\", [\"a\", \"b\", \"c\"])})\n    obj = ds.set_index(z=[\"a\", \"b\"]).reset_index(\"z\", drop=True)\n    assert obj._coord_names <= set(obj._variables)\n    repr(obj)\n```\n\n**Verification**\n\n- Reproduction snippet from the issue now succeeds (previously raised `ValueError: __len__() should return >= 0`); confirmed with `python -c \"import xarray; print(xarray.__file__)\"` pointing at `/testbed/xarray/__init__.py` (the editable repo copy) before testing.\n- `python -m pytest xarray/tests/test_dataset.py -k \"reset_index or index\" -q` → 61 passed, 313 deselected.\n- `python -m pytest xarray/tests/test_dataset.py -q` (full file) → 371 passed, 1 skipped, 1 xfailed, 1 xpassed, no failures/regressions.\n\nNo other files were modified.",
+      "usage": {
+        "total_tokens": 24585,
+        "tool_uses": 10,
+        "duration_ms": 75858
+      },
+      "completion_trace_order": 100,
+      "completion_timestamp": null
+    }
+  ],
+  "orchestration_gate": {
+    "enabled": true,
+    "state": {
+      "condition": "multi",
+      "distinct_subagent_ids": [
+        "a2eae7a4744b87ea1"
+      ],
+      "event_sequence": 3,
+      "finalization_attempts": 2,
+      "first_subagent_invocation": {
+        "condition": "multi",
+        "counted": true,
+        "event": "subagent_started",
+        "event_order": 1,
+        "hook_event_name": "SubagentStart",
+        "prompt_id": "98a246b4-a22a-445e-ad6c-e7e3dbadefbd",
+        "session_id": "c084be62-0664-4344-b56e-40cd4d3d9676",
+        "subagent_id": "a2eae7a4744b87ea1",
+        "subagent_type": "general-purpose",
+        "timestamp": "2026-09-12T04:43:59.389232+00:00"
+      },
+      "rejected_finalizations": 0,
+      "successful_finalizations": 2,
+      "successful_subagent_invocations": 1,
+      "version": 1
+    },
+    "integrity_failure": null,
+    "events_file": "orchestration-gate/events.jsonl"
+  },
+  "delegation_prompt_chars_total": 3295,
+  "tool_calls_by_name": {
+    "Agent": 1,
+    "Bash": 11,
+    "Edit": 2,
+    "Read": 3,
+    "ScheduleWakeup": 2
+  },
+  "tool_calls_by_actor": {
+    "orchestrator": {
+      "Agent": 1,
+      "Bash": 5,
+      "Read": 1,
+      "ScheduleWakeup": 2
+    },
+    "toolu_014nhEJQejJtwey9gaL4f3kG": {
+      "Bash": 6,
+      "Edit": 2,
+      "Read": 2
+    }
+  },
+  "tool_calls_total": 19,
+  "protocol_status": "pass",
+  "finished_at": "2026-09-12T04:45:31.856108+00:00"
+}

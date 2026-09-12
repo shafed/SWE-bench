@@ -4,3 +4,33 @@
 [2026-09-12T04:23:08+00:00] stop at 1 django__django-13449 multi: runner exit 50: configuration violation -- discard this run, fix the configuration, then rerun the same instance
 [2026-09-12T04:23:10+00:00] git push exit 0: To github.com:shafed/SWE-bench.git
    af9668d..451d5fb  HEAD -> main
+[2026-09-12T04:36:35+00:00] start: 12 planned multi runs
+[2026-09-12T04:36:36+00:00] run  1 django__django-13449 multi
+[2026-09-12T04:42:12+00:00]      exit 0 pass session_limit=False
+[2026-09-12T04:42:12+00:00] run  2 pydata__xarray-6992 multi
+[2026-09-12T04:45:31+00:00]      exit 0 pass session_limit=False
+[2026-09-12T04:45:31+00:00] run  3 pylint-dev__pylint-8898 multi
+[2026-09-12T04:51:47+00:00]      exit 0 pass session_limit=False
+[2026-09-12T04:51:47+00:00] run  4 pylint-dev__pylint-4551 multi
+[2026-09-12T05:05:44+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:05:44+00:00] run  5 scikit-learn__scikit-learn-25102 multi
+[2026-09-12T05:13:21+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:13:21+00:00] run  6 sympy__sympy-15017 multi
+[2026-09-12T05:18:50+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:18:50+00:00] run  7 pytest-dev__pytest-5787 multi
+[2026-09-12T05:27:47+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:27:47+00:00] run  8 django__django-16938 multi
+[2026-09-12T05:31:37+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:31:37+00:00] run  9 sphinx-doc__sphinx-8551 multi
+[2026-09-12T05:42:08+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:42:08+00:00] run  10 sphinx-doc__sphinx-7757 multi
+[2026-09-12T05:45:40+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:45:40+00:00] run  11 pydata__xarray-6938 multi
+[2026-09-12T05:54:00+00:00]      exit 0 pass session_limit=False
+[2026-09-12T05:54:00+00:00] run  12 matplotlib__matplotlib-25775 multi
+[2026-09-12T05:56:06+00:00]      exit 30 violation_no_started_subagent session_limit=True
+[2026-09-12T05:56:06+00:00] session limit: moved to /home/shafed/github/nir-harness/SWE-bench/experiment/runs/discarded-main-v4prompt-v1-session-limit/matplotlib__matplotlib-25775/multi-20260912T055606Z; sleeping until 2026-09-12T06:10:00+00:00
+[2026-09-12T06:10:00+00:00] run  12 matplotlib__matplotlib-25775 multi
+[2026-09-12T06:15:56+00:00]      exit 0 pass session_limit=False
+[2026-09-12T06:15:56+00:00] evaluator: /home/shafed/github/nir-harness/SWE-bench/experiment/runs/main-v4prompt-v1/predictions-multi.jsonl
+[2026-09-12T06:18:19+00:00] evaluation exit 0

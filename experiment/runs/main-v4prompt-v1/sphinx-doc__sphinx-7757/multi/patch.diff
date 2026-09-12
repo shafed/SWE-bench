@@ -1,0 +1,58 @@
+diff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py
+index 15f0d66e2..3df43c3b9 100644
+--- a/sphinx/util/inspect.py
++++ b/sphinx/util/inspect.py
+@@ -520,15 +520,25 @@ def signature_from_str(signature: str) -> inspect.Signature:
+     args = definition.args
+     params = []
+ 
++    posonlyargs = getattr(args, "posonlyargs", [])  # type: ignore
++    num_positionals = len(posonlyargs) + len(args.args)
++    num_without_default = num_positionals - len(args.defaults)
++
+     if hasattr(args, "posonlyargs"):
+-        for arg in args.posonlyargs:  # type: ignore
++        for i, arg in enumerate(posonlyargs):  # type: ignore
++            if i >= num_without_default:
++                default = ast_unparse(args.defaults[i - num_without_default])
++            else:
++                default = Parameter.empty
++
+             annotation = ast_unparse(arg.annotation) or Parameter.empty
+             params.append(Parameter(arg.arg, Parameter.POSITIONAL_ONLY,
+-                                    annotation=annotation))
++                                    default=default, annotation=annotation))
+ 
+     for i, arg in enumerate(args.args):
+-        if len(args.args) - i <= len(args.defaults):
+-            default = ast_unparse(args.defaults[-len(args.args) + i])
++        j = len(posonlyargs) + i
++        if j >= num_without_default:
++            default = ast_unparse(args.defaults[j - num_without_default])
+         else:
+             default = Parameter.empty
+ 
+diff --git a/tests/test_util_inspect.py b/tests/test_util_inspect.py
+index f16feb698..ab28a029e 100644
+--- a/tests/test_util_inspect.py
++++ b/tests/test_util_inspect.py
+@@ -341,6 +341,19 @@ def test_signature_from_str_positionaly_only_args():
+     assert sig.parameters['b'].kind == Parameter.POSITIONAL_OR_KEYWORD
+ 
+ 
++@pytest.mark.skipif(sys.version_info < (3, 8),
++                    reason='python-3.8 or above is required')
++def test_signature_from_str_positionaly_only_args_with_default_values():
++    sig = inspect.signature_from_str('(a, b=0, /, c=1)')
++    assert list(sig.parameters.keys()) == ['a', 'b', 'c']
++    assert sig.parameters['a'].kind == Parameter.POSITIONAL_ONLY
++    assert sig.parameters['a'].default == Parameter.empty
++    assert sig.parameters['b'].kind == Parameter.POSITIONAL_ONLY
++    assert sig.parameters['b'].default == '0'
++    assert sig.parameters['c'].kind == Parameter.POSITIONAL_OR_KEYWORD
++    assert sig.parameters['c'].default == '1'
++
++
+ def test_signature_from_str_invalid():
+     with pytest.raises(SyntaxError):
+         inspect.signature_from_str('')

@@ -1,0 +1,75 @@
+diff --git a/CHANGES b/CHANGES
+index 327dc5e43..32bc0810f 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -93,6 +93,10 @@ Bugs fixed
+ * #8437: Makefile: ``make clean`` with empty BUILDDIR is dangerous
+ * #8352: std domain: Failed to parse an option that starts with bracket
+ * #8519: LaTeX: Prevent page brake in the middle of a seealso
++* py domain: info field lists (``:type:``, ``:rtype:`` and ``:param <type>
++  name:``) forced a fuzzy, ambiguous cross-reference lookup for unqualified
++  type names instead of Sphinx's normal qualified-name search order used by
++  the explicit ``:py:class:`` role
+ 
+ Testing
+ --------
+diff --git a/sphinx/domains/python.py b/sphinx/domains/python.py
+index 79d7e4f46..a477717a3 100644
+--- a/sphinx/domains/python.py
++++ b/sphinx/domains/python.py
+@@ -271,9 +271,12 @@ class PyXrefMixin:
+                   contnode: Node = None, env: BuildEnvironment = None) -> Node:
+         result = super().make_xref(rolename, domain, target,  # type: ignore
+                                    innernode, contnode, env)
+-        result['refspecific'] = True
++        if env:
++            result['py:module'] = env.ref_context.get('py:module')
++            result['py:class'] = env.ref_context.get('py:class')
+         if target.startswith(('.', '~')):
+             prefix, result['reftarget'] = target[0], target[1:]
++            result['refspecific'] = True
+             if prefix == '.':
+                 text = target[1:]
+             elif prefix == '~':
+diff --git a/tests/test_domain_py.py b/tests/test_domain_py.py
+index 2dc97bed9..f5ae57570 100644
+--- a/tests/test_domain_py.py
++++ b/tests/test_domain_py.py
+@@ -859,6 +859,37 @@ def test_noindexentry(app):
+     assert_node(doctree[2], addnodes.index, entries=[])
+ 
+ 
++def test_info_field_list_type_bound_to_no_class(app, warning):
++    text = (".. py:module:: mod\n"
++            ".. py:class:: A\n"
++            "\n"
++            ".. py:module:: mod.submod\n"
++            ".. py:class:: A\n"
++            "\n"
++            ".. py:currentmodule:: mod.submod\n"
++            "\n"
++            ".. py:function:: foo(a)\n"
++            "\n"
++            "   :param A a: blah blah\n"
++            "   :rtype: A\n")
++    doctree = restructuredtext.parse(app, text)
++    xrefs = [n for n in doctree.traverse(pending_xref) if n.astext() == 'A']
++    assert len(xrefs) == 2
++    for xref in xrefs:
++        assert xref['reftarget'] == 'A'
++        assert not xref.hasattr('refspecific')
++
++    domain = app.env.get_domain('py')
++    for xref in xrefs:
++        contnode = xref[0].deepcopy()
++        refnode = domain.resolve_xref(app.env, 'index', app.builder, 'class',
++                                      'A', xref, contnode)
++        assert refnode is not None
++        assert refnode['refid'] == 'mod.submod.A'
++
++    assert 'more than one target found for cross-reference' not in warning.getvalue()
++
++
+ @pytest.mark.sphinx('dummy', testroot='domain-py-xref-warning')
+ def test_warn_missing_reference(app, status, warning):
+     app.build()
