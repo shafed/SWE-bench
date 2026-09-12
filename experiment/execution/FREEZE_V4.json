@@ -37,8 +37,8 @@
     },
     {
       "path": "experiment/execution/orchestration-gate-settings.json",
-      "git_blob_sha1": "7e08e42d99f21db667881cedce40457eef1f5278",
-      "role": "admin-managed hook configuration for MULTI gate"
+      "git_blob_sha1": "5276b705d857255e683c46c18ec44c7d615de36a",
+      "role": "admin-managed hook configuration for MULTI gate; hook command pinned to /opt/miniconda3/bin/python3 (see RUNNER_AMENDMENT.md, \"Gate hook interpreter\")"
     },
     {
       "path": "experiment/execution/prompt-template.txt",

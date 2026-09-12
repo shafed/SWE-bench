@@ -151,3 +151,36 @@ and preregistered adherence/failure-analysis files.
 `run_series.py` invokes `verify_freeze.py` before reported v4 main inference and
 also checks `runner.sha256`. The validation-only bypass must never be used for a
 reported main run.
+
+## Gate hook interpreter (2026-09-12)
+
+`orchestration-gate-settings.json` invoked the gate as bare `python3`. The
+agent's shell in `/testbed` runs with whatever `conda activate testbed` puts
+first on `PATH`, and that env is per-task-repo, not fixed. On
+`django__django-13449` (`main-v4prompt-v1`, position 1) that resolved to
+`/opt/miniconda3/envs/testbed/bin/python3` = Python 3.6.13; `orchestration_gate.py`
+line 4 (`from __future__ import annotations`, needed for the `bool | None`
+return annotation later in the file) is a 3.7+ feature, so every
+`SubagentStart`/`Stop` hook invocation raised `SyntaxError: future feature
+annotations is not defined` before parsing stdin. `state.json`/`events.jsonl`
+were never written; `runner.py` correctly flagged
+`missing_or_invalid_gate_state` and the run exited 50 (evidence: hook_response
+events in that run's `trace.jsonl`, and `docker run … django-13449 -c 'conda
+activate testbed && python3 --version'` reproducing 3.6.13 on this exact,
+sha256-verified image while the same probe on `django-16263`'s image, which
+had run the gate successfully, gives 3.9.20).
+
+Checked across all 28 SWE-bench task images cached on this host (the full v1
+sample among them): `/opt/miniconda3/bin/python3` (the harness's own base
+conda, untouched by `conda activate testbed`) is 3.11.5 in every one, so it is
+not exposed to a task's per-repo pinned Python. The hook command is now pinned
+to that absolute path. Reproduced fixed: replaying the same `SubagentStart`
+then `Stop` hook input through the new command inside `django-13449`'s
+`testbed` shell now exits 0 and writes a normal `state.json`.
+
+`orchestration_gate.py` itself is unchanged; only the invocation path in
+`orchestration-gate-settings.json` moved, so `FREEZE_V4.json`'s entry for that
+file was updated to its new git-blob-sha1. This is an infrastructure fix, not
+a treatment change: the gate's observed behavior for every run that already
+passed (11 of the 12 `main-v4prompt-v1` positions have base conda 3.11.5, so
+were never affected) is identical.

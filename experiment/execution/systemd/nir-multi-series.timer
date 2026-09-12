@@ -1,0 +1,11 @@
+[Unit]
+Description=Wake from suspend and start the NIR MULTI series
+
+[Timer]
+OnCalendar=2026-09-12 00:10:00 Europe/Moscow
+WakeSystem=true
+AccuracySec=1s
+Persistent=false
+
+[Install]
+WantedBy=timers.target

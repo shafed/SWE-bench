@@ -1,0 +1,19 @@
+[Unit]
+Description=NIR: MULTI series (current multi-treatment.txt) on the v1 sample, evaluate, power off
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shafed/github/nir-harness/SWE-bench
+Environment=HOME=/home/shafed
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+# Root only for the sleep inhibitor; the series itself runs as shafed.
+ExecStart=/usr/bin/systemd-inhibit --what=sleep:idle --who=nir-series --why="SWE-bench series running" \
+    /usr/bin/runuser -u shafed -- \
+    /home/shafed/github/nir-harness/SWE-bench/.venv/bin/python \
+    experiment/execution/scheduled_series.py --label main-v4prompt-v1 --condition multi
+# Runs after success or failure. Cancel within 5 minutes with: sudo shutdown -c
+ExecStopPost=/usr/bin/shutdown -h +5 "NIR series finished; powering off (cancel: sudo shutdown -c)"
+TimeoutStartSec=infinity
