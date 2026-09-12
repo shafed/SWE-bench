@@ -53,17 +53,19 @@ The two first MULTI variants have the same per-instance resolved pattern. The v4
 
 ## Resource summary
 
-The preserved analysis tables show increasing orchestration cost as the prompt becomes more prescriptive:
+Resource results are interpreted metric by metric rather than as a single monotonic "orchestration cost" effect. The most stable observed pattern is increased **output-token** use in MULTI. Total-token and reported-cost comparisons are less clean because the SINGLE baseline itself changes substantially between the two completed paired series.
 
-| Condition | Total tokens, sum / median | Output tokens, sum / median | Reported cost, USD | Wall-clock, sum / median |
-| --- | ---: | ---: | ---: | ---: |
-| SINGLE baseline | 18.17M / 1.48M | 147k / 13.8k | 6.74 | 44 min / 218 s |
-| MULTI original prompt | 19.19M / 1.42M | 192k / 13.9k | 7.88 | 39 min / 165 s |
-| SINGLE model-directed series | 23.41M / 1.67M | 178k / 13.6k | 8.26 | unavailable |
-| MULTI model-directed | 22.73M / 1.91M | 254k / 21.5k | 9.40 | unavailable |
-| MULTI v4 prompt | 25.93M / 1.96M | 298k / 24.2k | 10.73 | 73 min / 320 s |
+| Condition | Total tokens, sum / median | Output tokens, sum / median | Reported cost, USD |
+| --- | ---: | ---: | ---: |
+| SINGLE baseline | 18.17M / 1.48M | 147k / 13.8k | 6.74 |
+| MULTI original prompt | 19.19M / 1.42M | 192k / 13.9k | 7.88 |
+| SINGLE model-directed series | 23.41M / 1.67M | 178k / 13.6k | 8.26 |
+| MULTI model-directed | 22.73M / 1.91M | 254k / 21.5k | 9.40 |
+| MULTI v4 prompt | 25.93M / 1.96M | 298k / 24.2k | 10.73 |
 
 Cost values are Claude Code/modelUsage estimates, not billing records.
+
+Across the task-level comparisons, MULTI uses more output tokens in 10–12 of the 12 task pairs depending on the treatment comparison. By contrast, total tokens and reported cost should not be read as a clean monotonic treatment effect: the two SINGLE series differ by about 29% in total tokens and about 23% in reported cost. In the model-directed series, the lower aggregate total-token count for MULTI is also sensitive to the large `pytest-dev__pytest-5787` SINGLE run. The MULTI v4 resource comparison is additionally cross-series rather than a same-session pair.
 
 ## Status of `main-v4-20260911`
 
